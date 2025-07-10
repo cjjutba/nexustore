@@ -46,7 +46,7 @@ export const Navigation = () => {
             {/* Logo */}
             <Link
               to="/"
-              className="flex items-center space-x-3 group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg"
+              className="flex items-center space-x-3 group focus:outline-none"
               aria-label="NexuStore Home"
             >
               <div className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 tracking-tight">
@@ -139,7 +139,7 @@ export const Navigation = () => {
                 key={link.name}
                 to={link.href}
                 className={cn(
-                  "text-muted-foreground hover:text-foreground transition-all duration-300 whitespace-nowrap relative group px-3 py-2 rounded-md hover:bg-background/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                  "text-muted-foreground hover:text-foreground transition-all duration-300 whitespace-nowrap relative group px-3 py-2 rounded-md hover:bg-background/80",
                   isActive(link.href) && "text-primary font-medium"
                 )}
               >

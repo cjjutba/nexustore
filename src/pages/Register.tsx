@@ -41,7 +41,7 @@ const Register = () => {
       <div className="absolute top-0 left-0 p-6">
         <Link
           to="/"
-          className="flex items-center space-x-3 group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg"
+          className="flex items-center space-x-3 group"
           aria-label="NexuStore Home"
         >
           <div className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 tracking-tight">

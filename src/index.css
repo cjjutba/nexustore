@@ -4,72 +4,56 @@
 
 @layer base {
   :root {
-    /* Shopee Brand Colors */
-    --brand: 12 88% 60%;
-    --brand-light: 12 100% 66%;
-    --brand-dark: 12 79% 53%;
-    
-    /* Secondary Blue */
-    --secondary-blue: 207 90% 49%;
-    --secondary-blue-light: 207 77% 61%;
-    --secondary-blue-dark: 207 100% 42%;
-    
-    /* Accent Colors */
-    --accent-yellow: 51 100% 50%;
-    --accent-yellow-light: 60 100% 72%;
-    --accent-green: 122 39% 49%;
-    --accent-green-light: 122 40% 66%;
-    
-    /* Neutral Colors */
-    --white: 0 0% 100%;
-    --gray-light: 0 0% 96%;
-    --gray: 0 0% 62%;
-    --gray-dark: 0 0% 26%;
-    --black: 0 0% 0%;
-    
-    /* Design System Colors */
-    --background: var(--white);
-    --foreground: var(--gray-dark);
-    --card: var(--white);
-    --card-foreground: var(--gray-dark);
-    --popover: var(--white);
-    --popover-foreground: var(--gray-dark);
-    --primary: var(--brand);
-    --primary-foreground: var(--white);
-    --secondary: var(--secondary-blue);
-    --secondary-foreground: var(--white);
-    --muted: var(--gray-light);
-    --muted-foreground: var(--gray);
-    --accent: var(--accent-yellow);
-    --accent-foreground: var(--gray-dark);
+    /* Modern Minimalist Color Palette */
+    --pure-white: 0 0% 100%;        /* #FFFFFF */
+    --light-gray: 0 0% 97%;         /* #F7F7F7 */
+    --medium-gray: 200 18% 46%;     /* #B0BEC5 */
+    --dark-gray: 200 18% 26%;       /* #455A64 */
+    --charcoal: 200 22% 18%;        /* #263238 */
+
+    /* Design System Colors - Modern Minimalist */
+    --background: var(--pure-white);
+    --foreground: var(--charcoal);
+    --card: var(--pure-white);
+    --card-foreground: var(--charcoal);
+    --popover: var(--pure-white);
+    --popover-foreground: var(--charcoal);
+    --primary: var(--dark-gray);
+    --primary-foreground: var(--pure-white);
+    --secondary: var(--medium-gray);
+    --secondary-foreground: var(--pure-white);
+    --muted: var(--light-gray);
+    --muted-foreground: var(--medium-gray);
+    --accent: var(--dark-gray);
+    --accent-foreground: var(--pure-white);
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: var(--white);
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: var(--brand);
+    --destructive-foreground: var(--pure-white);
+    --border: var(--medium-gray);
+    --input: var(--light-gray);
+    --ring: var(--dark-gray);
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: var(--gray-dark);
-    --foreground: var(--white);
-    --card: var(--gray-dark);
-    --card-foreground: var(--white);
-    --popover: var(--gray-dark);
-    --popover-foreground: var(--white);
-    --primary: var(--brand-light);
-    --primary-foreground: var(--white);
-    --secondary: var(--secondary-blue-light);
-    --secondary-foreground: var(--white);
-    --muted: 0 0% 15%;
-    --muted-foreground: var(--gray);
-    --accent: var(--accent-yellow);
-    --accent-foreground: var(--gray-dark);
+    --background: var(--charcoal);
+    --foreground: var(--pure-white);
+    --card: var(--charcoal);
+    --card-foreground: var(--pure-white);
+    --popover: var(--charcoal);
+    --popover-foreground: var(--pure-white);
+    --primary: var(--medium-gray);
+    --primary-foreground: var(--charcoal);
+    --secondary: var(--dark-gray);
+    --secondary-foreground: var(--pure-white);
+    --muted: var(--dark-gray);
+    --muted-foreground: var(--medium-gray);
+    --accent: var(--medium-gray);
+    --accent-foreground: var(--charcoal);
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: var(--white);
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: var(--brand-light);
+    --destructive-foreground: var(--pure-white);
+    --border: var(--dark-gray);
+    --input: var(--dark-gray);
+    --ring: var(--medium-gray);
   }
 }
 
@@ -84,14 +68,29 @@
 
 @layer utilities {
   .hero-gradient {
-    background: linear-gradient(135deg, hsl(var(--brand)) 0%, hsl(var(--accent-yellow)) 100%);
+    background: linear-gradient(135deg, hsl(var(--light-gray)) 0%, hsl(var(--pure-white)) 100%);
   }
-  
+
   .cta-gradient {
-    background: linear-gradient(90deg, hsl(var(--secondary-blue)) 0%, hsl(var(--secondary-blue-light)) 100%);
+    background: linear-gradient(90deg, hsl(var(--dark-gray)) 0%, hsl(var(--charcoal)) 100%);
   }
-  
+
   .background-gradient {
-    background: linear-gradient(180deg, hsl(var(--brand)) 0%, hsl(var(--brand-light)) 100%);
+    background: linear-gradient(180deg, hsl(var(--light-gray)) 0%, hsl(var(--pure-white)) 100%);
+  }
+
+  .minimalist-card {
+    background: hsl(var(--pure-white));
+    border: 1px solid hsl(var(--medium-gray) / 0.2);
+    box-shadow: 0 1px 3px 0 hsl(var(--medium-gray) / 0.1);
+  }
+
+  .minimalist-hover {
+    transition: all 0.3s ease;
+  }
+
+  .minimalist-hover:hover {
+    box-shadow: 0 4px 12px 0 hsl(var(--medium-gray) / 0.15);
+    transform: translateY(-1px);
   }
 }

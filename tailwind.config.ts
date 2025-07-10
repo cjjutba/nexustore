@@ -52,29 +52,20 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// Shopee Brand Colors
-				brand: {
-					DEFAULT: 'hsl(var(--brand))',
-					light: 'hsl(var(--brand-light))',
-					dark: 'hsl(var(--brand-dark))'
-				},
-				'secondary-blue': {
-					DEFAULT: 'hsl(var(--secondary-blue))',
-					light: 'hsl(var(--secondary-blue-light))',
-					dark: 'hsl(var(--secondary-blue-dark))'
-				},
-				'accent-yellow': {
-					DEFAULT: 'hsl(var(--accent-yellow))',
-					light: 'hsl(var(--accent-yellow-light))'
-				},
-				'accent-green': {
-					DEFAULT: 'hsl(var(--accent-green))',
-					light: 'hsl(var(--accent-green-light))'
-				},
-				'gray-custom': {
-					light: 'hsl(var(--gray-light))',
-					DEFAULT: 'hsl(var(--gray))',
-					dark: 'hsl(var(--gray-dark))'
+				// Modern Minimalist Colors
+				'pure-white': 'hsl(var(--pure-white))',
+				'light-gray': 'hsl(var(--light-gray))',
+				'medium-gray': 'hsl(var(--medium-gray))',
+				'dark-gray': 'hsl(var(--dark-gray))',
+				'charcoal': 'hsl(var(--charcoal))',
+
+				// Semantic color mappings
+				minimalist: {
+					white: 'hsl(var(--pure-white))',
+					'gray-50': 'hsl(var(--light-gray))',
+					'gray-400': 'hsl(var(--medium-gray))',
+					'gray-600': 'hsl(var(--dark-gray))',
+					'gray-800': 'hsl(var(--charcoal))'
 				}
 			},
 			transitionTimingFunction: {

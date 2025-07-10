@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Star, Shield, Truck, Clock, Zap, Award, Gift } from "lucide-react";
 
-export const Hero = () => {
+const Hero = () => {
   return (
     <section className="bg-muted/30 py-8 lg:py-12">
       <div className="container mx-auto px-4 lg:px-6">
@@ -216,3 +216,5 @@ export const Hero = () => {
     </section>
   );
 };
+
+export default Hero;

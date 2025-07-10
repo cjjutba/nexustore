@@ -3,16 +3,16 @@ import { Smartphone, Headphones, Camera, Watch, Laptop, Shirt, Baby, Wrench, Sta
 
 const Categories = () => {
   const categories = [
-    { id: 1, name: "Fashion", icon: Shirt, image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400", count: "500+ items" },
-    { id: 2, name: "Electronics", icon: Smartphone, image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400", count: "300+ items" },
-    { id: 3, name: "Photography", icon: Camera, image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400", count: "150+ items" },
-    { id: 4, name: "Computers", icon: Laptop, image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=400", count: "200+ items" },
-    { id: 5, name: "Baby & Kids", icon: Baby, image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400", count: "400+ items" },
-    { id: 6, name: "Tools", icon: Wrench, image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400", count: "250+ items" },
-    { id: 7, name: "Audio", icon: Headphones, image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400", count: "180+ items" },
-    { id: 8, name: "Wearables", icon: Watch, image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400", count: "120+ items" },
-    { id: 9, name: "Sports", icon: Package, image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400", count: "350+ items" },
-    { id: 10, name: "Accessories", icon: Star, image: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400", count: "600+ items" }
+    { id: 1, name: "Fashion", icon: Shirt, image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400", count: "500+ items", path: "/categories/fashion" },
+    { id: 2, name: "Electronics", icon: Smartphone, image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400", count: "300+ items", path: "/categories/electronics" },
+    { id: 3, name: "Photography", icon: Camera, image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400", count: "150+ items", path: "/categories/photography" },
+    { id: 4, name: "Computers", icon: Laptop, image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=400", count: "200+ items", path: "/categories/computers" },
+    { id: 5, name: "Baby & Kids", icon: Baby, image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400", count: "400+ items", path: "/categories/baby-kids" },
+    { id: 6, name: "Tools", icon: Wrench, image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400", count: "250+ items", path: "/categories/tools" },
+    { id: 7, name: "Audio", icon: Headphones, image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400", count: "180+ items", path: "/categories/audio" },
+    { id: 8, name: "Wearables", icon: Watch, image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400", count: "120+ items", path: "/categories/wearables" },
+    { id: 9, name: "Sports", icon: Package, image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400", count: "350+ items", path: "/categories/sports" },
+    { id: 10, name: "Accessories", icon: Star, image: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400", count: "600+ items", path: "/categories/accessories" }
   ];
 
   return (
@@ -27,7 +27,7 @@ const Categories = () => {
           {categories.map((category) => {
             const IconComponent = category.icon;
             return (
-              <Link key={category.id} to="/shop" className="group">
+              <Link key={category.id} to={category.path} className="group">
                 <div className="bg-pure-white rounded-xl p-6 text-center hover:shadow-xl transition-all duration-300 border border-light-gray hover:border-medium-gray hover:scale-105 transform">
                   <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
                     <IconComponent className="w-8 h-8 text-primary" />

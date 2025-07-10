@@ -26,12 +26,12 @@ export const Navigation = () => {
   }, [location.pathname]);
 
   const categoryLinks = [
-    { name: "Electronics", href: "/shop?category=electronics" },
-    { name: "Fashion", href: "/shop?category=fashion" },
-    { name: "Home & Garden", href: "/shop?category=home" },
-    { name: "Sports", href: "/shop?category=sports" },
-    { name: "Beauty", href: "/shop?category=beauty" },
-    { name: "Books", href: "/shop?category=books" }
+    { name: "Electronics", href: "/categories/electronics" },
+    { name: "Fashion", href: "/categories/fashion" },
+    { name: "Photography", href: "/categories/photography" },
+    { name: "Sports", href: "/categories/sports" },
+    { name: "Audio", href: "/categories/audio" },
+    { name: "Computers", href: "/categories/computers" }
   ];
 
   return (

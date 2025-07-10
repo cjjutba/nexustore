@@ -51,6 +51,30 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				// Shopee Brand Colors
+				brand: {
+					DEFAULT: 'hsl(var(--brand))',
+					light: 'hsl(var(--brand-light))',
+					dark: 'hsl(var(--brand-dark))'
+				},
+				'secondary-blue': {
+					DEFAULT: 'hsl(var(--secondary-blue))',
+					light: 'hsl(var(--secondary-blue-light))',
+					dark: 'hsl(var(--secondary-blue-dark))'
+				},
+				'accent-yellow': {
+					DEFAULT: 'hsl(var(--accent-yellow))',
+					light: 'hsl(var(--accent-yellow-light))'
+				},
+				'accent-green': {
+					DEFAULT: 'hsl(var(--accent-green))',
+					light: 'hsl(var(--accent-green-light))'
+				},
+				'gray-custom': {
+					light: 'hsl(var(--gray-light))',
+					DEFAULT: 'hsl(var(--gray))',
+					dark: 'hsl(var(--gray-dark))'
 				}
 			},
 			transitionTimingFunction: {

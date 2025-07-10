@@ -26,27 +26,11 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))',
-					hover: 'hsl(var(--primary-hover))'
+					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))',
-					light: 'hsl(var(--secondary-light))'
-				},
-				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))',
-					light: 'hsl(var(--accent-light))'
-				},
-				success: {
-					DEFAULT: 'hsl(var(--success))',
-					foreground: 'hsl(var(--success-foreground))',
-					light: 'hsl(var(--success-light))'
-				},
-				warning: {
-					DEFAULT: 'hsl(var(--warning))',
-					foreground: 'hsl(var(--warning-foreground))'
+					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -56,28 +40,18 @@ export default {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
 				},
+				accent: {
+					DEFAULT: 'hsl(var(--accent))',
+					foreground: 'hsl(var(--accent-foreground))'
+				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))',
-					hover: 'hsl(var(--card-hover))'
+					foreground: 'hsl(var(--card-foreground))'
 				}
-			},
-			backgroundImage: {
-				'gradient-primary': 'linear-gradient(135deg, hsl(215 25% 15%), hsl(215 25% 25%))',
-				'gradient-accent': 'linear-gradient(135deg, hsl(45 95% 55%), hsl(45 95% 65%))',
-				'gradient-surface': 'linear-gradient(180deg, hsl(0 0% 100%), hsl(215 15% 98%))',
-				'gradient-hero': 'linear-gradient(135deg, hsl(215 25% 8%) 0%, hsl(215 25% 15%) 50%, hsl(215 25% 20%) 100%)'
-			},
-			boxShadow: {
-				'premium-sm': '0 1px 2px 0 hsl(215 25% 15% / 0.05)',
-				'premium-md': '0 4px 6px -1px hsl(215 25% 15% / 0.1), 0 2px 4px -1px hsl(215 25% 15% / 0.06)',
-				'premium-lg': '0 10px 15px -3px hsl(215 25% 15% / 0.1), 0 4px 6px -2px hsl(215 25% 15% / 0.05)',
-				'premium-xl': '0 20px 25px -5px hsl(215 25% 15% / 0.1), 0 10px 10px -5px hsl(215 25% 15% / 0.04)',
-				'glow': '0 0 40px hsl(45 95% 55% / 0.3)'
 			},
 			transitionTimingFunction: {
 				'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -138,3 +112,4 @@ export default {
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
+} satisfies Config;

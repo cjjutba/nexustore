@@ -7,7 +7,7 @@ export const Hero = () => {
   return (
     <section className="relative min-h-[80vh] flex items-center overflow-hidden">
       {/* Background with Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-hero">
+      <div className="absolute inset-0 bg-gray-900">
         <div className="absolute inset-0 bg-black/20" />
         <img 
           src={heroImage}
@@ -21,7 +21,7 @@ export const Hero = () => {
         <div className="max-w-3xl">
           <div className="animate-fade-in">
             {/* Badge */}
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent mb-6">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 mb-6">
               <Star className="w-4 h-4 mr-2" />
               <span className="text-sm font-medium">Premium Collection 2024</span>
             </div>
@@ -29,7 +29,7 @@ export const Hero = () => {
             {/* Main Heading */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
               Discover
-              <span className="bg-gradient-accent bg-clip-text text-transparent"> Premium </span>
+              <span className="text-yellow-400"> Premium </span>
               Quality Products
             </h1>
             
@@ -59,8 +59,8 @@ export const Hero = () => {
         {/* Features */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl animate-slide-up">
           <div className="flex items-center gap-3 text-white/90">
-            <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-accent" />
+            <div className="w-10 h-10 bg-yellow-400/20 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 text-yellow-400" />
             </div>
             <div>
               <p className="font-medium">Quality Guarantee</p>
@@ -69,8 +69,8 @@ export const Hero = () => {
           </div>
           
           <div className="flex items-center gap-3 text-white/90">
-            <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
-              <Truck className="w-5 h-5 text-accent" />
+            <div className="w-10 h-10 bg-yellow-400/20 rounded-lg flex items-center justify-center">
+              <Truck className="w-5 h-5 text-yellow-400" />
             </div>
             <div>
               <p className="font-medium">Free Shipping</p>
@@ -79,8 +79,8 @@ export const Hero = () => {
           </div>
           
           <div className="flex items-center gap-3 text-white/90">
-            <div className="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
-              <Star className="w-5 h-5 text-accent" />
+            <div className="w-10 h-10 bg-yellow-400/20 rounded-lg flex items-center justify-center">
+              <Star className="w-5 h-5 text-yellow-400" />
             </div>
             <div>
               <p className="font-medium">5-Star Reviews</p>
@@ -91,8 +91,8 @@ export const Hero = () => {
       </div>
       
       {/* Decorative Elements */}
-      <div className="absolute top-1/4 right-10 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-glow-pulse" />
-      <div className="absolute bottom-1/4 left-10 w-48 h-48 bg-accent/10 rounded-full blur-3xl animate-glow-pulse delay-1000" />
+      <div className="absolute top-1/4 right-10 w-64 h-64 bg-yellow-400/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 left-10 w-48 h-48 bg-yellow-400/10 rounded-full blur-3xl animate-pulse" />
     </section>
   );
 };

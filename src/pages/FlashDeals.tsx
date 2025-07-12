@@ -1,46 +1,28 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Star, Filter, Grid, List } from "lucide-react";
+import { Heart, Star, Filter, Grid, List, Clock } from "lucide-react";
 import { formatPrice } from "@/data/products";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { useScrollToTop } from "@/utils/scrollToTop";
+import { useFlashDealTimer } from "@/utils/flashDealTimer";
 
 const FlashDeals = () => {
-  // Timer state - set to end in 24 hours from now
-  const [timeLeft, setTimeLeft] = useState(() => {
-    const endTime = new Date();
-    endTime.setHours(endTime.getHours() + 24);
-    return Math.floor((endTime.getTime() - new Date().getTime()) / 1000);
-  });
-
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('discount');
 
-  // Update timer every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 0) {
-          // Reset timer to 24 hours when it reaches 0
-          const endTime = new Date();
-          endTime.setHours(endTime.getHours() + 24);
-          return Math.floor((endTime.getTime() - new Date().getTime()) / 1000);
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
+  const { toggleWaitlist, isInWaitlist } = useCart();
+  const { toast } = useToast();
+  const { timeLeft, formattedTime } = useFlashDealTimer();
 
-    return () => clearInterval(timer);
-  }, []);
+  // Scroll to top when component mounts (when navigating to this page)
+  useScrollToTop();
 
-  // Format time display
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+
 
   // Extended flash deals data
   const flashDeals = [
@@ -57,8 +39,12 @@ const FlashDeals = () => {
       brand: "Apple",
       rating: 4.8,
       reviews: 234,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "Premium wireless earbuds with active noise cancellation and spatial audio technology."
+      description: "Premium wireless earbuds with active noise cancellation and spatial audio technology.",
+      sizes: [],
+      colors: ["White", "Black", "Space Gray"]
     },
     {
       id: 1002,
@@ -73,8 +59,12 @@ const FlashDeals = () => {
       brand: "Logitech",
       rating: 4.7,
       reviews: 456,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "High-precision wireless gaming mouse with customizable RGB lighting and programmable buttons."
+      description: "High-precision wireless gaming mouse with customizable RGB lighting and programmable buttons.",
+      sizes: [],
+      colors: ["Black", "White"]
     },
     {
       id: 1003,
@@ -89,8 +79,12 @@ const FlashDeals = () => {
       brand: "JBL",
       rating: 4.6,
       reviews: 189,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "Portable Bluetooth speaker with powerful sound and waterproof design for outdoor adventures."
+      description: "Portable Bluetooth speaker with powerful sound and waterproof design for outdoor adventures.",
+      sizes: [],
+      colors: ["Black", "Blue", "Red"]
     },
     {
       id: 1004,
@@ -105,8 +99,12 @@ const FlashDeals = () => {
       brand: "Samsung",
       rating: 4.5,
       reviews: 123,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "Advanced fitness tracker with heart rate monitoring, GPS, and comprehensive health insights."
+      description: "Advanced fitness tracker with heart rate monitoring, GPS, and comprehensive health insights.",
+      sizes: ["38mm", "42mm", "46mm"],
+      colors: ["Black", "Silver", "Gold"]
     },
     {
       id: 1005,
@@ -121,8 +119,12 @@ const FlashDeals = () => {
       brand: "Corsair",
       rating: 4.9,
       reviews: 345,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "Premium mechanical keyboard with RGB backlighting and customizable switches for gaming and typing."
+      description: "Premium mechanical keyboard with RGB backlighting and customizable switches for gaming and typing.",
+      sizes: [],
+      colors: ["Black", "White"]
     },
     {
       id: 1006,
@@ -137,8 +139,12 @@ const FlashDeals = () => {
       brand: "Anker",
       rating: 4.4,
       reviews: 167,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "Fast wireless charging pad compatible with all Qi-enabled devices for convenient charging."
+      description: "Fast wireless charging pad compatible with all Qi-enabled devices for convenient charging.",
+      sizes: [],
+      colors: ["Black", "White"]
     },
     {
       id: 1007,
@@ -153,8 +159,12 @@ const FlashDeals = () => {
       brand: "TRX",
       rating: 4.6,
       reviews: 234,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "Complete resistance bands set with multiple resistance levels for full-body workouts anywhere."
+      description: "Complete resistance bands set with multiple resistance levels for full-body workouts anywhere.",
+      sizes: ["Light", "Medium", "Heavy"],
+      colors: ["Black", "Blue", "Red"]
     },
     {
       id: 1008,
@@ -169,8 +179,12 @@ const FlashDeals = () => {
       brand: "OtterBox",
       rating: 4.7,
       reviews: 789,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "Heavy-duty protective phone case with drop protection and wireless charging compatibility."
+      description: "Heavy-duty protective phone case with drop protection and wireless charging compatibility.",
+      sizes: ["iPhone 14", "iPhone 15", "Samsung S24"],
+      colors: ["Black", "Clear", "Blue"]
     },
     {
       id: 1009,
@@ -185,8 +199,12 @@ const FlashDeals = () => {
       brand: "Philips",
       rating: 4.5,
       reviews: 156,
+      isNew: true,
+      inStock: true,
       isFlashDeal: true,
-      description: "Adjustable LED desk lamp with multiple brightness levels and color temperature settings."
+      description: "Adjustable LED desk lamp with multiple brightness levels and color temperature settings.",
+      sizes: [],
+      colors: ["White", "Black", "Silver"]
     }
   ];
 
@@ -222,9 +240,10 @@ const FlashDeals = () => {
             <p className="text-xl text-muted-foreground mb-6">
               Limited time offers with incredible discounts
             </p>
-            <div className="inline-flex items-center gap-4 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-lg font-bold shadow-lg">
-              <span>Sale ends in:</span>
-              <span className="text-2xl font-mono">{formatTime(timeLeft)}</span>
+            <div className="inline-flex items-center gap-4 bg-destructive/10 border border-destructive/20 px-6 py-3 rounded-lg text-lg font-bold shadow-lg">
+              <Clock className="w-5 h-5 text-destructive" />
+              <span className="text-destructive">Sale ends in:</span>
+              <span className="text-2xl font-mono text-destructive">{formattedTime}</span>
             </div>
           </div>
         </div>
@@ -276,27 +295,21 @@ const FlashDeals = () => {
             : 'grid-cols-1'
         }`}>
           {sortedDeals.map((product) => (
-            <Link key={product.id} to={`/product/${product.id}`} className="group">
-              <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border hover:border-accent/50">
-                <div className="relative">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${
-                      viewMode === 'grid' ? 'h-48' : 'h-32'
-                    }`}
-                  />
-                  <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-sm font-bold">
-                    -{product.discount}%
+            <div key={product.id} className="group relative">
+              <Link to={`/flash-deals/${product.id}`}>
+                <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border hover:border-accent/50">
+                  <div className="relative">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className={`w-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+                        viewMode === 'grid' ? 'h-48' : 'h-32'
+                      }`}
+                    />
+                    <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-sm font-bold">
+                      -{product.discount}%
+                    </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="absolute top-3 right-3 bg-background/80 hover:bg-background"
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
-                </div>
                 
                 <CardContent className="p-4">
                   <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors mb-2 line-clamp-2">
@@ -329,7 +342,7 @@ const FlashDeals = () => {
                   </div>
                   
                   <div className="text-sm text-muted-foreground mb-3">
-                    {product.sold} sold • {formatTime(timeLeft)} left
+                    {product.sold} sold • {formattedTime} left
                   </div>
                   
                   {/* Progress bar */}
@@ -342,9 +355,52 @@ const FlashDeals = () => {
                 </CardContent>
               </Card>
             </Link>
+
+            {/* Wishlist Heart Button - Outside Link to prevent navigation */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`absolute top-3 right-3 transition-all duration-300 hover:scale-110 z-10 ${
+                isInWaitlist(product.id, {
+                  size: product.sizes?.[0],
+                  color: product.colors?.[0]
+                })
+                  ? 'bg-red-500 text-white hover:bg-red-600'
+                  : 'bg-white/90 hover:bg-white text-gray-600 hover:text-red-500'
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const selectedOptions = {
+                  size: product.sizes?.[0],
+                  color: product.colors?.[0]
+                };
+                const wasAdded = toggleWaitlist(product, selectedOptions);
+                toast({
+                  title: wasAdded ? "Added to Wishlist!" : "Removed from Wishlist",
+                  description: wasAdded
+                    ? `${product.name} has been added to your wishlist.`
+                    : `${product.name} has been removed from your wishlist.`,
+                });
+              }}
+            >
+              <Heart
+                className={`h-4 w-4 transition-colors ${
+                  isInWaitlist(product.id, {
+                    size: product.sizes?.[0],
+                    color: product.colors?.[0]
+                  })
+                    ? 'fill-current'
+                    : ''
+                }`}
+              />
+            </Button>
+          </div>
           ))}
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

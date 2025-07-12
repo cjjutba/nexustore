@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import FlashDeals from "./pages/FlashDeals";
+import FlashDealsProductDetail from "./pages/FlashDealsProductDetail";
 import FeaturedProducts from "./pages/FeaturedProducts";
 // Category Pages
 import Fashion from "./pages/categories/Fashion";
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/flash-deals" element={<FlashDeals />} />
+          <Route path="/flash-deals/:id" element={<FlashDealsProductDetail />} />
           <Route path="/featured-products" element={<FeaturedProducts />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/waitlist" element={<Waitlist />} />

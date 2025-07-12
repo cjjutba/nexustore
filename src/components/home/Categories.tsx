@@ -27,7 +27,7 @@ const Categories = () => {
           {categories.map((category) => {
             const IconComponent = category.icon;
             return (
-              <Link key={category.id} to={category.path} className="group">
+              <Link key={category.id} to={category.path} state={{ fromHome: true }} className="group">
                 <div className="bg-pure-white rounded-xl p-6 text-center hover:shadow-xl transition-all duration-300 border border-light-gray hover:border-medium-gray hover:scale-105 transform">
                   <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
                     <IconComponent className="w-8 h-8 text-primary" />

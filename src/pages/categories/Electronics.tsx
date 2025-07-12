@@ -1,26 +1,66 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import CategoryFilter from "@/components/CategoryFilter";
+import Pagination from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Filter, Grid, List, Heart, Star, Smartphone } from "lucide-react";
-import { getProductsByCategory, formatPrice } from "@/data/products";
+import { Grid, List, Heart, Star, Smartphone } from "lucide-react";
+import { getProductsByCategory, formatPrice, type Product } from "@/data/products";
 
 const Electronics = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
-  const products = getProductsByCategory('Electronics');
+  const allProducts = useMemo(() => getProductsByCategory('Electronics'), []);
 
-  // Scroll to top when component mounts
+  // Initialize filtered products when component mounts
   useEffect(() => {
-    window.scrollTo(0, 0);
+    setFilteredProducts(allProducts);
+  }, [allProducts]);
+
+  // Handle filter changes
+  const handleFilterChange = useCallback((filtered: Product[]) => {
+    setFilteredProducts(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
   }, []);
 
-  const categories = ["All", "Smartphones", "Tablets", "Laptops", "Audio", "Gaming", "TV & Home"];
-  const brands = ["All", "Apple", "Samsung", "Sony", "Google", "Nintendo", "Microsoft"];
-  const priceRanges = ["All", "Under $100", "$100-$500", "$500-$1000", "Over $1000"];
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return a.price - b.price;
+      case 'price-high':
+        return b.price - a.price;
+      case 'rating':
+        return b.rating - a.rating;
+      case 'newest':
+        return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
+      default:
+        return 0;
+    }
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of the main content area, not the very top
+    const mainContent = document.querySelector('.container');
+    if (mainContent) {
+      mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,76 +80,11 @@ const Electronics = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-64 flex-shrink-0">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filters
-                </h3>
-                
-                {/* Category Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Category</h4>
-                  <div className="space-y-2">
-                    {categories.map((category) => (
-                      <label key={category} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
-                        <span className="text-sm">{category}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Brand Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Brand</h4>
-                  <div className="space-y-2">
-                    {brands.map((brand) => (
-                      <label key={brand} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
-                        <span className="text-sm">{brand}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Price Range */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Price Range</h4>
-                  <div className="space-y-2">
-                    {priceRanges.map((range) => (
-                      <label key={range} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
-                        <span className="text-sm">{range}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Features */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Features</h4>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">5G Compatible</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">Wireless Charging</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">Water Resistant</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">Fast Charging</span>
-                    </label>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <CategoryFilter
+              products={allProducts}
+              onFilterChange={handleFilterChange}
+              categoryName="Electronics"
+            />
           </div>
 
           {/* Main Content */}
@@ -117,7 +92,7 @@ const Electronics = () => {
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
               <p className="text-muted-foreground">
-                Showing {products.length} electronic products
+                Showing {currentProducts.length} of {sortedProducts.length} electronic products
               </p>
               
               <div className="flex items-center gap-4">
@@ -162,7 +137,7 @@ const Electronics = () => {
                 ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' 
                 : 'grid-cols-1'
             }`}>
-              {products.map((product) => (
+              {currentProducts.map((product) => (
                 <Link key={product.id} to={`/categories/electronics/${product.id}`} className="group">
                   <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
                     viewMode === 'list' ? 'flex flex-row' : ''
@@ -234,15 +209,21 @@ const Electronics = () => {
               ))}
             </div>
 
-            {/* Load More */}
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg">
-                Load More Electronics
-              </Button>
-            </div>
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              totalItems={sortedProducts.length}
+            />
           </div>
         </div>
       </div>
+
+      {/* Spacing before footer */}
+      <div className="py-8"></div>
+
       <Footer />
     </div>
   );

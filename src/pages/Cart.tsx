@@ -6,12 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Minus, 
-  Plus, 
-  Trash2, 
-  ShoppingBag, 
-  ArrowLeft, 
+import { useCart } from "@/contexts/CartContext";
+import { formatPrice } from "@/data/products";
+import {
+  Minus,
+  Plus,
+  Trash2,
+  ShoppingBag,
+  ArrowLeft,
   Heart,
   Shield,
   Truck,
@@ -19,66 +21,23 @@ import {
 } from "lucide-react";
 import Footer from "@/components/Footer";
 
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  quantity: number;
-  color?: string;
-  size?: string;
-  inStock: boolean;
-}
-
 const Cart = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Premium Wireless Headphones",
-      price: 299.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
-      quantity: 1,
-      color: "Black",
-      inStock: true
-    },
-    {
-      id: 2,
-      name: "Smart Fitness Watch",
-      price: 199.99,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-      quantity: 2,
-      color: "Silver",
-      size: "42mm",
-      inStock: true
-    },
-    {
-      id: 3,
-      name: "Bluetooth Speaker",
-      price: 89.99,
-      originalPrice: 129.99,
-      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
-      quantity: 1,
-      color: "Blue",
-      inStock: false
-    }
-  ]);
-
+  const { state, removeFromCart, updateQuantity } = useCart();
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
 
-  const updateQuantity = (id: number, newQuantity: number) => {
+  const cartItems = state.items;
+
+  const handleUpdateQuantity = (index: number, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    const item = cartItems[index];
+    if (item) {
+      updateQuantity(item.id, newQuantity);
+    }
   };
 
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+  const handleRemoveItem = (index: number) => {
+    removeFromCart(index);
   };
 
   const applyPromoCode = () => {
@@ -105,7 +64,7 @@ const Cart = () => {
             <p className="text-muted-foreground mb-8">
               Looks like you haven't added anything to your cart yet.
             </p>
-            <Link to="/shop">
+            <Link to="/">
               <Button className="cta-gradient text-primary-foreground px-8 py-3">
                 Continue Shopping
               </Button>
@@ -125,7 +84,7 @@ const Cart = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link to="/shop">
+            <Link to="/">
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Continue Shopping
@@ -143,8 +102,8 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map((item) => (
-              <Card key={item.id} className="minimalist-card">
+            {cartItems.map((item, index) => (
+              <Card key={`${item.id}-${item.selectedOptions.size}-${item.selectedOptions.color}`} className="minimalist-card">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row gap-4">
                     {/* Product Image */}
@@ -165,20 +124,21 @@ const Cart = () => {
                     <div className="flex-1 space-y-2">
                       <div className="flex justify-between items-start">
                         <div>
-                          <Link to={`/products/${item.id}`}>
+                          <Link to={`/categories/${item.category.toLowerCase()}/${item.id}`}>
                             <h3 className="font-semibold text-foreground hover:text-primary transition-colors">
                               {item.name}
                             </h3>
                           </Link>
                           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                            {item.color && <span>Color: {item.color}</span>}
-                            {item.size && <span>• Size: {item.size}</span>}
+                            <span className="bg-muted px-2 py-1 rounded text-xs">{item.brand}</span>
+                            {item.selectedOptions.color && <span>Color: {item.selectedOptions.color}</span>}
+                            {item.selectedOptions.size && <span>• Size: {item.selectedOptions.size}</span>}
                           </div>
                         </div>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => handleRemoveItem(index)}
                           className="text-muted-foreground hover:text-destructive"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -188,11 +148,11 @@ const Cart = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <span className="font-semibold text-foreground">
-                            ${item.price.toFixed(2)}
+                            {formatPrice(item.price)}
                           </span>
                           {item.originalPrice && (
                             <span className="text-sm text-muted-foreground line-through">
-                              ${item.originalPrice.toFixed(2)}
+                              {formatPrice(item.originalPrice)}
                             </span>
                           )}
                         </div>
@@ -202,7 +162,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => handleUpdateQuantity(index, item.quantity - 1)}
                             disabled={item.quantity <= 1 || !item.inStock}
                             className="w-8 h-8 p-0"
                           >
@@ -212,7 +172,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => handleUpdateQuantity(index, item.quantity + 1)}
                             disabled={!item.inStock}
                             className="w-8 h-8 p-0"
                           >
@@ -242,33 +202,33 @@ const Cart = () => {
               <CardContent className="space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="text-foreground">${subtotal.toFixed(2)}</span>
+                  <span className="text-foreground">{formatPrice(subtotal)}</span>
                 </div>
-                
+
                 {discount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>Discount ({appliedPromo})</span>
-                    <span>-${discount.toFixed(2)}</span>
+                    <span>-{formatPrice(discount)}</span>
                   </div>
                 )}
-                
+
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
                   <span className="text-foreground">
-                    {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                    {shipping === 0 ? "Free" : formatPrice(shipping)}
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Tax</span>
-                  <span className="text-foreground">${tax.toFixed(2)}</span>
+                  <span className="text-foreground">{formatPrice(tax)}</span>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="flex justify-between font-semibold text-lg">
                   <span className="text-foreground">Total</span>
-                  <span className="text-foreground">${total.toFixed(2)}</span>
+                  <span className="text-foreground">{formatPrice(total)}</span>
                 </div>
 
                 {/* Promo Code */}

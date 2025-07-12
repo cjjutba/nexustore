@@ -5,16 +5,19 @@ import Footer from "@/components/Footer";
 import { getProductById, formatPrice, products, type Product } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Heart, 
-  Star, 
-  Minus, 
-  Plus, 
-  ShoppingCart, 
-  Share2, 
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Heart,
+  Star,
+  Minus,
+  Plus,
+  ShoppingCart,
+  Share2,
   ArrowLeft,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Clock
 } from "lucide-react";
 
 const CategoryProductDetail = () => {
@@ -24,6 +27,11 @@ const CategoryProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews'>('description');
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isAddingToWaitlist, setIsAddingToWaitlist] = useState(false);
+
+  const { addToCart, addToWaitlist, isInCart, isInWaitlist } = useCart();
+  const { toast } = useToast();
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -32,6 +40,107 @@ const CategoryProductDetail = () => {
 
   // Get product data from centralized data
   const product = getProductById(Number(id));
+
+  // Initialize selected options when product loads
+  useEffect(() => {
+    if (product) {
+      // Set default size if available
+      if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+        setSelectedSize(product.sizes[0]);
+      }
+      // Set default color if available
+      if (product.colors && product.colors.length > 0 && !selectedColor) {
+        setSelectedColor(product.colors[0]);
+      }
+    }
+  }, [product, selectedSize, selectedColor]);
+
+  // Validation function for required options
+  const validateOptions = () => {
+    if (!product) return false;
+
+    // Check if size is required and selected
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      toast({
+        title: "Size Required",
+        description: "Please select a size before adding to cart.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check if color is required and selected
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      toast({
+        title: "Color Required",
+        description: "Please select a color before adding to cart.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  // Add to cart handler
+  const handleAddToCart = async () => {
+    if (!product || !validateOptions()) return;
+
+    setIsAddingToCart(true);
+
+    try {
+      const selectedOptions = {
+        size: selectedSize || undefined,
+        color: selectedColor || undefined,
+      };
+
+      addToCart(product, quantity, selectedOptions);
+
+      toast({
+        title: "Added to Cart!",
+        description: `${product.name} has been added to your cart.`,
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  // Add to waitlist handler
+  const handleAddToWaitlist = async () => {
+    if (!product || !validateOptions()) return;
+
+    setIsAddingToWaitlist(true);
+
+    try {
+      const selectedOptions = {
+        size: selectedSize || undefined,
+        color: selectedColor || undefined,
+      };
+
+      addToWaitlist(product, selectedOptions);
+
+      toast({
+        title: "Added to Waitlist!",
+        description: `${product.name} has been added to your waitlist.`,
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to waitlist. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToWaitlist(false);
+    }
+  };
 
   if (!product) {
     return (
@@ -308,14 +417,47 @@ const CategoryProductDetail = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-4">
-              <Button size="lg" className="flex-1" disabled={!product.inStock}>
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart
-              </Button>
-              <Button variant="outline" size="lg">
-                <Share2 className="h-5 w-5" />
-              </Button>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                {product.inStock ? (
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart}
+                  >
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    {isAddingToCart ? "Adding..." : "Add to Cart"}
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    variant="outline"
+                    onClick={handleAddToWaitlist}
+                    disabled={isAddingToWaitlist}
+                  >
+                    <Clock className="mr-2 h-5 w-5" />
+                    {isAddingToWaitlist ? "Adding..." : "Add to Waitlist"}
+                  </Button>
+                )}
+                <Button variant="outline" size="lg">
+                  <Share2 className="h-5 w-5" />
+                </Button>
+              </div>
+
+              {/* Cart/Waitlist Status */}
+              {product.inStock && isInCart(product.id, { size: selectedSize, color: selectedColor }) && (
+                <p className="text-sm text-green-600 text-center">
+                  ✓ This item is already in your cart
+                </p>
+              )}
+
+              {!product.inStock && isInWaitlist(product.id, { size: selectedSize, color: selectedColor }) && (
+                <p className="text-sm text-blue-600 text-center">
+                  ✓ This item is in your waitlist
+                </p>
+              )}
             </div>
 
             {/* Back to Category */}

@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, LogIn, UserPlus } from "lucide-react";
+import { ShoppingCart, Menu, X, Search, LogIn, UserPlus, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/contexts/CartContext";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const { getCartItemsCount, state } = useCart();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -78,6 +80,23 @@ export const Navigation = () => {
 
             {/* Right Actions */}
             <div className="flex items-center space-x-2 lg:space-x-3">
+              {/* Waitlist */}
+              <Link to="/waitlist" className="group">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative text-primary hover:bg-muted hover:text-foreground rounded-lg p-2.5 transition-all duration-300 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  aria-label="Waitlist"
+                >
+                  <Clock className="w-5 h-5 group-hover:scale-105 transition-transform duration-300" />
+                  {state.waitlist.length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center font-semibold shadow-sm">
+                      {state.waitlist.length}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+
               {/* Cart */}
               <Link to="/cart" className="group">
                 <Button
@@ -87,9 +106,11 @@ export const Navigation = () => {
                   aria-label="Shopping cart"
                 >
                   <ShoppingCart className="w-5 h-5 group-hover:scale-105 transition-transform duration-300" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-semibold shadow-sm animate-pulse">
-                    0
-                  </span>
+                  {getCartItemsCount() > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-semibold shadow-sm animate-pulse">
+                      {getCartItemsCount()}
+                    </span>
+                  )}
                 </Button>
               </Link>
 

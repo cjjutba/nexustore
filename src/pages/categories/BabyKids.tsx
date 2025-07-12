@@ -1,26 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import CategoryFilter from "@/components/CategoryFilter";
+import Pagination from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Filter, Grid, List, Heart, Star, Baby } from "lucide-react";
-import { getProductsByCategory, formatPrice } from "@/data/products";
+import { Grid, List, Heart, Star, Baby } from "lucide-react";
+import { getProductsByCategory, formatPrice, type Product } from "@/data/products";
 
 const BabyKids = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
-  const products = getProductsByCategory('Baby & Kids');
+  const allProducts = useMemo(() => getProductsByCategory('Baby & Kids'), []);
 
-  // Scroll to top when component mounts
+  // Initialize filtered products when component mounts
   useEffect(() => {
-    window.scrollTo(0, 0);
+    setFilteredProducts(allProducts);
+  }, [allProducts]);
+
+  // Handle filter changes
+  const handleFilterChange = useCallback((filtered: Product[]) => {
+    setFilteredProducts(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
   }, []);
 
-  const categories = ["All", "Toys", "Clothing", "Safety", "Furniture", "Educational"];
-  const brands = ["All", "BabyTrend", "LearnPlay", "SafeRide", "KidsLearn", "OrganicBaby"];
-  const ageRanges = ["All", "0-1 years", "1-3 years", "3-6 years", "6+ years"];
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return a.price - b.price;
+      case 'price-high':
+        return b.price - a.price;
+      case 'rating':
+        return b.rating - a.rating;
+      case 'newest':
+        return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
+      default:
+        return 0;
+    }
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of the main content area, not the very top
+    const mainContent = document.querySelector('.container');
+    if (mainContent) {
+      mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,76 +78,11 @@ const BabyKids = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-64 flex-shrink-0">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filters
-                </h3>
-                
-                {/* Category Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Category</h4>
-                  <div className="space-y-2">
-                    {categories.map((category) => (
-                      <label key={category} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
-                        <span className="text-sm">{category}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Age Range Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Age Range</h4>
-                  <div className="space-y-2">
-                    {ageRanges.map((age) => (
-                      <label key={age} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
-                        <span className="text-sm">{age}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Brand Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Brand</h4>
-                  <div className="space-y-2">
-                    {brands.map((brand) => (
-                      <label key={brand} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
-                        <span className="text-sm">{brand}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Price Range */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Price Range</h4>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">Under $50</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">$50 - $100</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">$100 - $200</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">Over $200</span>
-                    </label>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <CategoryFilter
+              products={allProducts}
+              onFilterChange={handleFilterChange}
+              categoryName="Baby & Kids"
+            />
           </div>
 
           {/* Main Content */}
@@ -117,13 +90,13 @@ const BabyKids = () => {
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
               <p className="text-muted-foreground">
-                Showing {products.length} baby & kids products
+                Showing {currentProducts.length} of {sortedProducts.length} baby & kids products
               </p>
-              
+
               <div className="flex items-center gap-4">
                 {/* Sort */}
-                <select 
-                  value={sortBy} 
+                <select
+                  value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="border border-border rounded-md px-3 py-2 bg-background"
                 >
@@ -131,7 +104,7 @@ const BabyKids = () => {
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
                   <option value="rating">Highest Rated</option>
-                  <option value="age">Age Range</option>
+                  <option value="newest">Newest</option>
                 </select>
 
                 {/* View Mode */}
@@ -158,11 +131,11 @@ const BabyKids = () => {
 
             {/* Products Grid */}
             <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' 
+              viewMode === 'grid'
+                ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
                 : 'grid-cols-1'
             }`}>
-              {products.map((product) => (
+              {currentProducts.map((product) => (
                 <Link key={product.id} to={`/categories/baby-kids/${product.id}`} className="group">
                   <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
                     viewMode === 'list' ? 'flex flex-row' : ''
@@ -237,15 +210,21 @@ const BabyKids = () => {
               ))}
             </div>
 
-            {/* Load More */}
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg">
-                Load More Baby & Kids Products
-              </Button>
-            </div>
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              totalItems={sortedProducts.length}
+            />
           </div>
         </div>
       </div>
+
+      {/* Spacing before footer */}
+      <div className="py-8"></div>
+
       <Footer />
     </div>
   );

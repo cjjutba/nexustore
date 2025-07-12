@@ -46,6 +46,7 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'ADD_TO_WAITLIST'; payload: { product: Product; selectedOptions: { size?: string; color?: string } } }
   | { type: 'REMOVE_FROM_WAITLIST'; payload: number }
+  | { type: 'REMOVE_FROM_WAITLIST_BY_ID'; payload: { productId: number; selectedOptions: { size?: string; color?: string } } }
   | { type: 'LOAD_FROM_STORAGE'; payload: CartState }
   | { type: 'SET_LOADING'; payload: boolean };
 
@@ -151,6 +152,18 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         waitlist: state.waitlist.filter((_, index) => index !== action.payload)
       };
 
+    case 'REMOVE_FROM_WAITLIST_BY_ID': {
+      const { productId, selectedOptions } = action.payload;
+      return {
+        ...state,
+        waitlist: state.waitlist.filter(item =>
+          !(item.id === productId &&
+            item.selectedOptions.size === selectedOptions.size &&
+            item.selectedOptions.color === selectedOptions.color)
+        )
+      };
+    }
+
     case 'LOAD_FROM_STORAGE':
       return { ...action.payload, isLoading: false };
 
@@ -170,6 +183,8 @@ interface CartContextType {
   clearCart: () => void;
   addToWaitlist: (product: Product, selectedOptions: { size?: string; color?: string }) => void;
   removeFromWaitlist: (index: number) => void;
+  removeFromWaitlistById: (productId: number, selectedOptions: { size?: string; color?: string }) => void;
+  toggleWaitlist: (product: Product, selectedOptions: { size?: string; color?: string }) => boolean;
   getCartTotal: () => number;
   getCartItemsCount: () => number;
   isInCart: (productId: number, selectedOptions: { size?: string; color?: string }) => boolean;
@@ -248,6 +263,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'REMOVE_FROM_WAITLIST', payload: index });
   };
 
+  const removeFromWaitlistById = (productId: number, selectedOptions: { size?: string; color?: string }) => {
+    dispatch({ type: 'REMOVE_FROM_WAITLIST_BY_ID', payload: { productId, selectedOptions } });
+  };
+
+  const toggleWaitlist = (product: Product, selectedOptions: { size?: string; color?: string }): boolean => {
+    const isCurrentlyInWaitlist = isInWaitlist(product.id, selectedOptions);
+
+    if (isCurrentlyInWaitlist) {
+      removeFromWaitlistById(product.id, selectedOptions);
+      return false; // Removed from waitlist
+    } else {
+      addToWaitlist(product, selectedOptions);
+      return true; // Added to waitlist
+    }
+  };
+
   const getCartTotal = () => {
     return state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
@@ -280,6 +311,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     clearCart,
     addToWaitlist,
     removeFromWaitlist,
+    removeFromWaitlistById,
+    toggleWaitlist,
     getCartTotal,
     getCartItemsCount,
     isInCart,

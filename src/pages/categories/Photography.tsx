@@ -8,6 +8,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Grid, List, Heart, Star, Camera } from "lucide-react";
 import { getProductsByCategory, formatPrice, type Product } from "@/data/products";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { useScrollToTop } from "@/utils/scrollToTop";
 
 const Photography = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -15,6 +18,12 @@ const Photography = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+
+  const { toggleWaitlist, isInWaitlist } = useCart();
+  const { toast } = useToast();
+
+  // Scroll to top when component mounts (when navigating to this page)
+  useScrollToTop();
 
   const allProducts = useMemo(() => getProductsByCategory('Photography'), []);
 
@@ -44,6 +53,43 @@ const Photography = () => {
         return 0;
     }
   });
+
+
+
+  const handleToggleWaitlist = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault(); // Prevent navigation to product detail
+    e.stopPropagation(); // Stop event bubbling
+
+    try {
+      // Toggle waitlist with default options (first available size/color if any)
+      const selectedOptions = {
+        size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+        color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined,
+      };
+
+      const wasAdded = toggleWaitlist(product, selectedOptions);
+
+      if (wasAdded) {
+        toast({
+          title: "Added to Wishlist!",
+          description: `${product.name} has been added to your wishlist.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Removed from Wishlist",
+          description: `${product.name} has been removed from your wishlist.`,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Pagination logic
   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
@@ -151,12 +197,25 @@ const Photography = () => {
                           New
                         </div>
                       )}
-                      <Button 
+                                            <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="absolute top-3 right-3 bg-white/80 hover:bg-white"
+                        className={`absolute top-3 right-3 transition-all duration-300 hover:scale-110 ${
+                          isInWaitlist(product.id, { 
+                            size: product.sizes?.[0], 
+                            color: product.colors?.[0] 
+                          }) 
+                            ? 'bg-red-500 text-white hover:bg-red-600' 
+                            : 'bg-white/90 hover:bg-white text-gray-600 hover:text-red-500'
+                        }`}
+                        onClick={(e) => handleToggleWaitlist(e, product)}
                       >
-                        <Heart className="h-4 w-4" />
+                        <Heart className={`h-4 w-4 ${
+                          isInWaitlist(product.id, { 
+                            size: product.sizes?.[0], 
+                            color: product.colors?.[0] 
+                          }) ? 'fill-current' : ''
+                        }`} />
                       </Button>
                     </div>
                     <CardContent className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>

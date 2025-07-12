@@ -30,13 +30,13 @@ const CategoryProductDetail = () => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAddingToWaitlist, setIsAddingToWaitlist] = useState(false);
 
-  const { addToCart, addToWaitlist, isInCart, isInWaitlist } = useCart();
+  const { addToCart, toggleWaitlist, isInCart, isInWaitlist } = useCart();
   const { toast } = useToast();
 
-  // Scroll to top when component mounts
+  // Scroll to top when component mounts or when product ID changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [id]);
 
   // Get product data from centralized data
   const product = getProductById(Number(id));
@@ -112,34 +112,51 @@ const CategoryProductDetail = () => {
     }
   };
 
-  // Add to waitlist handler
-  const handleAddToWaitlist = async () => {
-    if (!product || !validateOptions()) return;
+  // Toggle waitlist handler
+  const handleToggleWaitlist = async () => {
+    if (!product) return;
+
+    const selectedOptions = {
+      size: selectedSize || undefined,
+      color: selectedColor || undefined,
+    };
+
+    if (!validateOptions()) return;
 
     setIsAddingToWaitlist(true);
 
     try {
-      const selectedOptions = {
-        size: selectedSize || undefined,
-        color: selectedColor || undefined,
-      };
+      const wasAdded = toggleWaitlist(product, selectedOptions);
 
-      addToWaitlist(product, selectedOptions);
-
-      toast({
-        title: "Added to Waitlist!",
-        description: `${product.name} has been added to your waitlist.`,
-        variant: "default",
-      });
+      if (wasAdded) {
+        toast({
+          title: "Added to Wishlist!",
+          description: `${product.name} has been added to your wishlist.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Removed from Wishlist",
+          description: `${product.name} has been removed from your wishlist.`,
+          variant: "default",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to add item to waitlist. Please try again.",
+        description: "Failed to update wishlist. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsAddingToWaitlist(false);
     }
+  };
+
+  // Heart icon click handler (for main product image)
+  const handleHeartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleToggleWaitlist();
   };
 
   if (!product) {
@@ -222,23 +239,36 @@ const CategoryProductDetail = () => {
         </nav>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Images */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Main Image */}
-            <div className="relative aspect-[4/3] max-w-md mx-auto overflow-hidden rounded-lg bg-muted">
+            <div className="relative aspect-square max-w-sm mx-auto overflow-hidden rounded-lg bg-muted">
               <img
                 src={productImages[selectedImage]}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="absolute top-4 right-4 bg-white/80 hover:bg-white"
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`absolute top-4 right-4 transition-all duration-300 hover:scale-110 ${
+                  isInWaitlist(product.id, {
+                    size: selectedSize || product.sizes?.[0],
+                    color: selectedColor || product.colors?.[0]
+                  })
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : 'bg-white/90 hover:bg-white text-gray-600 hover:text-red-500'
+                }`}
+                onClick={handleHeartClick}
               >
-                <Heart className="h-5 w-5" />
+                <Heart className={`h-5 w-5 ${
+                  isInWaitlist(product.id, {
+                    size: selectedSize || product.sizes?.[0],
+                    color: selectedColor || product.colors?.[0]
+                  }) ? 'fill-current' : ''
+                }`} />
               </Button>
               
               {/* Image Navigation */}
@@ -265,7 +295,7 @@ const CategoryProductDetail = () => {
             </div>
             
             {/* Thumbnail Images */}
-            <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
+            <div className="grid grid-cols-4 gap-2 max-w-sm mx-auto">
               {productImages.map((image, index) => (
                 <button
                   key={index}
@@ -285,7 +315,7 @@ const CategoryProductDetail = () => {
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
@@ -300,8 +330,8 @@ const CategoryProductDetail = () => {
                   </span>
                 )}
               </div>
-              
-              <h1 className="text-3xl font-bold text-foreground mb-4">{product.name}</h1>
+
+              <h1 className="text-2xl font-bold text-foreground mb-3">{product.name}</h1>
               
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center">
@@ -322,13 +352,13 @@ const CategoryProductDetail = () => {
               </div>
 
               {/* Price */}
-              <div className="flex items-center gap-4 mb-4">
-                <span className="text-3xl font-bold text-foreground">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-2xl font-bold text-foreground">
                   {formatPrice(product.price)}
                 </span>
                 {product.originalPrice && (
                   <>
-                    <span className="text-xl text-muted-foreground line-through">
+                    <span className="text-lg text-muted-foreground line-through">
                       {formatPrice(product.originalPrice)}
                     </span>
                     <span className="bg-destructive text-destructive-foreground px-2 py-1 rounded text-sm font-medium">
@@ -339,13 +369,13 @@ const CategoryProductDetail = () => {
               </div>
 
               {/* Stock Status */}
-              <div className="mb-6">
+              <div className="mb-4">
                 <span className={product.inStock ? 'text-success' : 'text-destructive'}>
                   {product.inStock ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>
 
-              <p className="text-muted-foreground mb-6">{product.description}</p>
+              <p className="text-muted-foreground mb-4">{product.description}</p>
             </div>
 
             {/* Options */}
@@ -417,32 +447,58 @@ const CategoryProductDetail = () => {
             </div>
 
             {/* Actions */}
-            <div className="space-y-4">
-              <div className="flex gap-4">
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
                 {product.inStock ? (
                   <Button
                     size="lg"
-                    className="flex-1"
                     onClick={handleAddToCart}
                     disabled={isAddingToCart}
                   >
-                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    <ShoppingCart className="mr-2 h-4 w-4" />
                     {isAddingToCart ? "Adding..." : "Add to Cart"}
                   </Button>
                 ) : (
                   <Button
                     size="lg"
-                    className="flex-1"
                     variant="outline"
-                    onClick={handleAddToWaitlist}
+                    onClick={handleToggleWaitlist}
                     disabled={isAddingToWaitlist}
                   >
-                    <Clock className="mr-2 h-5 w-5" />
-                    {isAddingToWaitlist ? "Adding..." : "Add to Waitlist"}
+                    <Clock className="mr-2 h-4 w-4" />
+                    {isAddingToWaitlist
+                      ? "Updating..."
+                      : isInWaitlist(product.id, {
+                          size: selectedSize || product.sizes?.[0],
+                          color: selectedColor || product.colors?.[0]
+                        })
+                        ? "Remove from Waitlist"
+                        : "Add to Waitlist"
+                    }
                   </Button>
                 )}
-                <Button variant="outline" size="lg">
-                  <Share2 className="h-5 w-5" />
+
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={handleToggleWaitlist}
+                  disabled={isAddingToWaitlist}
+                >
+                  <Heart className={`mr-2 h-4 w-4 ${
+                    isInWaitlist(product.id, {
+                      size: selectedSize || product.sizes?.[0],
+                      color: selectedColor || product.colors?.[0]
+                    }) ? 'fill-current' : ''
+                  }`} />
+                  {isAddingToWaitlist
+                    ? "Updating..."
+                    : isInWaitlist(product.id, {
+                        size: selectedSize || product.sizes?.[0],
+                        color: selectedColor || product.colors?.[0]
+                      })
+                      ? "Remove from Wishlist"
+                      : "Add to Wishlist"
+                  }
                 </Button>
               </div>
 
@@ -453,9 +509,9 @@ const CategoryProductDetail = () => {
                 </p>
               )}
 
-              {!product.inStock && isInWaitlist(product.id, { size: selectedSize, color: selectedColor }) && (
+              {isInWaitlist(product.id, { size: selectedSize, color: selectedColor }) && (
                 <p className="text-sm text-blue-600 text-center">
-                  ✓ This item is in your waitlist
+                  ✓ This item is in your wishlist
                 </p>
               )}
             </div>
@@ -473,7 +529,7 @@ const CategoryProductDetail = () => {
         </div>
 
         {/* Product Details Tabs */}
-        <div className="mt-16">
+        <div className="mt-12">
           <div className="border-b">
             <div className="flex space-x-8">
               <button
@@ -625,8 +681,8 @@ const CategoryProductDetail = () => {
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold mb-8">Related Products</h2>
+          <div className="mt-12">
+            <h2 className="text-xl font-bold mb-6">Related Products</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedProducts.map((relatedProduct) => (
                 <Link key={relatedProduct.id} to={`/categories/${category}/${relatedProduct.id}`}>

@@ -1,149 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Shirt } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const Fashion = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "Premium Cotton T-Shirt",
-      price: 29.99,
-      originalPrice: 39.99,
-      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-      rating: 4.7,
-      reviews: 89,
-      category: "Fashion",
-      brand: "StyleCo",
-      isNew: true,
-      inStock: true,
-      sizes: ["XS", "S", "M", "L", "XL"],
-      colors: ["White", "Black", "Navy", "Gray"]
-    },
-    {
-      id: 2,
-      name: "Classic Denim Jeans",
-      price: 79.99,
-      originalPrice: 99.99,
-      image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400",
-      rating: 4.8,
-      reviews: 156,
-      category: "Fashion",
-      brand: "DenimPro",
-      isNew: false,
-      inStock: true,
-      sizes: ["28", "30", "32", "34", "36"],
-      colors: ["Blue", "Black", "Light Blue"]
-    },
-    {
-      id: 3,
-      name: "Elegant Summer Dress",
-      price: 89.99,
-      originalPrice: 119.99,
-      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400",
-      rating: 4.9,
-      reviews: 203,
-      category: "Fashion",
-      brand: "ElegantWear",
-      isNew: true,
-      inStock: true,
-      sizes: ["XS", "S", "M", "L"],
-      colors: ["Floral", "Solid Blue", "Black"]
-    },
-    {
-      id: 4,
-      name: "Professional Blazer",
-      price: 149.99,
-      originalPrice: 199.99,
-      image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400",
-      rating: 4.6,
-      reviews: 78,
-      category: "Fashion",
-      brand: "BusinessStyle",
-      isNew: false,
-      inStock: true,
-      sizes: ["XS", "S", "M", "L", "XL"],
-      colors: ["Black", "Navy", "Charcoal"]
-    },
-    {
-      id: 5,
-      name: "Casual Sneakers",
-      price: 119.99,
-      originalPrice: 149.99,
-      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400",
-      rating: 4.8,
-      reviews: 234,
-      category: "Fashion",
-      brand: "ComfortStep",
-      isNew: true,
-      inStock: true,
-      sizes: ["7", "8", "9", "10", "11", "12"],
-      colors: ["White", "Black", "Gray", "Navy"]
-    },
-    {
-      id: 6,
-      name: "Leather Handbag",
-      price: 199.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-      rating: 4.7,
-      reviews: 145,
-      category: "Fashion",
-      brand: "LuxeLeather",
-      isNew: false,
-      inStock: true,
-      colors: ["Brown", "Black", "Tan"]
-    },
-    {
-      id: 7,
-      name: "Wool Winter Coat",
-      price: 299.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
-      rating: 4.9,
-      reviews: 167,
-      category: "Fashion",
-      brand: "WarmWear",
-      isNew: true,
-      inStock: true,
-      sizes: ["XS", "S", "M", "L", "XL"],
-      colors: ["Black", "Camel", "Navy"]
-    },
-    {
-      id: 8,
-      name: "Athletic Leggings",
-      price: 49.99,
-      originalPrice: 69.99,
-      image: "https://images.unsplash.com/photo-1506629905607-d9c297d3f5f5?w=400",
-      rating: 4.6,
-      reviews: 298,
-      category: "Fashion",
-      brand: "ActiveFit",
-      isNew: false,
-      inStock: true,
-      sizes: ["XS", "S", "M", "L", "XL"],
-      colors: ["Black", "Navy", "Gray", "Purple"]
-    },
-    {
-      id: 9,
-      name: "Silk Scarf",
-      price: 79.99,
-      originalPrice: 99.99,
-      image: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400",
-      rating: 4.8,
-      reviews: 89,
-      category: "Fashion",
-      brand: "SilkLux",
-      isNew: true,
-      inStock: true,
-      colors: ["Floral", "Geometric", "Solid"]
-    }
-  ];
+  const products = getProductsByCategory('Fashion');
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+
 
   const categories = ["All", "Clothing", "Shoes", "Accessories", "Bags"];
   const brands = ["All", "StyleCo", "DenimPro", "ElegantWear", "BusinessStyle", "ComfortStep", "LuxeLeather"];
@@ -303,7 +178,7 @@ const Fashion = () => {
                 : 'grid-cols-1'
             }`}>
               {products.map((product) => (
-                <Link key={product.id} to={`/products/${product.id}`} className="group">
+                <Link key={product.id} to={`/categories/fashion/${product.id}`} className="group">
                   <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
                     viewMode === 'list' ? 'flex flex-row' : ''
                   }`}>
@@ -347,12 +222,12 @@ const Fashion = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}
@@ -377,6 +252,7 @@ const Fashion = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

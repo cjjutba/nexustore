@@ -1,42 +1,81 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Heart } from "lucide-react";
 
 const FlashDeals = () => {
+  // Timer state - set to end in 24 hours from now
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const endTime = new Date();
+    endTime.setHours(endTime.getHours() + 24);
+    return Math.floor((endTime.getTime() - new Date().getTime()) / 1000);
+  });
+
+  // Update timer every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 0) {
+          // Reset timer to 24 hours when it reaches 0
+          const endTime = new Date();
+          endTime.setHours(endTime.getHours() + 24);
+          return Math.floor((endTime.getTime() - new Date().getTime()) / 1000);
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Format time display
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const flashDeals = [
     {
-      id: 1,
-      name: "Flash Deal - Wireless Earbuds",
-      price: 29.99,
-      originalPrice: 79.99,
-      image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400",
-      timeLeft: "2h 45m",
+      id: 1001, // Using unique IDs for flash deals
+      name: "Flash Deal - Wireless Earbuds Pro",
+      price: 1499.99,
+      originalPrice: 3999.99,
+      image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400",
       sold: 189,
       stock: 50,
-      discount: 63
+      discount: 63,
+      category: "Electronics",
+      brand: "Apple",
+      isFlashDeal: true
     },
     {
-      id: 2,
-      name: "Flash Deal - Smartphone Case",
-      price: 9.99,
-      originalPrice: 24.99,
-      image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400",
-      timeLeft: "1h 23m",
+      id: 1002,
+      name: "Flash Deal - Gaming Mouse RGB",
+      price: 999.99,
+      originalPrice: 2499.99,
+      image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400",
       sold: 267,
       stock: 33,
-      discount: 60
+      discount: 60,
+      category: "Electronics",
+      brand: "Logitech",
+      isFlashDeal: true
     },
     {
-      id: 3,
-      name: "Flash Deal - USB Cable",
-      price: 4.99,
-      originalPrice: 19.99,
-      image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=400",
-      timeLeft: "4h 12m",
+      id: 1003,
+      name: "Flash Deal - Bluetooth Speaker",
+      price: 1249.99,
+      originalPrice: 4999.99,
+      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
       sold: 423,
       stock: 77,
-      discount: 75
+      discount: 75,
+      category: "Audio",
+      brand: "JBL",
+      isFlashDeal: true
     }
   ];
 
@@ -47,10 +86,10 @@ const FlashDeals = () => {
           <div className="flex items-center gap-6">
             <h2 className="text-3xl font-bold text-charcoal">FLASH SALE</h2>
             <div className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
-              Ends in 23:59:42
+              Ends in {formatTime(timeLeft)}
             </div>
           </div>
-          <Link to="/shop">
+          <Link to="/flash-deals">
             <Button variant="outline" className="group border-2 border-charcoal text-charcoal hover:bg-charcoal hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300">
               See All
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -60,7 +99,7 @@ const FlashDeals = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {flashDeals.map((product) => (
-            <Link key={product.id} to={`/products/${product.id}`} className="group">
+            <Link key={product.id} to={`/product/${product.id}`} className="group">
               <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105 transform">
                 <div className="relative">
                   <img 
@@ -84,7 +123,7 @@ const FlashDeals = () => {
                     <span className="text-base text-medium-gray line-through">₱{product.originalPrice}</span>
                   </div>
                   <div className="text-sm text-dark-gray mb-4">
-                    {product.sold} sold • {product.timeLeft} left
+                    {product.sold} sold • {formatTime(timeLeft)} left
                   </div>
                   <div className="w-full bg-medium-gray/30 rounded-full h-3">
                     <div 

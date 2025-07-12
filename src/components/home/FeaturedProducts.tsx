@@ -103,7 +103,7 @@ const FeaturedProducts = () => {
             <h2 className="text-3xl font-bold text-charcoal mb-4">FEATURED PRODUCTS</h2>
             <p className="text-dark-gray text-lg">Handpicked premium products with great deals</p>
           </div>
-          <Link to="/shop">
+          <Link to="/featured-products">
             <Button variant="outline" className="group border-2 border-charcoal text-charcoal hover:bg-charcoal hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300">
               View All
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -113,7 +113,7 @@ const FeaturedProducts = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {featuredProducts.map((product) => (
-            <Link key={product.id} to={`/products/${product.id}`} className="group">
+            <Link key={product.id} to={`/product/${product.id}`} className="group">
               <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105 transform">
                 <div className="relative">
                   <img 

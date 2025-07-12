@@ -4,139 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Wrench } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const Tools = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "Cordless Drill Set",
-      price: 149.99,
-      originalPrice: 199.99,
-      image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400",
-      rating: 4.8,
-      reviews: 456,
-      category: "Tools",
-      brand: "DeWalt",
-      isNew: true,
-      inStock: true,
-      specs: ["18V Battery", "2-Speed Gearbox", "LED Light", "Carrying Case"]
-    },
-    {
-      id: 2,
-      name: "Professional Tool Set",
-      price: 89.99,
-      originalPrice: 119.99,
-      image: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400",
-      rating: 4.7,
-      reviews: 234,
-      category: "Tools",
-      brand: "Craftsman",
-      isNew: false,
-      inStock: true,
-      specs: ["150 Pieces", "Chrome Vanadium", "Lifetime Warranty", "Organized Case"]
-    },
-    {
-      id: 3,
-      name: "Circular Saw",
-      price: 199.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400",
-      rating: 4.6,
-      reviews: 189,
-      category: "Tools",
-      brand: "Makita",
-      isNew: true,
-      inStock: true,
-      specs: ["7-1/4\" Blade", "15 Amp Motor", "Bevel Capacity", "Dust Port"]
-    },
-    {
-      id: 4,
-      name: "Impact Wrench",
-      price: 179.99,
-      originalPrice: 219.99,
-      image: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400",
-      rating: 4.9,
-      reviews: 298,
-      category: "Tools",
-      brand: "Milwaukee",
-      isNew: false,
-      inStock: true,
-      specs: ["1/2\" Drive", "700 ft-lbs Torque", "Brushless Motor", "LED Ring"]
-    },
-    {
-      id: 5,
-      name: "Multi-Tool Oscillating",
-      price: 129.99,
-      originalPrice: 159.99,
-      image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400",
-      rating: 4.5,
-      reviews: 167,
-      category: "Tools",
-      brand: "Bosch",
-      isNew: true,
-      inStock: true,
-      specs: ["Variable Speed", "Tool-Free Blade Change", "Vibration Control", "Accessories Included"]
-    },
-    {
-      id: 6,
-      name: "Adjustable Wrench Set",
-      price: 49.99,
-      originalPrice: 69.99,
-      image: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400",
-      rating: 4.4,
-      reviews: 123,
-      category: "Tools",
-      brand: "Stanley",
-      isNew: false,
-      inStock: true,
-      specs: ["3-Piece Set", "Chrome Finish", "Comfort Grip", "Laser Etched Scale"]
-    },
-    {
-      id: 7,
-      name: "Angle Grinder",
-      price: 79.99,
-      originalPrice: 99.99,
-      image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400",
-      rating: 4.6,
-      reviews: 234,
-      category: "Tools",
-      brand: "Black+Decker",
-      isNew: true,
-      inStock: true,
-      specs: ["4-1/2\" Disc", "6 Amp Motor", "Side Handle", "Guard Adjustment"]
-    },
-    {
-      id: 8,
-      name: "Socket Set",
-      price: 69.99,
-      originalPrice: 89.99,
-      image: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400",
-      rating: 4.7,
-      reviews: 345,
-      category: "Tools",
-      brand: "Husky",
-      isNew: false,
-      inStock: true,
-      specs: ["84 Pieces", "Chrome Vanadium", "Quick Release", "Blow Mold Case"]
-    },
-    {
-      id: 9,
-      name: "Cordless Jigsaw",
-      price: 119.99,
-      originalPrice: 149.99,
-      image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400",
-      rating: 4.5,
-      reviews: 178,
-      category: "Tools",
-      brand: "Ryobi",
-      isNew: true,
-      inStock: true,
-      specs: ["18V Battery", "Variable Speed", "Orbital Action", "Dust Blower"]
-    }
-  ];
+  const products = getProductsByCategory('Tools');
 
   const categories = ["All", "Power Tools", "Hand Tools", "Measuring", "Safety", "Storage"];
   const brands = ["All", "DeWalt", "Craftsman", "Makita", "Milwaukee", "Bosch", "Stanley"];
@@ -332,12 +206,12 @@ const Tools = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}

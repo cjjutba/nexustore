@@ -1,142 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Smartphone } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const Electronics = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro Max",
-      price: 1199.99,
-      originalPrice: 1299.99,
-      image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
-      rating: 4.9,
-      reviews: 1247,
-      category: "Electronics",
-      brand: "Apple",
-      isNew: true,
-      inStock: true,
-      specs: ["256GB Storage", "A17 Pro Chip", "48MP Camera", "6.7\" Display"]
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy S24 Ultra",
-      price: 1099.99,
-      originalPrice: 1199.99,
-      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400",
-      rating: 4.8,
-      reviews: 892,
-      category: "Electronics",
-      brand: "Samsung",
-      isNew: true,
-      inStock: true,
-      specs: ["512GB Storage", "Snapdragon 8 Gen 3", "200MP Camera", "6.8\" Display"]
-    },
-    {
-      id: 3,
-      name: "iPad Pro 12.9\"",
-      price: 899.99,
-      originalPrice: 999.99,
-      image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400",
-      rating: 4.7,
-      reviews: 634,
-      category: "Electronics",
-      brand: "Apple",
-      isNew: false,
-      inStock: true,
-      specs: ["128GB Storage", "M2 Chip", "12.9\" Liquid Retina", "Apple Pencil Compatible"]
-    },
-    {
-      id: 4,
-      name: "MacBook Air M3",
-      price: 1299.99,
-      originalPrice: 1399.99,
-      image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
-      rating: 4.9,
-      reviews: 456,
-      category: "Electronics",
-      brand: "Apple",
-      isNew: true,
-      inStock: true,
-      specs: ["256GB SSD", "M3 Chip", "13.6\" Display", "18-hour Battery"]
-    },
-    {
-      id: 5,
-      name: "Sony WH-1000XM5 Headphones",
-      price: 349.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400",
-      rating: 4.8,
-      reviews: 789,
-      category: "Electronics",
-      brand: "Sony",
-      isNew: false,
-      inStock: true,
-      specs: ["30-hour Battery", "Active Noise Canceling", "Hi-Res Audio", "Quick Charge"]
-    },
-    {
-      id: 6,
-      name: "Nintendo Switch OLED",
-      price: 299.99,
-      originalPrice: 349.99,
-      image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
-      rating: 4.6,
-      reviews: 1123,
-      category: "Electronics",
-      brand: "Nintendo",
-      isNew: false,
-      inStock: true,
-      specs: ["7\" OLED Screen", "64GB Storage", "Enhanced Audio", "Dock Included"]
-    },
-    {
-      id: 7,
-      name: "AirPods Pro (3rd Gen)",
-      price: 229.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400",
-      rating: 4.7,
-      reviews: 567,
-      category: "Electronics",
-      brand: "Apple",
-      isNew: true,
-      inStock: true,
-      specs: ["Active Noise Cancellation", "Spatial Audio", "6-hour Battery", "MagSafe Charging"]
-    },
-    {
-      id: 8,
-      name: "Samsung 4K Smart TV 55\"",
-      price: 799.99,
-      originalPrice: 899.99,
-      image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400",
-      rating: 4.5,
-      reviews: 234,
-      category: "Electronics",
-      brand: "Samsung",
-      isNew: false,
-      inStock: true,
-      specs: ["55\" 4K UHD", "Smart TV", "HDR10+", "Voice Remote"]
-    },
-    {
-      id: 9,
-      name: "Google Pixel 8 Pro",
-      price: 899.99,
-      originalPrice: 999.99,
-      image: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=400",
-      rating: 4.6,
-      reviews: 445,
-      category: "Electronics",
-      brand: "Google",
-      isNew: true,
-      inStock: true,
-      specs: ["128GB Storage", "Google Tensor G3", "50MP Camera", "6.7\" Display"]
-    }
-  ];
+  const products = getProductsByCategory('Electronics');
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const categories = ["All", "Smartphones", "Tablets", "Laptops", "Audio", "Gaming", "TV & Home"];
   const brands = ["All", "Apple", "Samsung", "Sony", "Google", "Nintendo", "Microsoft"];
@@ -283,7 +163,7 @@ const Electronics = () => {
                 : 'grid-cols-1'
             }`}>
               {products.map((product) => (
-                <Link key={product.id} to={`/products/${product.id}`} className="group">
+                <Link key={product.id} to={`/categories/electronics/${product.id}`} className="group">
                   <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
                     viewMode === 'list' ? 'flex flex-row' : ''
                   }`}>
@@ -327,12 +207,12 @@ const Electronics = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}
@@ -363,6 +243,7 @@ const Electronics = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

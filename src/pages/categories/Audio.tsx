@@ -4,139 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Headphones } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const Audio = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "Sony WH-1000XM5 Headphones",
-      price: 349.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400",
-      rating: 4.9,
-      reviews: 1247,
-      category: "Audio",
-      brand: "Sony",
-      isNew: true,
-      inStock: true,
-      specs: ["30-hour Battery", "Active Noise Canceling", "Hi-Res Audio", "Quick Charge"]
-    },
-    {
-      id: 2,
-      name: "Bose QuietComfort 45",
-      price: 279.99,
-      originalPrice: 329.99,
-      image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400",
-      rating: 4.8,
-      reviews: 892,
-      category: "Audio",
-      brand: "Bose",
-      isNew: false,
-      inStock: true,
-      specs: ["24-hour Battery", "Noise Cancellation", "Comfortable Fit", "Voice Assistant"]
-    },
-    {
-      id: 3,
-      name: "JBL Charge 5 Speaker",
-      price: 149.99,
-      originalPrice: 179.99,
-      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
-      rating: 4.7,
-      reviews: 634,
-      category: "Audio",
-      brand: "JBL",
-      isNew: true,
-      inStock: true,
-      specs: ["20-hour Playtime", "Waterproof", "Power Bank", "PartyBoost"]
-    },
-    {
-      id: 4,
-      name: "Apple AirPods Pro (3rd Gen)",
-      price: 229.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400",
-      rating: 4.6,
-      reviews: 456,
-      category: "Audio",
-      brand: "Apple",
-      isNew: true,
-      inStock: true,
-      specs: ["Active Noise Cancellation", "Spatial Audio", "6-hour Battery", "MagSafe Charging"]
-    },
-    {
-      id: 5,
-      name: "Marshall Acton III Speaker",
-      price: 279.99,
-      originalPrice: 329.99,
-      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
-      rating: 4.5,
-      reviews: 789,
-      category: "Audio",
-      brand: "Marshall",
-      isNew: false,
-      inStock: true,
-      specs: ["Bluetooth 5.2", "Multi-host", "Classic Design", "Dynamic Loudness"]
-    },
-    {
-      id: 6,
-      name: "Sennheiser HD 660S2",
-      price: 499.99,
-      originalPrice: 599.99,
-      image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400",
-      rating: 4.8,
-      reviews: 234,
-      category: "Audio",
-      brand: "Sennheiser",
-      isNew: true,
-      inStock: true,
-      specs: ["Open-back Design", "Hi-Fi Audio", "Detachable Cable", "Velour Earpads"]
-    },
-    {
-      id: 7,
-      name: "Beats Studio3 Wireless",
-      price: 199.99,
-      originalPrice: 349.99,
-      image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400",
-      rating: 4.4,
-      reviews: 567,
-      category: "Audio",
-      brand: "Beats",
-      isNew: false,
-      inStock: true,
-      specs: ["22-hour Battery", "Pure ANC", "Apple W1 Chip", "Fast Fuel"]
-    },
-    {
-      id: 8,
-      name: "Sonos One (Gen 2)",
-      price: 199.99,
-      originalPrice: 219.99,
-      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
-      rating: 4.6,
-      reviews: 345,
-      category: "Audio",
-      brand: "Sonos",
-      isNew: false,
-      inStock: true,
-      specs: ["Voice Control", "Multi-room Audio", "Trueplay Tuning", "AirPlay 2"]
-    },
-    {
-      id: 9,
-      name: "Audio-Technica ATH-M50x",
-      price: 149.99,
-      originalPrice: 169.99,
-      image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400",
-      rating: 4.7,
-      reviews: 1123,
-      category: "Audio",
-      brand: "Audio-Technica",
-      isNew: false,
-      inStock: true,
-      specs: ["Professional Monitor", "45mm Drivers", "Detachable Cables", "Swiveling Earcups"]
-    }
-  ];
+  const products = getProductsByCategory('Audio');
 
   const categories = ["All", "Headphones", "Speakers", "Earbuds", "Home Audio", "Professional"];
   const brands = ["All", "Sony", "Bose", "JBL", "Apple", "Marshall", "Sennheiser", "Beats"];
@@ -336,12 +210,12 @@ const Audio = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}

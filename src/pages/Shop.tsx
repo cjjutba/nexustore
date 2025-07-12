@@ -1,97 +1,82 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star } from "lucide-react";
+import { products, getAllCategories, getAllBrands, getPriceRanges, formatPrice, type Product } from "@/data/products";
 
 const Shop = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedBrand, setSelectedBrand] = useState('All');
+  const [selectedPriceRange, setSelectedPriceRange] = useState<{min: number, max: number} | null>(null);
+  const [showNewOnly, setShowNewOnly] = useState(false);
+  const [showInStockOnly, setShowInStockOnly] = useState(false);
+  const [minRating, setMinRating] = useState(0);
 
-  const products = [
-    {
-      id: 1,
-      name: "Premium Wireless Headphones",
-      price: 299.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
-      rating: 4.8,
-      reviews: 128,
-      category: "Audio",
-      brand: "TechPro",
-      isNew: true,
-      inStock: true
-    },
-    {
-      id: 2,
-      name: "Professional Laptop",
-      price: 1299.99,
-      originalPrice: 1499.99,
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400",
-      rating: 4.9,
-      reviews: 256,
-      category: "Electronics",
-      brand: "ProTech",
-      isNew: false,
-      inStock: true
-    },
-    {
-      id: 3,
-      name: "Smart Watch Pro",
-      price: 449.99,
-      originalPrice: 549.99,
-      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400",
-      rating: 4.7,
-      reviews: 89,
-      category: "Wearables",
-      brand: "SmartTech",
-      isNew: true,
-      inStock: true
-    },
-    {
-      id: 4,
-      name: "Professional Camera",
-      price: 899.99,
-      originalPrice: 1099.99,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400",
-      rating: 4.9,
-      reviews: 167,
-      category: "Photography",
-      brand: "PhotoPro",
-      isNew: false,
-      inStock: false
-    },
-    {
-      id: 5,
-      name: "Wireless Speaker",
-      price: 199.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400",
-      rating: 4.6,
-      reviews: 203,
-      category: "Audio",
-      brand: "SoundWave",
-      isNew: false,
-      inStock: true
-    },
-    {
-      id: 6,
-      name: "Gaming Laptop",
-      price: 1799.99,
-      originalPrice: 1999.99,
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400",
-      rating: 4.8,
-      reviews: 145,
-      category: "Electronics",
-      brand: "GameTech",
-      isNew: true,
-      inStock: true
+  const categories = getAllCategories();
+  const brands = getAllBrands();
+  const priceRanges = getPriceRanges();
+
+  const filteredProducts = useMemo(() => {
+    let filtered = [...products];
+
+    // Filter by category
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(product => product.category === selectedCategory);
     }
-  ];
 
-  const categories = ["All", "Electronics", "Audio", "Photography", "Wearables"];
-  const brands = ["All", "TechPro", "ProTech", "SmartTech", "PhotoPro", "SoundWave", "GameTech"];
+    // Filter by brand
+    if (selectedBrand !== 'All') {
+      filtered = filtered.filter(product => product.brand === selectedBrand);
+    }
+
+    // Filter by price range
+    if (selectedPriceRange) {
+      filtered = filtered.filter(product =>
+        product.price >= selectedPriceRange.min &&
+        product.price <= selectedPriceRange.max
+      );
+    }
+
+    // Filter by new products only
+    if (showNewOnly) {
+      filtered = filtered.filter(product => product.isNew);
+    }
+
+    // Filter by in stock only
+    if (showInStockOnly) {
+      filtered = filtered.filter(product => product.inStock);
+    }
+
+    // Filter by minimum rating
+    if (minRating > 0) {
+      filtered = filtered.filter(product => product.rating >= minRating);
+    }
+
+    // Sort products
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+        break;
+      default:
+        // Featured - keep original order
+        break;
+    }
+
+    return filtered;
+  }, [selectedCategory, selectedBrand, selectedPriceRange, showNewOnly, showInStockOnly, minRating, sortBy]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -124,7 +109,13 @@ const Shop = () => {
                   <div className="space-y-2">
                     {categories.map((category) => (
                       <label key={category} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
+                        <input
+                          type="radio"
+                          name="category"
+                          checked={selectedCategory === category}
+                          onChange={() => setSelectedCategory(category)}
+                          className="rounded border-border"
+                        />
                         <span className="text-sm">{category}</span>
                       </label>
                     ))}
@@ -137,7 +128,13 @@ const Shop = () => {
                   <div className="space-y-2">
                     {brands.map((brand) => (
                       <label key={brand} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
+                        <input
+                          type="radio"
+                          name="brand"
+                          checked={selectedBrand === brand}
+                          onChange={() => setSelectedBrand(brand)}
+                          className="rounded border-border"
+                        />
                         <span className="text-sm">{brand}</span>
                       </label>
                     ))}
@@ -149,31 +146,78 @@ const Shop = () => {
                   <h4 className="font-medium mb-3">Price Range</h4>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">Under $200</span>
+                      <input
+                        type="radio"
+                        name="priceRange"
+                        checked={selectedPriceRange === null}
+                        onChange={() => setSelectedPriceRange(null)}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm">All Prices</span>
+                    </label>
+                    {priceRanges.map((range, index) => (
+                      <label key={index} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="priceRange"
+                          checked={selectedPriceRange?.min === range.min && selectedPriceRange?.max === range.max}
+                          onChange={() => setSelectedPriceRange(range)}
+                          className="rounded border-border"
+                        />
+                        <span className="text-sm">{range.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Additional Filters */}
+                <div className="mb-6">
+                  <h4 className="font-medium mb-3">Additional Filters</h4>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showNewOnly}
+                        onChange={(e) => setShowNewOnly(e.target.checked)}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm">New Products Only</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">$200 - $500</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">$500 - $1000</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-border" />
-                      <span className="text-sm">Over $1000</span>
+                      <input
+                        type="checkbox"
+                        checked={showInStockOnly}
+                        onChange={(e) => setShowInStockOnly(e.target.checked)}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm">In Stock Only</span>
                     </label>
                   </div>
                 </div>
 
                 {/* Rating Filter */}
                 <div className="mb-6">
-                  <h4 className="font-medium mb-3">Rating</h4>
+                  <h4 className="font-medium mb-3">Minimum Rating</h4>
                   <div className="space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="rating"
+                        checked={minRating === 0}
+                        onChange={() => setMinRating(0)}
+                        className="rounded border-border"
+                      />
+                      <span className="text-sm">All Ratings</span>
+                    </label>
                     {[4, 3, 2, 1].map((rating) => (
                       <label key={rating} className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-border" />
+                        <input
+                          type="radio"
+                          name="rating"
+                          checked={minRating === rating}
+                          onChange={() => setMinRating(rating)}
+                          className="rounded border-border"
+                        />
                         <div className="flex items-center gap-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
@@ -198,7 +242,7 @@ const Shop = () => {
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-6">
               <p className="text-muted-foreground">
-                Showing {products.length} products
+                Showing {filteredProducts.length} of {products.length} products
               </p>
               
               <div className="flex items-center gap-4">
@@ -239,11 +283,11 @@ const Shop = () => {
 
             {/* Products Grid */}
             <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' 
+              viewMode === 'grid'
+                ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
                 : 'grid-cols-1'
             }`}>
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <Link key={product.id} to={`/products/${product.id}`} className="group">
                   <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
                     viewMode === 'list' ? 'flex flex-row' : ''
@@ -293,11 +337,15 @@ const Shop = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
-                        <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
-                        <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                          Save ${(product.originalPrice - product.price).toFixed(2)}
-                        </span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
+                        {product.originalPrice && (
+                          <>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
+                            <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
+                              Save {formatPrice(product.originalPrice - product.price)}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </CardContent>
                   </Card>

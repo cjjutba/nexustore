@@ -1,29 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { getProductById, formatPrice, products, type Product } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Star, 
   Heart, 
-  ShoppingCart, 
-  Truck, 
-  Shield, 
-  RotateCcw, 
+  Star, 
+  Minus, 
   Plus, 
-  Minus,
+  ShoppingCart, 
+  Share2, 
+  ArrowLeft,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
 
-const ProductDetail = () => {
-  const { id } = useParams();
+const CategoryProductDetail = () => {
+  const { category, id } = useParams();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews'>('description');
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Get product data from centralized data
   const product = getProductById(Number(id));
@@ -35,10 +40,14 @@ const ProductDetail = () => {
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold mb-4">Product Not Found</h1>
           <p className="text-muted-foreground mb-8">The product you're looking for doesn't exist.</p>
-          <Link to="/shop">
-            <Button>Back to Shop</Button>
+          <Link to={`/categories/${category}`}>
+            <Button>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to {category?.charAt(0).toUpperCase() + category?.slice(1)}
+            </Button>
           </Link>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -69,24 +78,21 @@ const ProductDetail = () => {
       user: "Sarah Johnson",
       rating: 5,
       date: "2024-01-15",
-      comment: "Absolutely amazing sound quality! The noise cancellation is incredible and the battery life exceeds expectations.",
-      verified: true
+      comment: "Excellent product! Exactly as described and great quality. Highly recommend!"
     },
     {
       id: 2,
       user: "Mike Chen",
       rating: 4,
       date: "2024-01-10",
-      comment: "Great headphones overall. Very comfortable for long listening sessions. Only minor complaint is the case could be smaller.",
-      verified: true
+      comment: "Good value for money. Fast shipping and well packaged."
     },
     {
       id: 3,
-      user: "Emily Davis",
+      user: "Emma Davis",
       rating: 5,
-      date: "2024-01-08",
-      comment: "Best purchase I've made this year! The build quality is exceptional and they look as premium as they sound.",
-      verified: false
+      date: "2024-01-05",
+      comment: "Love this product! Will definitely buy again."
     }
   ];
 
@@ -95,18 +101,16 @@ const ProductDetail = () => {
       <Navigation />
       
       {/* Breadcrumb */}
-      <div className="border-b">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-accent">Home</Link>
-            <span>/</span>
-            <Link to="/shop" className="hover:text-accent">Shop</Link>
-            <span>/</span>
-            <Link to={`/shop?category=${product.category}`} className="hover:text-accent">{product.category}</Link>
-            <span>/</span>
-            <span className="text-foreground">{product.name}</span>
-          </div>
-        </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <Link to="/" className="hover:text-foreground">Home</Link>
+          <span>/</span>
+          <Link to={`/categories/${category}`} className="hover:text-foreground capitalize">
+            {category}
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">{product.name}</span>
+        </nav>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -134,7 +138,7 @@ const ProductDetail = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
                     onClick={() => setSelectedImage(selectedImage > 0 ? selectedImage - 1 : productImages.length - 1)}
                   >
                     <ChevronLeft className="h-5 w-5" />
@@ -142,7 +146,7 @@ const ProductDetail = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
                     onClick={() => setSelectedImage(selectedImage < productImages.length - 1 ? selectedImage + 1 : 0)}
                   >
                     <ChevronRight className="h-5 w-5" />
@@ -174,22 +178,30 @@ const ProductDetail = () => {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <span>{product.brand}</span>
-                <span>•</span>
-                <span>{product.category}</span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
+                  {product.brand}
+                </span>
+                <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded capitalize">
+                  {category}
+                </span>
+                {product.isNew && (
+                  <span className="text-sm bg-accent text-accent-foreground px-2 py-1 rounded font-medium">
+                    New
+                  </span>
+                )}
               </div>
+              
               <h1 className="text-3xl font-bold text-foreground mb-4">{product.name}</h1>
               
-              {/* Rating */}
               <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`w-5 h-5 ${
-                        i < Math.floor(product.rating) 
-                          ? 'text-accent fill-accent' 
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`h-5 w-5 ${
+                        star <= Math.floor(product.rating)
+                          ? 'fill-yellow-400 text-yellow-400'
                           : 'text-muted-foreground'
                       }`}
                     />
@@ -201,12 +213,16 @@ const ProductDetail = () => {
               </div>
 
               {/* Price */}
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-3xl font-bold text-foreground">{formatPrice(product.price)}</span>
+              <div className="flex items-center gap-4 mb-4">
+                <span className="text-3xl font-bold text-foreground">
+                  {formatPrice(product.price)}
+                </span>
                 {product.originalPrice && (
                   <>
-                    <span className="text-xl text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
-                    <span className="bg-success-light text-success px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="text-xl text-muted-foreground line-through">
+                      {formatPrice(product.originalPrice)}
+                    </span>
+                    <span className="bg-destructive text-destructive-foreground px-2 py-1 rounded text-sm font-medium">
                       Save {formatPrice(product.originalPrice - product.price)}
                     </span>
                   </>
@@ -214,8 +230,7 @@ const ProductDetail = () => {
               </div>
 
               {/* Stock Status */}
-              <div className="flex items-center gap-2 mb-6">
-                <div className={`w-3 h-3 rounded-full ${product.inStock ? 'bg-success' : 'bg-destructive'}`} />
+              <div className="mb-6">
                 <span className={product.inStock ? 'text-success' : 'text-destructive'}>
                   {product.inStock ? 'In Stock' : 'Out of Stock'}
                 </span>
@@ -227,17 +242,20 @@ const ProductDetail = () => {
             {/* Options */}
             {product.sizes && product.sizes.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3">Size</h3>
-                <div className="flex gap-2">
+                <h3 className="font-semibold mb-3">Size</h3>
+                <div className="flex flex-wrap gap-2">
                   {product.sizes.map((size) => (
-                    <Button
+                    <button
                       key={size}
-                      variant={selectedSize === size ? 'default' : 'outline'}
-                      size="sm"
                       onClick={() => setSelectedSize(size)}
+                      className={`px-4 py-2 border rounded-md transition-colors ${
+                        selectedSize === size
+                          ? 'border-accent bg-accent text-accent-foreground'
+                          : 'border-border hover:border-accent'
+                      }`}
                     >
                       {size}
-                    </Button>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -245,17 +263,20 @@ const ProductDetail = () => {
 
             {product.colors && product.colors.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3">Color</h3>
-                <div className="flex gap-2">
+                <h3 className="font-semibold mb-3">Color</h3>
+                <div className="flex flex-wrap gap-2">
                   {product.colors.map((color) => (
-                    <Button
+                    <button
                       key={color}
-                      variant={selectedColor === color ? 'default' : 'outline'}
-                      size="sm"
                       onClick={() => setSelectedColor(color)}
+                      className={`px-4 py-2 border rounded-md transition-colors ${
+                        selectedColor === color
+                          ? 'border-accent bg-accent text-accent-foreground'
+                          : 'border-border hover:border-accent'
+                      }`}
                     >
                       {color}
-                    </Button>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -263,57 +284,48 @@ const ProductDetail = () => {
 
             {/* Quantity */}
             <div>
-              <h3 className="font-medium mb-3">Quantity</h3>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  disabled={quantity <= 1}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="w-12 text-center">{quantity}</span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                  disabled={quantity >= 99}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+              <h3 className="font-semibold mb-3">Quantity</h3>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center border border-border rounded-md">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="px-4 py-2 min-w-[3rem] text-center">{quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
-            {/* Add to Cart */}
-            <div className="space-y-4">
-              <Button className="w-full" size="lg" disabled={!product.inStock}>
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart - {formatPrice(product.price * quantity)}
+            {/* Actions */}
+            <div className="flex gap-4">
+              <Button size="lg" className="flex-1" disabled={!product.inStock}>
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                Add to Cart
               </Button>
-              <Button variant="outline" className="w-full" size="lg">
-                <Heart className="w-5 h-5 mr-2" />
-                Add to Wishlist
+              <Button variant="outline" size="lg">
+                <Share2 className="h-5 w-5" />
               </Button>
             </div>
 
-            {/* Trust Badges */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t">
-              <div className="text-center">
-                <Truck className="w-8 h-8 text-accent mx-auto mb-2" />
-                <p className="text-sm font-medium">Free Shipping</p>
-                <p className="text-xs text-muted-foreground">On orders $99+</p>
-              </div>
-              <div className="text-center">
-                <Shield className="w-8 h-8 text-accent mx-auto mb-2" />
-                <p className="text-sm font-medium">2 Year Warranty</p>
-                <p className="text-xs text-muted-foreground">Full coverage</p>
-              </div>
-              <div className="text-center">
-                <RotateCcw className="w-8 h-8 text-accent mx-auto mb-2" />
-                <p className="text-sm font-medium">30-Day Returns</p>
-                <p className="text-xs text-muted-foreground">No questions asked</p>
-              </div>
+            {/* Back to Category */}
+            <div className="pt-4">
+              <Link to={`/categories/${category}`}>
+                <Button variant="outline">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to {category?.charAt(0).toUpperCase() + category?.slice(1)}
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -354,7 +366,7 @@ const ProductDetail = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="py-8">
             {activeTab === 'description' && (
               <div className="max-w-4xl">
@@ -470,46 +482,48 @@ const ProductDetail = () => {
         </div>
 
         {/* Related Products */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-8">You might also like</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {relatedProducts.map((product) => (
-              <Link key={product.id} to={`/products/${product.id}`} className="group">
-                <Card className="h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors mb-2">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`w-3 h-3 ${
-                              i < Math.floor(product.rating) 
-                                ? 'text-accent fill-accent' 
+        {relatedProducts.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-2xl font-bold mb-8">Related Products</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedProducts.map((relatedProduct) => (
+                <Link key={relatedProduct.id} to={`/categories/${category}/${relatedProduct.id}`}>
+                  <Card className="hover:shadow-lg transition-shadow">
+                    <div className="relative aspect-square overflow-hidden rounded-t-lg">
+                      <img
+                        src={relatedProduct.image}
+                        alt={relatedProduct.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-1 mb-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-3 w-3 ${
+                              star <= Math.floor(relatedProduct.rating)
+                                ? 'fill-yellow-400 text-yellow-400'
                                 : 'text-muted-foreground'
                             }`}
                           />
                         ))}
+                        <span className="text-xs text-muted-foreground">({relatedProduct.reviews})</span>
                       </div>
-                      <span className="text-xs text-muted-foreground">({product.reviews})</span>
-                    </div>
-                    <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2">{relatedProduct.name}</h3>
+                      <span className="text-lg font-bold text-foreground">{formatPrice(relatedProduct.price)}</span>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
+
+      <Footer />
     </div>
   );
 };
 
-export default ProductDetail;
+export default CategoryProductDetail;

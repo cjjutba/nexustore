@@ -10,8 +10,11 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
+import FlashDeals from "./pages/FlashDeals";
+import FeaturedProducts from "./pages/FeaturedProducts";
 // Category Pages
 import Fashion from "./pages/categories/Fashion";
+import CategoryProductDetail from "./pages/categories/CategoryProductDetail";
 import Electronics from "./pages/categories/Electronics";
 import Photography from "./pages/categories/Photography";
 import Computers from "./pages/categories/Computers";
@@ -33,7 +36,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/shop" element={<Shop />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/flash-deals" element={<FlashDeals />} />
+          <Route path="/featured-products" element={<FeaturedProducts />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -48,6 +53,8 @@ const App = () => (
           <Route path="/categories/wearables" element={<Wearables />} />
           <Route path="/categories/sports" element={<Sports />} />
           <Route path="/categories/accessories" element={<Accessories />} />
+          {/* Category Product Detail Routes */}
+          <Route path="/categories/:category/:id" element={<CategoryProductDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

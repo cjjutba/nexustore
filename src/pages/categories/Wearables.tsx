@@ -4,139 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Watch } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const Wearables = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "Apple Watch Series 9",
-      price: 399.99,
-      originalPrice: 429.99,
-      image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400",
-      rating: 4.8,
-      reviews: 1247,
-      category: "Wearables",
-      brand: "Apple",
-      isNew: true,
-      inStock: true,
-      specs: ["S9 Chip", "Always-On Display", "Health Sensors", "Water Resistant"]
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy Watch6",
-      price: 329.99,
-      originalPrice: 379.99,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-      rating: 4.7,
-      reviews: 892,
-      category: "Wearables",
-      brand: "Samsung",
-      isNew: false,
-      inStock: true,
-      specs: ["Exynos W930", "Super AMOLED", "Sleep Tracking", "GPS"]
-    },
-    {
-      id: 3,
-      name: "Fitbit Charge 6",
-      price: 159.99,
-      originalPrice: 199.99,
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400",
-      rating: 4.6,
-      reviews: 634,
-      category: "Wearables",
-      brand: "Fitbit",
-      isNew: true,
-      inStock: true,
-      specs: ["7-day Battery", "Built-in GPS", "Heart Rate", "Stress Management"]
-    },
-    {
-      id: 4,
-      name: "Garmin Forerunner 965",
-      price: 599.99,
-      originalPrice: 649.99,
-      image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400",
-      rating: 4.9,
-      reviews: 456,
-      category: "Wearables",
-      brand: "Garmin",
-      isNew: true,
-      inStock: true,
-      specs: ["AMOLED Display", "Multi-band GPS", "Training Metrics", "23-day Battery"]
-    },
-    {
-      id: 5,
-      name: "Oura Ring Gen3",
-      price: 299.99,
-      originalPrice: 329.99,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-      rating: 4.5,
-      reviews: 789,
-      category: "Wearables",
-      brand: "Oura",
-      isNew: false,
-      inStock: true,
-      specs: ["Sleep Tracking", "Heart Rate", "Temperature", "7-day Battery"]
-    },
-    {
-      id: 6,
-      name: "Polar Vantage V3",
-      price: 599.99,
-      originalPrice: 699.99,
-      image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400",
-      rating: 4.7,
-      reviews: 234,
-      category: "Wearables",
-      brand: "Polar",
-      isNew: true,
-      inStock: true,
-      specs: ["AMOLED Display", "Dual-band GPS", "Training Load Pro", "61-hour Battery"]
-    },
-    {
-      id: 7,
-      name: "Amazfit GTR 4",
-      price: 199.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-      rating: 4.4,
-      reviews: 567,
-      category: "Wearables",
-      brand: "Amazfit",
-      isNew: false,
-      inStock: true,
-      specs: ["1.43\" AMOLED", "Dual-band GPS", "150+ Sports", "14-day Battery"]
-    },
-    {
-      id: 8,
-      name: "Whoop 4.0",
-      price: 239.99,
-      originalPrice: 279.99,
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400",
-      rating: 4.3,
-      reviews: 345,
-      category: "Wearables",
-      brand: "Whoop",
-      isNew: false,
-      inStock: true,
-      specs: ["24/7 Monitoring", "Recovery Insights", "Strain Coach", "5-day Battery"]
-    },
-    {
-      id: 9,
-      name: "Suunto 9 Peak Pro",
-      price: 569.99,
-      originalPrice: 629.99,
-      image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400",
-      rating: 4.6,
-      reviews: 178,
-      category: "Wearables",
-      brand: "Suunto",
-      isNew: true,
-      inStock: true,
-      specs: ["Titanium Build", "Dual-band GPS", "100+ Sports", "21-day Battery"]
-    }
-  ];
+  const products = getProductsByCategory('Wearables');
 
   const categories = ["All", "Smartwatches", "Fitness Trackers", "Smart Rings", "Sports Watches"];
   const brands = ["All", "Apple", "Samsung", "Fitbit", "Garmin", "Oura", "Polar", "Amazfit"];
@@ -336,12 +210,12 @@ const Wearables = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}

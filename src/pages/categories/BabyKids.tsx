@@ -1,151 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Baby } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const BabyKids = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "Premium Baby Stroller",
-      price: 299.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400",
-      rating: 4.8,
-      reviews: 234,
-      category: "Baby & Kids",
-      brand: "BabyTrend",
-      isNew: true,
-      inStock: true,
-      ageRange: "0-3 years",
-      specs: ["Lightweight Frame", "5-Point Harness", "Large Storage", "Easy Fold"]
-    },
-    {
-      id: 2,
-      name: "Wooden Educational Blocks",
-      price: 49.99,
-      originalPrice: 69.99,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
-      rating: 4.7,
-      reviews: 456,
-      category: "Baby & Kids",
-      brand: "LearnPlay",
-      isNew: false,
-      inStock: true,
-      ageRange: "2-6 years",
-      specs: ["Natural Wood", "Non-Toxic Paint", "50 Pieces", "Educational"]
-    },
-    {
-      id: 3,
-      name: "Baby Car Seat",
-      price: 199.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
-      rating: 4.9,
-      reviews: 189,
-      category: "Baby & Kids",
-      brand: "SafeRide",
-      isNew: true,
-      inStock: true,
-      ageRange: "0-4 years",
-      specs: ["ISOFIX Compatible", "Side Impact Protection", "Adjustable", "Machine Washable"]
-    },
-    {
-      id: 4,
-      name: "Interactive Learning Tablet",
-      price: 89.99,
-      originalPrice: 119.99,
-      image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400",
-      rating: 4.6,
-      reviews: 298,
-      category: "Baby & Kids",
-      brand: "KidsLearn",
-      isNew: false,
-      inStock: true,
-      ageRange: "3-8 years",
-      specs: ["Educational Games", "Parental Controls", "Durable Design", "Long Battery"]
-    },
-    {
-      id: 5,
-      name: "Organic Baby Clothes Set",
-      price: 79.99,
-      originalPrice: 99.99,
-      image: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=400",
-      rating: 4.8,
-      reviews: 167,
-      category: "Baby & Kids",
-      brand: "OrganicBaby",
-      isNew: true,
-      inStock: true,
-      ageRange: "0-2 years",
-      specs: ["100% Organic Cotton", "Hypoallergenic", "Soft & Comfortable", "Machine Washable"]
-    },
-    {
-      id: 6,
-      name: "Kids Balance Bike",
-      price: 129.99,
-      originalPrice: 159.99,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
-      rating: 4.7,
-      reviews: 123,
-      category: "Baby & Kids",
-      brand: "RideFun",
-      isNew: false,
-      inStock: true,
-      ageRange: "2-5 years",
-      specs: ["Adjustable Seat", "Lightweight", "No Pedals", "Balance Training"]
-    },
-    {
-      id: 7,
-      name: "Baby Monitor with Camera",
-      price: 149.99,
-      originalPrice: 199.99,
-      image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400",
-      rating: 4.5,
-      reviews: 234,
-      category: "Baby & Kids",
-      brand: "BabyWatch",
-      isNew: true,
-      inStock: true,
-      ageRange: "0+ years",
-      specs: ["HD Video", "Night Vision", "Two-Way Audio", "Mobile App"]
-    },
-    {
-      id: 8,
-      name: "Plush Teddy Bear",
-      price: 29.99,
-      originalPrice: 39.99,
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400",
-      rating: 4.9,
-      reviews: 567,
-      category: "Baby & Kids",
-      brand: "CuddleFriend",
-      isNew: false,
-      inStock: true,
-      ageRange: "0+ years",
-      specs: ["Super Soft", "Machine Washable", "Safety Tested", "Hypoallergenic"]
-    },
-    {
-      id: 9,
-      name: "Kids Art Supply Kit",
-      price: 59.99,
-      originalPrice: 79.99,
-      image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400",
-      rating: 4.6,
-      reviews: 345,
-      category: "Baby & Kids",
-      brand: "CreativeKids",
-      isNew: true,
-      inStock: true,
-      ageRange: "4-12 years",
-      specs: ["100+ Pieces", "Non-Toxic", "Storage Case", "Creative Fun"]
-    }
-  ];
+  const products = getProductsByCategory('Baby & Kids');
 
   const categories = ["All", "Toys", "Clothing", "Safety", "Furniture", "Educational"];
   const brands = ["All", "BabyTrend", "LearnPlay", "SafeRide", "KidsLearn", "OrganicBaby"];
@@ -336,12 +202,12 @@ const BabyKids = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}

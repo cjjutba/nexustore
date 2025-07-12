@@ -1,142 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Camera } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const Photography = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "Canon EOS R5 Mirrorless Camera",
-      price: 3899.99,
-      originalPrice: 4299.99,
-      image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400",
-      rating: 4.9,
-      reviews: 234,
-      category: "Photography",
-      brand: "Canon",
-      isNew: true,
-      inStock: true,
-      specs: ["45MP Full Frame", "8K Video", "In-Body Stabilization", "Dual Card Slots"]
-    },
-    {
-      id: 2,
-      name: "Sony Alpha A7 IV",
-      price: 2499.99,
-      originalPrice: 2799.99,
-      image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
-      rating: 4.8,
-      reviews: 456,
-      category: "Photography",
-      brand: "Sony",
-      isNew: false,
-      inStock: true,
-      specs: ["33MP Full Frame", "4K 60p Video", "693 AF Points", "5-Axis Stabilization"]
-    },
-    {
-      id: 3,
-      name: "Canon RF 24-70mm f/2.8L IS USM",
-      price: 2299.99,
-      originalPrice: 2499.99,
-      image: "https://images.unsplash.com/photo-1617005082133-548c4dd27f35?w=400",
-      rating: 4.7,
-      reviews: 189,
-      category: "Photography",
-      brand: "Canon",
-      isNew: false,
-      inStock: true,
-      specs: ["24-70mm Zoom", "f/2.8 Aperture", "Image Stabilization", "Weather Sealed"]
-    },
-    {
-      id: 4,
-      name: "Nikon Z9 Professional Camera",
-      price: 5499.99,
-      originalPrice: 5999.99,
-      image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400",
-      rating: 4.9,
-      reviews: 167,
-      category: "Photography",
-      brand: "Nikon",
-      isNew: true,
-      inStock: true,
-      specs: ["45.7MP Full Frame", "8K Video", "120fps Burst", "Dual CFexpress"]
-    },
-    {
-      id: 5,
-      name: "Manfrotto Carbon Fiber Tripod",
-      price: 449.99,
-      originalPrice: 549.99,
-      image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
-      rating: 4.6,
-      reviews: 298,
-      category: "Photography",
-      brand: "Manfrotto",
-      isNew: false,
-      inStock: true,
-      specs: ["Carbon Fiber Legs", "22lb Load Capacity", "Compact Design", "Quick Release"]
-    },
-    {
-      id: 6,
-      name: "Godox AD600Pro Flash",
-      price: 899.99,
-      originalPrice: 999.99,
-      image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400",
-      rating: 4.5,
-      reviews: 123,
-      category: "Photography",
-      brand: "Godox",
-      isNew: false,
-      inStock: true,
-      specs: ["600Ws Power", "TTL Support", "High Speed Sync", "Wireless Control"]
-    },
-    {
-      id: 7,
-      name: "Sony FE 85mm f/1.4 GM",
-      price: 1799.99,
-      originalPrice: 1999.99,
-      image: "https://images.unsplash.com/photo-1617005082133-548c4dd27f35?w=400",
-      rating: 4.8,
-      reviews: 345,
-      category: "Photography",
-      brand: "Sony",
-      isNew: false,
-      inStock: true,
-      specs: ["85mm Prime", "f/1.4 Aperture", "G Master Series", "Bokeh Control"]
-    },
-    {
-      id: 8,
-      name: "DJI Ronin-S Gimbal Stabilizer",
-      price: 699.99,
-      originalPrice: 799.99,
-      image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400",
-      rating: 4.4,
-      reviews: 267,
-      category: "Photography",
-      brand: "DJI",
-      isNew: false,
-      inStock: true,
-      specs: ["3-Axis Stabilization", "7.9lb Payload", "12-hour Battery", "Mobile App Control"]
-    },
-    {
-      id: 9,
-      name: "Fujifilm X-T5 Mirrorless",
-      price: 1699.99,
-      originalPrice: 1899.99,
-      image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
-      rating: 4.7,
-      reviews: 178,
-      category: "Photography",
-      brand: "Fujifilm",
-      isNew: true,
-      inStock: true,
-      specs: ["40.2MP APS-C", "6K Video", "Film Simulations", "Weather Resistant"]
-    }
-  ];
+  const products = getProductsByCategory('Photography');
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const categories = ["All", "Cameras", "Lenses", "Tripods", "Lighting", "Accessories"];
   const brands = ["All", "Canon", "Sony", "Nikon", "Fujifilm", "Manfrotto", "Godox", "DJI"];
@@ -306,7 +186,7 @@ const Photography = () => {
                 : 'grid-cols-1'
             }`}>
               {products.map((product) => (
-                <Link key={product.id} to={`/products/${product.id}`} className="group">
+                <Link key={product.id} to={`/categories/photography/${product.id}`} className="group">
                   <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
                     viewMode === 'list' ? 'flex flex-row' : ''
                   }`}>
@@ -350,12 +230,12 @@ const Photography = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}
@@ -386,6 +266,7 @@ const Photography = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

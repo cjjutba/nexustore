@@ -4,139 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Gem } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const Accessories = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "Leather Crossbody Bag",
-      price: 149.99,
-      originalPrice: 199.99,
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-      rating: 4.8,
-      reviews: 456,
-      category: "Accessories",
-      brand: "Coach",
-      isNew: true,
-      inStock: true,
-      specs: ["Genuine Leather", "Adjustable Strap", "Multiple Compartments", "Gold Hardware"]
-    },
-    {
-      id: 2,
-      name: "Wireless Phone Charger",
-      price: 39.99,
-      originalPrice: 59.99,
-      image: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400",
-      rating: 4.6,
-      reviews: 789,
-      category: "Accessories",
-      brand: "Anker",
-      isNew: false,
-      inStock: true,
-      specs: ["15W Fast Charging", "Qi Compatible", "LED Indicator", "Non-Slip Base"]
-    },
-    {
-      id: 3,
-      name: "Sunglasses Aviator",
-      price: 199.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400",
-      rating: 4.7,
-      reviews: 634,
-      category: "Accessories",
-      brand: "Ray-Ban",
-      isNew: true,
-      inStock: true,
-      specs: ["UV Protection", "Polarized Lenses", "Metal Frame", "Classic Design"]
-    },
-    {
-      id: 4,
-      name: "Phone Case Clear",
-      price: 24.99,
-      originalPrice: 34.99,
-      image: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400",
-      rating: 4.5,
-      reviews: 1234,
-      category: "Accessories",
-      brand: "OtterBox",
-      isNew: false,
-      inStock: true,
-      specs: ["Drop Protection", "Crystal Clear", "Wireless Charging", "Easy Installation"]
-    },
-    {
-      id: 5,
-      name: "Silk Scarf Designer",
-      price: 89.99,
-      originalPrice: 129.99,
-      image: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400",
-      rating: 4.8,
-      reviews: 234,
-      category: "Accessories",
-      brand: "Hermès",
-      isNew: true,
-      inStock: true,
-      specs: ["100% Silk", "Hand-Rolled Edges", "Artistic Print", "Versatile Styling"]
-    },
-    {
-      id: 6,
-      name: "Wallet Minimalist",
-      price: 79.99,
-      originalPrice: 99.99,
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-      rating: 4.6,
-      reviews: 567,
-      category: "Accessories",
-      brand: "Ridge",
-      isNew: false,
-      inStock: true,
-      specs: ["RFID Blocking", "Carbon Fiber", "Slim Design", "Money Clip"]
-    },
-    {
-      id: 7,
-      name: "Jewelry Set Gold",
-      price: 299.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400",
-      rating: 4.9,
-      reviews: 189,
-      category: "Accessories",
-      brand: "Pandora",
-      isNew: true,
-      inStock: true,
-      specs: ["14K Gold Plated", "Hypoallergenic", "Gift Box Included", "Matching Set"]
-    },
-    {
-      id: 8,
-      name: "Belt Leather Classic",
-      price: 69.99,
-      originalPrice: 89.99,
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-      rating: 4.7,
-      reviews: 345,
-      category: "Accessories",
-      brand: "Calvin Klein",
-      isNew: false,
-      inStock: true,
-      specs: ["Genuine Leather", "Reversible", "Metal Buckle", "Adjustable"]
-    },
-    {
-      id: 9,
-      name: "Keychain Multi-Tool",
-      price: 19.99,
-      originalPrice: 29.99,
-      image: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400",
-      rating: 4.4,
-      reviews: 892,
-      category: "Accessories",
-      brand: "Leatherman",
-      isNew: true,
-      inStock: true,
-      specs: ["Stainless Steel", "7 Tools in 1", "Compact Size", "Lifetime Warranty"]
-    }
-  ];
+  const products = getProductsByCategory('Accessories');
 
   const categories = ["All", "Bags", "Jewelry", "Phone Accessories", "Fashion", "Tech", "Lifestyle"];
   const brands = ["All", "Coach", "Anker", "Ray-Ban", "OtterBox", "Hermès", "Ridge", "Pandora"];
@@ -336,12 +210,12 @@ const Accessories = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}

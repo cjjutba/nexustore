@@ -4,139 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Filter, Grid, List, Heart, Star, Dumbbell } from "lucide-react";
+import { getProductsByCategory, formatPrice } from "@/data/products";
 
 const Sports = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
 
-  const products = [
-    {
-      id: 1,
-      name: "Adjustable Dumbbell Set",
-      price: 299.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-      rating: 4.8,
-      reviews: 456,
-      category: "Sports",
-      brand: "PowerBlock",
-      isNew: true,
-      inStock: true,
-      specs: ["5-50 lbs per hand", "Quick Weight Change", "Compact Design", "Expandable"]
-    },
-    {
-      id: 2,
-      name: "Yoga Mat Premium",
-      price: 79.99,
-      originalPrice: 99.99,
-      image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
-      rating: 4.7,
-      reviews: 789,
-      category: "Sports",
-      brand: "Manduka",
-      isNew: false,
-      inStock: true,
-      specs: ["6mm Thick", "Non-Slip Surface", "Eco-Friendly", "Lifetime Guarantee"]
-    },
-    {
-      id: 3,
-      name: "Resistance Bands Set",
-      price: 49.99,
-      originalPrice: 69.99,
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-      rating: 4.6,
-      reviews: 634,
-      category: "Sports",
-      brand: "Bodylastics",
-      isNew: true,
-      inStock: true,
-      specs: ["5 Resistance Levels", "Door Anchor", "Handles & Ankle Straps", "Workout Guide"]
-    },
-    {
-      id: 4,
-      name: "Treadmill Folding",
-      price: 899.99,
-      originalPrice: 1199.99,
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-      rating: 4.5,
-      reviews: 234,
-      category: "Sports",
-      brand: "NordicTrack",
-      isNew: false,
-      inStock: true,
-      specs: ["2.6 CHP Motor", "10% Incline", "Foldable Design", "iFit Compatible"]
-    },
-    {
-      id: 5,
-      name: "Basketball Official Size",
-      price: 39.99,
-      originalPrice: 49.99,
-      image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
-      rating: 4.8,
-      reviews: 345,
-      category: "Sports",
-      brand: "Spalding",
-      isNew: true,
-      inStock: true,
-      specs: ["Official Size 7", "Composite Leather", "Deep Channel Design", "Indoor/Outdoor"]
-    },
-    {
-      id: 6,
-      name: "Tennis Racket Pro",
-      price: 199.99,
-      originalPrice: 249.99,
-      image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400",
-      rating: 4.7,
-      reviews: 189,
-      category: "Sports",
-      brand: "Wilson",
-      isNew: false,
-      inStock: true,
-      specs: ["100 sq in Head", "11.2 oz Weight", "16x19 String Pattern", "Graphite Frame"]
-    },
-    {
-      id: 7,
-      name: "Cycling Helmet",
-      price: 89.99,
-      originalPrice: 119.99,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
-      rating: 4.6,
-      reviews: 298,
-      category: "Sports",
-      brand: "Giro",
-      isNew: true,
-      inStock: true,
-      specs: ["MIPS Technology", "18 Vents", "Adjustable Fit", "Lightweight"]
-    },
-    {
-      id: 8,
-      name: "Soccer Ball FIFA Approved",
-      price: 29.99,
-      originalPrice: 39.99,
-      image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
-      rating: 4.5,
-      reviews: 567,
-      category: "Sports",
-      brand: "Adidas",
-      isNew: false,
-      inStock: true,
-      specs: ["FIFA Quality Pro", "Size 5", "Machine Stitched", "Butyl Bladder"]
-    },
-    {
-      id: 9,
-      name: "Protein Shaker Bottle",
-      price: 19.99,
-      originalPrice: 24.99,
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-      rating: 4.4,
-      reviews: 1123,
-      category: "Sports",
-      brand: "BlenderBottle",
-      isNew: true,
-      inStock: true,
-      specs: ["28 oz Capacity", "BlenderBall Wire Whisk", "Leak Proof", "BPA Free"]
-    }
-  ];
+  const products = getProductsByCategory('Sports');
 
   const categories = ["All", "Fitness Equipment", "Team Sports", "Individual Sports", "Outdoor", "Accessories"];
   const brands = ["All", "PowerBlock", "Manduka", "NordicTrack", "Spalding", "Wilson", "Giro", "Adidas"];
@@ -336,12 +210,12 @@ const Sports = () => {
                         <span className="text-xs text-muted-foreground">({product.reviews})</span>
                       </div>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-lg font-bold text-foreground">${product.price}</span>
+                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                         {product.originalPrice && (
                           <>
-                            <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                             <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save ${(product.originalPrice - product.price).toFixed(2)}
+                              Save {formatPrice(product.originalPrice - product.price)}
                             </span>
                           </>
                         )}

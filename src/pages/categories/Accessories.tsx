@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
@@ -11,6 +12,11 @@ const Accessories = () => {
   const [sortBy, setSortBy] = useState('featured');
 
   const products = getProductsByCategory('Accessories');
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const categories = ["All", "Bags", "Jewelry", "Phone Accessories", "Fashion", "Tech", "Lifestyle"];
   const brands = ["All", "Coach", "Anker", "Ray-Ban", "OtterBox", "Hermès", "Ridge", "Pandora"];
@@ -166,7 +172,7 @@ const Accessories = () => {
                 : 'grid-cols-1'
             }`}>
               {products.map((product) => (
-                <Link key={product.id} to={`/products/${product.id}`} className="group">
+                <Link key={product.id} to={`/categories/accessories/${product.id}`} className="group">
                   <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
                     viewMode === 'list' ? 'flex flex-row' : ''
                   }`}>
@@ -246,6 +252,7 @@ const Accessories = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

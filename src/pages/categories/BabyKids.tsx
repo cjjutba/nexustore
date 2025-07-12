@@ -13,6 +13,11 @@ const BabyKids = () => {
 
   const products = getProductsByCategory('Baby & Kids');
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const categories = ["All", "Toys", "Clothing", "Safety", "Furniture", "Educational"];
   const brands = ["All", "BabyTrend", "LearnPlay", "SafeRide", "KidsLearn", "OrganicBaby"];
   const ageRanges = ["All", "0-1 years", "1-3 years", "3-6 years", "6+ years"];
@@ -158,7 +163,7 @@ const BabyKids = () => {
                 : 'grid-cols-1'
             }`}>
               {products.map((product) => (
-                <Link key={product.id} to={`/products/${product.id}`} className="group">
+                <Link key={product.id} to={`/categories/baby-kids/${product.id}`} className="group">
                   <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
                     viewMode === 'list' ? 'flex flex-row' : ''
                   }`}>
@@ -241,6 +246,7 @@ const BabyKids = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

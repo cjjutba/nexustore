@@ -51,38 +51,38 @@ const Newsletter = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-charcoal via-dark-gray to-charcoal relative overflow-hidden">
+    <section className="py-6 mobile-xs:py-8 mobile-l:py-12 sm:py-14 tablet:py-16 lg:py-20 bg-gradient-to-br from-charcoal via-dark-gray to-charcoal relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_0%,transparent_50%)]"></div>
       </div>
 
-      <div className="container mx-auto px-4 text-center relative z-10">
+      <div className="container mx-auto px-4 mobile-l:px-6 sm:px-8 tablet:px-10 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+          <h2 className="mobile-xs:text-lg text-xl mobile-l:text-2xl sm:text-3xl tablet:text-4xl md:text-4xl lg:text-5xl font-bold text-white mb-2 mobile-xs:mb-3 mobile-l:mb-4 sm:mb-5 tablet:mb-6 leading-tight">
             Stay Updated with Latest Deals
           </h2>
-          <p className="text-white/90 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-white/90 mobile-xs:text-sm text-sm mobile-l:text-base sm:text-lg tablet:text-xl md:text-lg lg:text-xl mb-3 mobile-xs:mb-4 mobile-l:mb-6 sm:mb-8 tablet:mb-9 lg:mb-10 max-w-2xl mx-auto leading-relaxed">
             Subscribe to our newsletter and be the first to know about flash sales, new arrivals, and exclusive offers
           </p>
 
           {/* Newsletter Form */}
-          <form onSubmit={handleSecureSubmit} className="max-w-2xl mx-auto mb-8">
+          <form onSubmit={handleSecureSubmit} className="max-w-2xl mx-auto mb-3 mobile-xs:mb-4 mobile-l:mb-6 sm:mb-7 tablet:mb-8">
             {/* Honeypot field for bot detection */}
             <input
               {...HoneypotSecurity.getHoneypotProps()}
               value={honeypotValue}
               onChange={(e) => setHoneypotValue(e.target.value)}
             />
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch justify-center bg-white/10 backdrop-blur-sm rounded-2xl p-2 shadow-2xl border border-white/20">
+            <div className="flex flex-col mobile-l:flex-row gap-2 mobile-l:gap-2 sm:gap-3 tablet:gap-4 items-stretch justify-center bg-white/10 backdrop-blur-sm rounded-lg mobile-l:rounded-xl sm:rounded-2xl p-1.5 mobile-l:p-1.5 sm:p-2 tablet:p-2 shadow-2xl border border-white/20">
               <div className="flex-1 min-w-0 relative">
                 <input
                   type="email"
                   value={formState.email}
                   onChange={(e) => handleEmailChange(e.target.value)}
-                  placeholder="Enter your email address"
+                  placeholder="Enter your email"
                   disabled={formState.isLoading || formState.isSubscribed || isRateLimited}
-                  className={`w-full h-14 px-6 rounded-xl border-0 focus:outline-none focus:ring-2 text-charcoal font-medium text-base shadow-lg transition-all duration-300 placeholder:text-gray-500 bg-white hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`w-full h-10 mobile-l:h-10 sm:h-12 tablet:h-14 lg:h-14 px-3 mobile-l:px-4 sm:px-5 tablet:px-6 rounded-lg mobile-l:rounded-lg sm:rounded-xl border-0 focus:outline-none focus:ring-2 text-charcoal font-medium text-sm mobile-l:text-sm sm:text-base tablet:text-base shadow-lg transition-all duration-300 placeholder:text-gray-500 bg-white hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${
                     formState.error
                       ? 'focus:ring-red-500 ring-2 ring-red-500'
                       : formState.isSubscribed
@@ -95,15 +95,15 @@ const Newsletter = () => {
                 />
 
                 {/* Input Status Icons */}
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="absolute right-2.5 mobile-l:right-3 top-1/2 transform -translate-y-1/2">
                   {formState.isLoading && (
-                    <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                    <Loader2 className="h-4 w-4 mobile-l:h-5 mobile-l:w-5 text-primary animate-spin" />
                   )}
                   {formState.isSubscribed && (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-4 w-4 mobile-l:h-5 mobile-l:w-5 text-green-500" />
                   )}
                   {formState.error && (
-                    <AlertCircle className="h-5 w-5 text-red-500" />
+                    <AlertCircle className="h-4 w-4 mobile-l:h-5 mobile-l:w-5 text-red-500" />
                   )}
                 </div>
               </div>
@@ -111,7 +111,7 @@ const Newsletter = () => {
               <Button
                 type="submit"
                 disabled={formState.isLoading || formState.isSubscribed || isRateLimited || !formState.email.trim()}
-                className={`h-14 font-semibold px-8 rounded-xl text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] transform whitespace-nowrap border-0 min-w-fit ${
+                className={`h-10 mobile-l:h-10 sm:h-12 tablet:h-14 lg:h-14 font-semibold px-3 mobile-l:px-4 sm:px-5 tablet:px-6 lg:px-8 rounded-lg mobile-l:rounded-lg sm:rounded-xl text-xs mobile-l:text-sm sm:text-base tablet:text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] transform whitespace-nowrap border-0 min-w-fit min-h-[44px] ${
                   formState.isSubscribed
                     ? 'bg-green-500 hover:bg-green-600 text-white'
                     : isRateLimited
@@ -165,18 +165,18 @@ const Newsletter = () => {
           </form>
 
           {/* Stats and Security Info */}
-          <div className="text-white/70 text-base space-y-2">
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
+          <div className="text-white/70 text-sm mobile-l:text-base sm:text-base tablet:text-lg space-y-1.5 mobile-l:space-y-2 sm:space-y-2 tablet:space-y-3">
+            <div className="flex flex-col mobile-l:flex-row sm:flex-row tablet:flex-row items-center justify-center gap-2 mobile-l:gap-4 sm:gap-5 tablet:gap-6 flex-wrap">
+              <div className="flex items-center gap-1.5 mobile-l:gap-2 sm:gap-2 tablet:gap-2">
+                <Users className="h-3 w-3 mobile-l:h-4 mobile-l:w-4 sm:h-4 sm:w-4 tablet:h-5 tablet:w-5" />
                 <span>Join {stats.active.toLocaleString()}+ subscribers</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
+              <div className="flex items-center gap-1.5 mobile-l:gap-2 sm:gap-2 tablet:gap-2">
+                <Shield className="h-3 w-3 mobile-l:h-4 mobile-l:w-4 sm:h-4 sm:w-4 tablet:h-5 tablet:w-5" />
                 <span>Secure & spam-free</span>
               </div>
             </div>
-            <p>No spam, unsubscribe anytime • {stats.recent} joined this month</p>
+            <p className="text-xs mobile-l:text-sm sm:text-sm tablet:text-base">No spam, unsubscribe anytime • {stats.recent} joined this month</p>
           </div>
         </div>
       </div>

@@ -36,6 +36,14 @@
 
 @layer base {
   :root {
+    /* Custom Breakpoints for NexuStore */
+    --mobile-xs: 425px;   /* Mobile Extra Small (≤425px) */
+    --mobile-l: 425px;    /* Mobile Large */
+    --tablet: 768px;      /* Tablet */
+    --laptop-s: 1024px;   /* Laptop Small */
+    --laptop-m: 1280px;   /* Laptop Medium */
+    --laptop-l: 1440px;   /* Laptop Large */
+
     /* Modern Minimalist Color Palette */
     --pure-white: 0 0% 100%;        /* #FFFFFF */
     --light-gray: 0 0% 97%;         /* #F7F7F7 */
@@ -124,5 +132,46 @@
   .minimalist-hover:hover {
     box-shadow: 0 4px 12px 0 hsl(var(--medium-gray) / 0.15);
     transform: translateY(-1px);
+  }
+
+  /* Responsive utility classes for custom breakpoints */
+  .responsive-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 425px) {
+    .responsive-container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .responsive-container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-container {
+      max-width: 1024px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .responsive-container {
+      max-width: 1280px;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .responsive-container {
+      max-width: 1440px;
+    }
   }
 }

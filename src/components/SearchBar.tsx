@@ -14,9 +14,12 @@ interface SearchBarProps {
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   className,
-  placeholder = "Search for products, brands and more...",
+  placeholder,
   isMobile = false
 }) => {
+  // Dynamic placeholder based on screen size
+  const defaultPlaceholder = isMobile ? "Search products..." : "Search for products, brands and more...";
+  const finalPlaceholder = placeholder || defaultPlaceholder;
   const navigate = useNavigate();
   const {
     query,
@@ -183,7 +186,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           ref={inputRef}
           id={isMobile ? "mobile-search" : "search"}
           type="search"
-          placeholder={placeholder}
+          placeholder={finalPlaceholder}
           value={query}
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}

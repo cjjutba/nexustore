@@ -1998,7 +1998,7 @@ export const products: Product[] = [
   },
   {
     id: 2005,
-    name: "iPhone 11",
+    name: "Apple iPhone 11 128gb",
     price: 34999.99,
     originalPrice: 39999.99,
     image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400",

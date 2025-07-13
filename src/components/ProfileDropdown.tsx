@@ -2,12 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
   User,
   Settings,
   LogOut,
-  ChevronDown,
   ShoppingBag,
   Heart
 } from "lucide-react";
@@ -43,9 +41,20 @@ export const ProfileDropdown = () => {
   };
 
   const handleToggleDropdown = () => {
-    console.log('ProfileDropdown clicked, current state:', isOpen);
     setIsOpen(!isOpen);
   };
+
+  // Handle escape key to close dropdown
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
 
   if (!state.user) {
     return null;
@@ -63,33 +72,20 @@ export const ProfileDropdown = () => {
       {/* Profile Button */}
       <Button
         variant="ghost"
+        size="icon"
         onClick={handleToggleDropdown}
-        className="flex items-center space-x-2 text-primary hover:bg-muted hover:text-foreground rounded-lg px-3 py-1.5 transition-all duration-300 border border-border/30 hover:border-border/60 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        className="relative h-9 w-9 rounded-full hover:bg-muted"
         aria-label="Profile menu"
         aria-expanded={isOpen}
       >
-        {/* User Avatar */}
         <div className="w-7 h-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-semibold">
           {userInitials}
         </div>
-        
-        {/* User Name (hidden on mobile) */}
-        <span className="hidden md:block text-sm font-medium">
-          {state.user.firstName}
-        </span>
-        
-        {/* Dropdown Arrow */}
-        <ChevronDown 
-          className={cn(
-            "w-4 h-4 transition-transform duration-200",
-            isOpen && "rotate-180"
-          )} 
-        />
       </Button>
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-[9999] animate-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg z-[9999] animate-in slide-in-from-top-2 duration-200">
           {/* User Info Header */}
           <div className="px-4 py-3 border-b border-border">
             <div className="flex items-center space-x-3">

@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Star, Filter, Grid, List, Clock } from "lucide-react";
-import { formatPrice } from "@/data/products";
+import { formatPrice, getFlashDeals } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollToTop } from "@/utils/scrollToTop";
@@ -24,195 +24,14 @@ const FlashDeals = () => {
 
 
 
-  // Extended flash deals data
-  const flashDeals = [
-    {
-      id: 1001,
-      name: "Flash Deal - Wireless Earbuds Pro",
-      price: 1499.99,
-      originalPrice: 3999.99,
-      image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400",
-      sold: 189,
-      stock: 50,
-      discount: 63,
-      category: "Electronics",
-      brand: "Apple",
-      rating: 4.8,
-      reviews: 234,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Premium wireless earbuds with active noise cancellation and spatial audio technology.",
-      sizes: [],
-      colors: ["White", "Black", "Space Gray"]
-    },
-    {
-      id: 1002,
-      name: "Flash Deal - Gaming Mouse RGB",
-      price: 999.99,
-      originalPrice: 2499.99,
-      image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400",
-      sold: 267,
-      stock: 33,
-      discount: 60,
-      category: "Electronics",
-      brand: "Logitech",
-      rating: 4.7,
-      reviews: 456,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "High-precision wireless gaming mouse with customizable RGB lighting and programmable buttons.",
-      sizes: [],
-      colors: ["Black", "White"]
-    },
-    {
-      id: 1003,
-      name: "Flash Deal - Bluetooth Speaker",
-      price: 1249.99,
-      originalPrice: 4999.99,
-      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
-      sold: 423,
-      stock: 77,
-      discount: 75,
-      category: "Audio",
-      brand: "JBL",
-      rating: 4.6,
-      reviews: 189,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Portable Bluetooth speaker with powerful sound and waterproof design for outdoor adventures.",
-      sizes: [],
-      colors: ["Black", "Blue", "Red"]
-    },
-    {
-      id: 1004,
-      name: "Flash Deal - Smartwatch Fitness",
-      price: 2999.99,
-      originalPrice: 7999.99,
-      image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400",
-      sold: 156,
-      stock: 44,
-      discount: 63,
-      category: "Wearables",
-      brand: "Samsung",
-      rating: 4.5,
-      reviews: 123,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Advanced fitness tracker with heart rate monitoring, GPS, and comprehensive health insights.",
-      sizes: ["38mm", "42mm", "46mm"],
-      colors: ["Black", "Silver", "Gold"]
-    },
-    {
-      id: 1005,
-      name: "Flash Deal - Mechanical Keyboard",
-      price: 3999.99,
-      originalPrice: 7999.99,
-      image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400",
-      sold: 89,
-      stock: 21,
-      discount: 50,
-      category: "Computers",
-      brand: "Corsair",
-      rating: 4.9,
-      reviews: 345,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Premium mechanical keyboard with RGB backlighting and customizable switches for gaming and typing.",
-      sizes: [],
-      colors: ["Black", "White"]
-    },
-    {
-      id: 1006,
-      name: "Flash Deal - Wireless Charger",
-      price: 799.99,
-      originalPrice: 1999.99,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
-      sold: 234,
-      stock: 66,
-      discount: 60,
-      category: "Electronics",
-      brand: "Anker",
-      rating: 4.4,
-      reviews: 167,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Fast wireless charging pad compatible with all Qi-enabled devices for convenient charging.",
-      sizes: [],
-      colors: ["Black", "White"]
-    },
-    {
-      id: 1007,
-      name: "Flash Deal - Fitness Resistance Bands",
-      price: 599.99,
-      originalPrice: 1499.99,
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-      sold: 345,
-      stock: 55,
-      discount: 60,
-      category: "Sports",
-      brand: "TRX",
-      rating: 4.6,
-      reviews: 234,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Complete resistance bands set with multiple resistance levels for full-body workouts anywhere.",
-      sizes: ["Light", "Medium", "Heavy"],
-      colors: ["Black", "Blue", "Red"]
-    },
-    {
-      id: 1008,
-      name: "Flash Deal - Phone Case Premium",
-      price: 499.99,
-      originalPrice: 1299.99,
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-      sold: 567,
-      stock: 133,
-      discount: 62,
-      category: "Accessories",
-      brand: "OtterBox",
-      rating: 4.7,
-      reviews: 789,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Heavy-duty protective phone case with drop protection and wireless charging compatibility.",
-      sizes: ["iPhone 14", "iPhone 15", "Samsung S24"],
-      colors: ["Black", "Clear", "Blue"]
-    },
-    {
-      id: 1009,
-      name: "Flash Deal - LED Desk Lamp",
-      price: 1199.99,
-      originalPrice: 2999.99,
-      image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400",
-      sold: 123,
-      stock: 27,
-      discount: 60,
-      category: "Electronics",
-      brand: "Philips",
-      rating: 4.5,
-      reviews: 156,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Adjustable LED desk lamp with multiple brightness levels and color temperature settings.",
-      sizes: [],
-      colors: ["White", "Black", "Silver"]
-    }
-  ];
+  // Get flash deals from centralized data
+  const flashDeals = getFlashDeals();
 
   // Sort products
   const sortedDeals = [...flashDeals].sort((a, b) => {
     switch (sortBy) {
       case 'discount':
-        return b.discount - a.discount;
+        return (b.flashDealData?.discount || 0) - (a.flashDealData?.discount || 0);
       case 'price-low':
         return a.price - b.price;
       case 'price-high':
@@ -307,7 +126,7 @@ const FlashDeals = () => {
                       }`}
                     />
                     <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-sm font-bold">
-                      -{product.discount}%
+                      -{product.flashDealData?.discount || 0}%
                     </div>
                   </div>
                 
@@ -342,14 +161,14 @@ const FlashDeals = () => {
                   </div>
                   
                   <div className="text-sm text-muted-foreground mb-3">
-                    {product.sold} sold • {formattedTime} left
+                    {product.flashDealData?.sold || 0} sold • {formattedTime} left
                   </div>
-                  
+
                   {/* Progress bar */}
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-accent h-2 rounded-full transition-all duration-300" 
-                      style={{width: `${(product.sold / (product.sold + product.stock)) * 100}%`}}
+                    <div
+                      className="bg-accent h-2 rounded-full transition-all duration-300"
+                      style={{width: `${((product.flashDealData?.sold || 0) / ((product.flashDealData?.sold || 0) + (product.flashDealData?.stock || 1))) * 100}%`}}
                     />
                   </div>
                 </CardContent>

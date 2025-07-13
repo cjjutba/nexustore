@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, LogIn, UserPlus, Clock } from "lucide-react";
+import { ShoppingCart, Menu, X, LogIn, UserPlus, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
+import { SearchBar } from "@/components/SearchBar";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,24 +59,7 @@ export const Navigation = () => {
 
             {/* Search Bar */}
             <div className="flex-1 max-w-2xl mx-8 hidden md:block">
-              <div className="relative group">
-                <label htmlFor="search" className="sr-only">Search products</label>
-                <input
-                  id="search"
-                  type="search"
-                  placeholder="Search for products, brands and more..."
-                  className="w-full px-5 py-2.5 rounded-lg text-foreground bg-muted border border-border/30 focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring focus:bg-background transition-all duration-300 pl-5 pr-12 placeholder:text-muted-foreground"
-                  aria-label="Search products"
-                />
-                <Button
-                  size="sm"
-                  type="submit"
-                  className="absolute right-1.5 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md px-3 py-1.5 transition-all duration-300 shadow-sm hover:shadow-md focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  aria-label="Search"
-                >
-                  <Search className="w-4 h-4" />
-                </Button>
-              </div>
+              <SearchBar />
             </div>
 
             {/* Right Actions */}
@@ -177,16 +161,7 @@ export const Navigation = () => {
         <div className="md:hidden bg-background/95 backdrop-blur-md border-t border-border/20 shadow-lg animate-in slide-in-from-top-2 duration-300">
           <div className="px-4 py-6 space-y-6">
             {/* Mobile Search */}
-            <div className="relative">
-              <label htmlFor="mobile-search" className="sr-only">Search products</label>
-              <input
-                id="mobile-search"
-                type="search"
-                placeholder="Search for products, brands and more..."
-                className="w-full px-6 py-3 border border-border/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring bg-muted text-foreground placeholder:text-muted-foreground"
-              />
-              <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-            </div>
+            <SearchBar isMobile={true} />
 
             {/* Mobile Categories */}
             <div className="space-y-1">

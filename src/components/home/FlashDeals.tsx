@@ -5,6 +5,7 @@ import { ArrowRight, Heart, Clock } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useFlashDealTimer } from "@/utils/flashDealTimer";
+import { formatPrice, getFlashDeals } from "@/data/products";
 
 const FlashDeals = () => {
   const { toggleWaitlist, isInWaitlist } = useCart();
@@ -47,65 +48,8 @@ const FlashDeals = () => {
     }
   };
 
-  const flashDeals = [
-    {
-      id: 1001, // Using unique IDs for flash deals
-      name: "Flash Deal - Wireless Earbuds Pro",
-      price: 1499.99,
-      originalPrice: 3999.99,
-      image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400",
-      sold: 189,
-      stock: 50,
-      discount: 63,
-      category: "Electronics",
-      brand: "Apple",
-      rating: 4.8,
-      reviews: 234,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      sizes: [],
-      colors: ["White", "Black", "Space Gray"]
-    },
-    {
-      id: 1002,
-      name: "Flash Deal - Gaming Mouse RGB",
-      price: 999.99,
-      originalPrice: 2499.99,
-      image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400",
-      sold: 267,
-      stock: 33,
-      discount: 60,
-      category: "Electronics",
-      brand: "Logitech",
-      rating: 4.7,
-      reviews: 456,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      sizes: [],
-      colors: ["Black", "White"]
-    },
-    {
-      id: 1003,
-      name: "Flash Deal - Bluetooth Speaker",
-      price: 1249.99,
-      originalPrice: 4999.99,
-      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
-      sold: 423,
-      stock: 77,
-      discount: 75,
-      category: "Audio",
-      brand: "JBL",
-      rating: 4.6,
-      reviews: 189,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      sizes: [],
-      colors: ["Black", "Blue", "Red"]
-    }
-  ];
+  // Get flash deals from centralized data (show first 3 for home page)
+  const flashDeals = getFlashDeals().slice(0, 3);
 
   return (
     <section className="py-16 bg-light-gray">
@@ -169,16 +113,18 @@ const FlashDeals = () => {
                     {product.name}
                   </h3>
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl font-bold text-primary">₱{product.price}</span>
-                    <span className="text-base text-medium-gray line-through">₱{product.originalPrice}</span>
+                    <span className="text-2xl font-bold text-primary">{formatPrice(product.price)}</span>
+                    {product.originalPrice && (
+                      <span className="text-base text-medium-gray line-through">{formatPrice(product.originalPrice)}</span>
+                    )}
                   </div>
                   <div className="text-sm text-dark-gray mb-4">
-                    {product.sold} sold • {formattedTime} left
+                    {product.flashDealData?.sold || 0} sold • {formattedTime} left
                   </div>
                   <div className="w-full bg-medium-gray/30 rounded-full h-3">
-                    <div 
-                      className="bg-primary h-3 rounded-full transition-all duration-300" 
-                      style={{width: `${(product.sold / (product.sold + product.stock)) * 100}%`}}
+                    <div
+                      className="bg-primary h-3 rounded-full transition-all duration-300"
+                      style={{width: `${((product.flashDealData?.sold || 0) / ((product.flashDealData?.sold || 0) + (product.flashDealData?.stock || 1))) * 100}%`}}
                     ></div>
                   </div>
                 </CardContent>

@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
+import { SearchProvider } from "@/contexts/SearchContext";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -11,10 +12,12 @@ import Cart from "./pages/Cart";
 import Waitlist from "./pages/Waitlist";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 import FlashDeals from "./pages/FlashDeals";
 import FlashDealsProductDetail from "./pages/FlashDealsProductDetail";
 import FeaturedProducts from "./pages/FeaturedProducts";
+import FeaturedProductsProductDetail from "./pages/FeaturedProductsProductDetail";
 // Category Pages
 import Fashion from "./pages/categories/Fashion";
 import CategoryProductDetail from "./pages/categories/CategoryProductDetail";
@@ -34,9 +37,10 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <CartProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+        <SearchProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
           <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/shop" element={<Shop />} />
@@ -44,8 +48,10 @@ const App = () => (
           <Route path="/flash-deals" element={<FlashDeals />} />
           <Route path="/flash-deals/:id" element={<FlashDealsProductDetail />} />
           <Route path="/featured-products" element={<FeaturedProducts />} />
+          <Route path="/featured-products/:id" element={<FeaturedProductsProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/waitlist" element={<Waitlist />} />
+          <Route path="/search" element={<SearchResults />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* Category Routes */}
@@ -65,6 +71,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </SearchProvider>
       </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>

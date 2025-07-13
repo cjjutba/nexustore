@@ -2,98 +2,52 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Heart, Star } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { formatPrice, getFeaturedProducts } from "@/data/products";
 
 const FeaturedProducts = () => {
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "Premium Wireless Headphones",
-      price: 299.99,
-      originalPrice: 399.99,
-      image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400",
-      rating: 4.8,
-      reviews: 1284,
-      isNew: true,
-      discount: 25
-    },
-    {
-      id: 2,
-      name: "Professional Laptop",
-      price: 1299.99,
-      originalPrice: 1499.99,
-      image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=400",
-      rating: 4.9,
-      reviews: 856,
-      isNew: false,
-      discount: 13
-    },
-    {
-      id: 3,
-      name: "Smart Watch Pro",
-      price: 449.99,
-      originalPrice: 549.99,
-      image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400",
-      rating: 4.7,
-      reviews: 623,
-      isNew: true,
-      discount: 18
-    },
-    {
-      id: 4,
-      name: "Professional Camera",
-      price: 899.99,
-      originalPrice: 1099.99,
-      image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400",
-      rating: 4.9,
-      reviews: 445,
-      isNew: false,
-      discount: 18
-    },
-    {
-      id: 5,
-      name: "Gaming Smartphone",
-      price: 699.99,
-      originalPrice: 799.99,
-      image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400",
-      rating: 4.6,
-      reviews: 932,
-      isNew: true,
-      discount: 13
-    },
-    {
-      id: 6,
-      name: "Designer Jacket",
-      price: 199.99,
-      originalPrice: 299.99,
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
-      rating: 4.5,
-      reviews: 378,
-      isNew: false,
-      discount: 33
-    },
-    {
-      id: 7,
-      name: "Professional Tools Set",
-      price: 149.99,
-      originalPrice: 199.99,
-      image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400",
-      rating: 4.7,
-      reviews: 267,
-      isNew: false,
-      discount: 25
-    },
-    {
-      id: 8,
-      name: "Baby Care Kit",
-      price: 89.99,
-      originalPrice: 119.99,
-      image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400",
-      rating: 4.8,
-      reviews: 534,
-      isNew: true,
-      discount: 25
+  const { toggleWaitlist, isInWaitlist } = useCart();
+  const { toast } = useToast();
+
+  // Handle toggle waitlist
+  const handleToggleWaitlist = (e: React.MouseEvent, product: any) => {
+    e.preventDefault(); // Prevent navigation to product detail
+    e.stopPropagation(); // Stop event bubbling
+
+    try {
+      // Toggle waitlist with default options (first available size/color if any)
+      const selectedOptions = {
+        size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+        color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined,
+      };
+
+      const wasAdded = toggleWaitlist(product, selectedOptions);
+
+      if (wasAdded) {
+        toast({
+          title: "Added to Wishlist!",
+          description: `${product.name} has been added to your wishlist.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Removed from Wishlist",
+          description: `${product.name} has been removed from your wishlist.`,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist. Please try again.",
+        variant: "destructive",
+      });
     }
-  ];
+  };
+
+  // Get featured products from centralized data
+  const featuredProducts = getFeaturedProducts().slice(0, 8); // Show first 8 featured products
 
   return (
     <section className="py-16 bg-pure-white">
@@ -113,7 +67,7 @@ const FeaturedProducts = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {featuredProducts.map((product) => (
-            <Link key={product.id} to={`/product/${product.id}`} className="group">
+            <Link key={product.id} to={`/featured-products/${product.id}`} className="group">
               <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105 transform">
                 <div className="relative">
                   <img 
@@ -129,8 +83,27 @@ const FeaturedProducts = () => {
                   <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold shadow-lg">
                     -{product.discount}%
                   </div>
-                  <Button variant="ghost" size="icon" className="absolute bottom-4 right-4 bg-white/90 hover:bg-white shadow-lg">
-                    <Heart className="h-4 w-4 text-charcoal" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`absolute top-4 right-4 transition-all duration-300 hover:scale-110 ${
+                      isInWaitlist(product.id, {
+                        size: product.sizes?.[0],
+                        color: product.colors?.[0]
+                      })
+                        ? 'bg-red-500 text-white hover:bg-red-600'
+                        : 'bg-white/90 hover:bg-white text-gray-600 hover:text-red-500'
+                    }`}
+                    onClick={(e) => handleToggleWaitlist(e, product)}
+                  >
+                    <Heart className={`h-4 w-4 ${
+                      isInWaitlist(product.id, {
+                        size: product.sizes?.[0],
+                        color: product.colors?.[0]
+                      })
+                        ? 'fill-current'
+                        : ''
+                    }`} />
                   </Button>
                 </div>
                 <CardContent className="p-6">
@@ -153,8 +126,10 @@ const FeaturedProducts = () => {
                     <span className="text-sm text-dark-gray">({product.reviews})</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-primary">₱{product.price}</span>
-                    <span className="text-base text-medium-gray line-through">₱{product.originalPrice}</span>
+                    <span className="text-2xl font-bold text-primary">{formatPrice(product.price)}</span>
+                    {product.originalPrice && (
+                      <span className="text-base text-medium-gray line-through">{formatPrice(product.originalPrice)}</span>
+                    )}
                   </div>
                 </CardContent>
               </Card>

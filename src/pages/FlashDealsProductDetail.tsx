@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { formatPrice } from "@/data/products";
+import { formatPrice, getFlashDeals } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/contexts/CartContext";
@@ -41,174 +41,10 @@ const FlashDealsProductDetail = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  // Flash deals data - matches the data from FlashDeals.tsx
-  const flashDeals = [
-    {
-      id: 1001,
-      name: "Flash Deal - Wireless Earbuds Pro",
-      price: 1499.99,
-      originalPrice: 3999.99,
-      image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400",
-      images: [
-        "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500",
-        "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500",
-        "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500"
-      ],
-      sold: 189,
-      stock: 50,
-      discount: 63,
-      category: "Electronics",
-      brand: "Apple",
-      rating: 4.8,
-      reviews: 234,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Premium wireless earbuds with active noise cancellation and spatial audio technology.",
-      specifications: {
-        "Battery Life": "6 hours + 24 hours with case",
-        "Connectivity": "Bluetooth 5.3",
-        "Noise Cancellation": "Active ANC",
-        "Water Resistance": "IPX4",
-        "Driver Size": "11mm",
-        "Weight": "5.4g per earbud"
-      },
-      sizes: [],
-      colors: ["White", "Black", "Space Gray"]
-    },
-    {
-      id: 1002,
-      name: "Flash Deal - Gaming Mouse RGB",
-      price: 999.99,
-      originalPrice: 2499.99,
-      image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400",
-      images: [
-        "https://images.unsplash.com/photo-1527814050087-3793815479db?w=500",
-        "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500",
-        "https://images.unsplash.com/photo-1563297007-0686b7003af7?w=500"
-      ],
-      sold: 267,
-      stock: 33,
-      discount: 60,
-      category: "Electronics",
-      brand: "Logitech",
-      rating: 4.7,
-      reviews: 456,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "High-precision wireless gaming mouse with customizable RGB lighting and programmable buttons.",
-      specifications: {
-        "DPI": "25,600 DPI",
-        "Connectivity": "Wireless 2.4GHz, Bluetooth",
-        "Battery Life": "250 hours",
-        "Buttons": "11 programmable buttons",
-        "Weight": "99g",
-        "Sensor": "HERO 25K"
-      },
-      sizes: [],
-      colors: ["Black", "White"]
-    },
-    {
-      id: 1003,
-      name: "Flash Deal - Bluetooth Speaker",
-      price: 1249.99,
-      originalPrice: 4999.99,
-      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400",
-      images: [
-        "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500",
-        "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=500",
-        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500"
-      ],
-      sold: 423,
-      stock: 77,
-      discount: 75,
-      category: "Audio",
-      brand: "JBL",
-      rating: 4.6,
-      reviews: 189,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Portable Bluetooth speaker with powerful sound and waterproof design for outdoor adventures.",
-      specifications: {
-        "Battery Life": "20 hours",
-        "Connectivity": "Bluetooth 5.0, AUX",
-        "Water Resistance": "IPX7",
-        "Power Output": "40W",
-        "Frequency Response": "65Hz - 20kHz",
-        "Weight": "1.2kg"
-      },
-      sizes: [],
-      colors: ["Black", "Blue", "Red"]
-    },
-    {
-      id: 1004,
-      name: "Flash Deal - Smartwatch Fitness",
-      price: 2999.99,
-      originalPrice: 7999.99,
-      image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400",
-      images: [
-        "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500",
-        "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=500",
-        "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=500"
-      ],
-      sold: 156,
-      stock: 44,
-      discount: 63,
-      category: "Wearables",
-      brand: "Samsung",
-      rating: 4.5,
-      reviews: 123,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Advanced fitness tracker with heart rate monitoring, GPS, and comprehensive health insights.",
-      specifications: {
-        "Display": "1.4-inch AMOLED",
-        "Battery Life": "4 days",
-        "Water Resistance": "5ATM + IP68",
-        "GPS": "Built-in GPS",
-        "Health Sensors": "Heart rate, SpO2, Sleep",
-        "Compatibility": "Android, iOS"
-      },
-      sizes: ["38mm", "42mm", "46mm"],
-      colors: ["Black", "Silver", "Gold"]
-    },
-    {
-      id: 1005,
-      name: "Flash Deal - Mechanical Keyboard",
-      price: 3999.99,
-      originalPrice: 7999.99,
-      image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400",
-      images: [
-        "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=500",
-        "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500",
-        "https://images.unsplash.com/photo-1595044426077-d36d9236d54a?w=500"
-      ],
-      sold: 89,
-      stock: 21,
-      discount: 50,
-      category: "Computers",
-      brand: "Corsair",
-      rating: 4.9,
-      reviews: 345,
-      isNew: true,
-      inStock: true,
-      isFlashDeal: true,
-      description: "Premium mechanical keyboard with RGB backlighting and customizable switches for gaming and typing.",
-      specifications: {
-        "Switch Type": "Cherry MX Red",
-        "Backlighting": "RGB per-key",
-        "Layout": "Full-size (104 keys)",
-        "Connectivity": "USB-C, Wireless",
-        "Battery Life": "200 hours",
-        "Polling Rate": "1000Hz"
-      },
-      sizes: [],
-      colors: ["Black", "White"]
-    }
-  ];
+  // Get flash deals from centralized data
+  const flashDeals = getFlashDeals();
+
+
 
   const product = flashDeals.find(p => p.id === parseInt(id || ''));
 
@@ -392,7 +228,7 @@ const FlashDealsProductDetail = () => {
               {/* Flash Deal Badge */}
               <div className="absolute top-4 left-4 bg-destructive text-destructive-foreground px-3 py-1 rounded-md text-sm font-bold flex items-center gap-1">
                 <Zap className="w-3 h-3" />
-                -{product.discount}% OFF
+                -{product.flashDealData?.discount || 0}% OFF
               </div>
 
               <Button
@@ -520,14 +356,14 @@ const FlashDealsProductDetail = () => {
               </div>
 
               <p className="text-sm text-muted-foreground mb-4">
-                {product.sold} sold • {product.stock} remaining
+                {product.flashDealData?.sold || 0} sold • {product.flashDealData?.stock || 0} remaining
               </p>
 
               {/* Progress bar */}
               <div className="w-full bg-muted rounded-full h-2 mb-4">
                 <div
                   className="bg-destructive h-2 rounded-full transition-all duration-300"
-                  style={{width: `${(product.sold / (product.sold + product.stock)) * 100}%`}}
+                  style={{width: `${((product.flashDealData?.sold || 0) / ((product.flashDealData?.sold || 0) + (product.flashDealData?.stock || 1))) * 100}%`}}
                 />
               </div>
 
@@ -702,13 +538,20 @@ const FlashDealsProductDetail = () => {
             )}
 
             {activeTab === 'specifications' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-2 border-b border-border">
-                    <span className="font-medium text-foreground">{key}</span>
-                    <span className="text-muted-foreground">{value}</span>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Technical Specifications</h3>
+                {product.specs && product.specs.length > 0 ? (
+                  <div className="space-y-3">
+                    {product.specs.map((spec, index) => (
+                      <div key={index} className="flex items-center py-2 border-b border-border">
+                        <span className="w-2 h-2 bg-accent rounded-full mr-3"></span>
+                        <span className="text-foreground">{spec}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <p className="text-muted-foreground">No specifications available for this product.</p>
+                )}
               </div>
             )}
 

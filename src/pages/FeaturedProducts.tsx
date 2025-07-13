@@ -1,14 +1,60 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Star, Filter, Grid, List, Award } from "lucide-react";
 import { formatPrice, getFeaturedProducts } from "@/data/products";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { useScrollToTop } from "@/utils/scrollToTop";
 
 const FeaturedProducts = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('rating');
+
+  const { toggleWaitlist, isInWaitlist } = useCart();
+  const { toast } = useToast();
+
+  // Scroll to top when component mounts (when navigating to this page)
+  useScrollToTop();
+
+  // Handle toggle waitlist
+  const handleToggleWaitlist = (e: React.MouseEvent, product: any) => {
+    e.preventDefault(); // Prevent navigation to product detail
+    e.stopPropagation(); // Stop event bubbling
+
+    try {
+      // Toggle waitlist with default options (first available size/color if any)
+      const selectedOptions = {
+        size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+        color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined,
+      };
+
+      const wasAdded = toggleWaitlist(product, selectedOptions);
+
+      if (wasAdded) {
+        toast({
+          title: "Added to Wishlist!",
+          description: `${product.name} has been added to your wishlist.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Removed from Wishlist",
+          description: `${product.name} has been removed from your wishlist.`,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Get featured products from centralized data
   const featuredProducts = getFeaturedProducts();
@@ -106,7 +152,7 @@ const FeaturedProducts = () => {
             : 'grid-cols-1'
         }`}>
           {sortedProducts.map((product) => (
-            <Link key={product.id} to={`/product/${product.id}`} className="group">
+            <Link key={product.id} to={`/featured-products/${product.id}`} className="group">
               <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border hover:border-accent/50">
                 <div className="relative">
                   <img 
@@ -135,12 +181,27 @@ const FeaturedProducts = () => {
                     </div>
                   )}
                   
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="absolute bottom-3 right-3 bg-background/80 hover:bg-background"
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`absolute top-4 right-4 transition-all duration-300 hover:scale-110 ${
+                      isInWaitlist(product.id, {
+                        size: product.sizes?.[0],
+                        color: product.colors?.[0]
+                      })
+                        ? 'bg-red-500 text-white hover:bg-red-600'
+                        : 'bg-white/90 hover:bg-white text-gray-600 hover:text-red-500'
+                    }`}
+                    onClick={(e) => handleToggleWaitlist(e, product)}
                   >
-                    <Heart className="h-4 w-4" />
+                    <Heart className={`h-4 w-4 ${
+                      isInWaitlist(product.id, {
+                        size: product.sizes?.[0],
+                        color: product.colors?.[0]
+                      })
+                        ? 'fill-current'
+                        : ''
+                    }`} />
                   </Button>
                 </div>
                 
@@ -224,6 +285,8 @@ const FeaturedProducts = () => {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };

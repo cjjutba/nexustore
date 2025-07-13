@@ -1492,6 +1492,116 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400"
     ]
   },
+  {
+    id: 1006,
+    name: "Flash Deal - Wireless Charger",
+    price: 799.99,
+    originalPrice: 1999.99,
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
+    rating: 4.4,
+    reviews: 167,
+    category: "Electronics",
+    brand: "Anker",
+    isNew: true,
+    inStock: true,
+    isFlashDeal: true,
+    flashDealData: {
+      sold: 234,
+      stock: 66,
+      discount: 60
+    },
+    description: "Fast wireless charging pad compatible with all Qi-enabled devices for convenient charging.",
+    specs: ["Qi Wireless Charging", "10W Fast Charge", "LED Indicator", "Non-Slip Surface"],
+    features: ["Universal Compatibility", "Overcharge Protection", "Compact Design", "Easy Setup"],
+    colors: ["Black", "White"],
+    images: [
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
+      "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400"
+    ]
+  },
+  {
+    id: 1007,
+    name: "Flash Deal - Fitness Resistance Bands",
+    price: 599.99,
+    originalPrice: 1499.99,
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+    rating: 4.6,
+    reviews: 234,
+    category: "Sports",
+    brand: "TRX",
+    isNew: true,
+    inStock: true,
+    isFlashDeal: true,
+    flashDealData: {
+      sold: 345,
+      stock: 55,
+      discount: 60
+    },
+    description: "Complete resistance bands set with multiple resistance levels for full-body workouts anywhere.",
+    specs: ["5 Resistance Levels", "Door Anchor", "Handles & Ankle Straps", "Carrying Bag"],
+    features: ["Portable Workout", "Full Body Training", "Durable Material", "Exercise Guide"],
+    sizes: ["Light", "Medium", "Heavy"],
+    colors: ["Black", "Blue", "Red"],
+    images: [
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+      "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400"
+    ]
+  },
+  {
+    id: 1008,
+    name: "Flash Deal - Phone Case Premium",
+    price: 499.99,
+    originalPrice: 1299.99,
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
+    rating: 4.7,
+    reviews: 789,
+    category: "Accessories",
+    brand: "OtterBox",
+    isNew: true,
+    inStock: true,
+    isFlashDeal: true,
+    flashDealData: {
+      sold: 567,
+      stock: 133,
+      discount: 62
+    },
+    description: "Heavy-duty protective phone case with drop protection and wireless charging compatibility.",
+    specs: ["Drop Protection", "Wireless Charging", "Precise Cutouts", "Raised Edges"],
+    features: ["Military Grade", "Easy Installation", "Screen Protection", "Button Covers"],
+    sizes: ["iPhone 14", "iPhone 15", "Samsung S24"],
+    colors: ["Black", "Clear", "Blue"],
+    images: [
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
+      "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400"
+    ]
+  },
+  {
+    id: 1009,
+    name: "Flash Deal - LED Desk Lamp",
+    price: 1199.99,
+    originalPrice: 2999.99,
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400",
+    rating: 4.5,
+    reviews: 156,
+    category: "Electronics",
+    brand: "Philips",
+    isNew: true,
+    inStock: true,
+    isFlashDeal: true,
+    flashDealData: {
+      sold: 123,
+      stock: 27,
+      discount: 60
+    },
+    description: "Adjustable LED desk lamp with multiple brightness levels and color temperature settings.",
+    specs: ["LED Technology", "Adjustable Brightness", "Color Temperature Control", "USB Charging Port"],
+    features: ["Eye Protection", "Energy Efficient", "Touch Controls", "Memory Function"],
+    colors: ["White", "Black", "Silver"],
+    images: [
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400",
+      "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400"
+    ]
+  },
 
   // Featured Products
   {

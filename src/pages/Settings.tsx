@@ -43,9 +43,9 @@ const Settings = () => {
   // Redirect if not authenticated
   if (!state.isAuthenticated || !state.user) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation />
-        <div className="container mx-auto px-4 py-16">
+        <div className="flex-1 container mx-auto px-4 py-16">
           <div className="text-center max-w-md mx-auto">
             <Shield className="w-24 h-24 text-muted-foreground mx-auto mb-6" />
             <h1 className="text-2xl font-bold text-foreground mb-4">Access Denied</h1>
@@ -129,10 +129,10 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
-      
-      <div className="container mx-auto px-4 py-8">
+
+      <div className="flex-1 container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Account Settings</h1>
@@ -368,6 +368,7 @@ const Settings = () => {
         </div>
       </div>
 
+      {/* Footer - will stick to bottom */}
       <Footer />
     </div>
   );

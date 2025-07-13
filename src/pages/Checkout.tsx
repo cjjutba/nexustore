@@ -54,10 +54,10 @@ const CheckoutContent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
-      
-      <div className="container mx-auto px-4 py-8">
+
+      <div className="container mx-auto px-4 py-8 flex-grow">
         <CheckoutLayout>
           {renderCurrentStep()}
         </CheckoutLayout>

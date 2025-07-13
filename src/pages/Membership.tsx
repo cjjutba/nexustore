@@ -144,9 +144,9 @@ const Membership = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
-      
+
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-primary/10 via-background to-accent/5 py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -177,8 +177,10 @@ const Membership = () => {
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="py-16 bg-muted/30">
+      {/* Main Content - flex-1 makes it expand to fill available space */}
+      <div className="flex-1">
+        {/* Stats Section */}
+        <div className="py-16 bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => {
@@ -456,7 +458,9 @@ const Membership = () => {
           </div>
         </div>
       </div>
+      </div>
 
+      {/* Footer - will stick to bottom */}
       <Footer />
     </div>
   );

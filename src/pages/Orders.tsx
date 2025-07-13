@@ -141,9 +141,9 @@ const Orders = () => {
 
   if (orders.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation />
-        <div className="container mx-auto px-4 py-16">
+        <div className="flex-1 container mx-auto px-4 py-16">
           <div className="text-center max-w-md mx-auto">
             <ShoppingBag className="w-24 h-24 text-muted-foreground mx-auto mb-6" />
             <h1 className="text-2xl font-bold text-foreground mb-4">No orders yet</h1>
@@ -163,10 +163,10 @@ const Orders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
-      
-      <div className="container mx-auto px-4 py-8">
+
+      <div className="flex-1 container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
@@ -392,6 +392,7 @@ const Orders = () => {
         </Tabs>
       </div>
 
+      {/* Footer - will stick to bottom */}
       <Footer />
     </div>
   );

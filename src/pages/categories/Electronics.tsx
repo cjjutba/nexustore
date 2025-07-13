@@ -108,9 +108,9 @@ const Electronics = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
-      
+
       {/* Header */}
       <div className="bg-gradient-surface py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,7 +121,8 @@ const Electronics = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content - flex-1 makes it expand to fill available space */}
+      <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-64 flex-shrink-0">
@@ -280,9 +281,7 @@ const Electronics = () => {
         </div>
       </div>
 
-      {/* Spacing before footer */}
-      <div className="py-8"></div>
-
+      {/* Footer - will stick to bottom */}
       <Footer />
     </div>
   );

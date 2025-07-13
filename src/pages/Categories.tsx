@@ -124,7 +124,7 @@ const Categories = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       
       {/* Header Section */}
@@ -144,7 +144,7 @@ const Categories = () => {
       </div>
 
       {/* Categories Grid */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {categories.map((category) => {
             const IconComponent = category.icon;

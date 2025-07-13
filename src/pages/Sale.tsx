@@ -96,7 +96,7 @@ const Sale = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
 
       {/* Hero Section */}
@@ -119,8 +119,8 @@ const Sale = () => {
         </div>
       </div>
 
-      {/* Filters and Controls */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content - flex-1 makes it expand to fill available space */}
+      <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <p className="text-muted-foreground">
@@ -277,6 +277,7 @@ const Sale = () => {
         )}
       </div>
 
+      {/* Footer - will stick to bottom */}
       <Footer />
     </div>
   );

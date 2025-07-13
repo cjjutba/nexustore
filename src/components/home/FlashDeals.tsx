@@ -83,7 +83,7 @@ const FlashDeals = () => {
                     className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold shadow-lg">
-                    -{product.discount}%
+                    -{product.flashDealData?.discount || 0}%
                   </div>
                   <Button
                     variant="ghost"

@@ -80,9 +80,6 @@ const FeaturedProducts = () => {
                       New
                     </div>
                   )}
-                  <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold shadow-lg">
-                    -{product.discount}%
-                  </div>
                   <Button
                     variant="ghost"
                     size="icon"

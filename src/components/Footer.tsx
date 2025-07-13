@@ -10,11 +10,6 @@ const Footer = () => {
             <p className="text-white/80 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">
               Your trusted online shopping destination with millions of products and unbeatable deals.
             </p>
-            <div className="flex space-x-3 sm:space-x-4">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full hover:bg-white/30 transition-colors cursor-pointer"></div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full hover:bg-white/30 transition-colors cursor-pointer"></div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full hover:bg-white/30 transition-colors cursor-pointer"></div>
-            </div>
           </div>
 
           <div>

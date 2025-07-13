@@ -177,6 +177,9 @@ const FlashDeals = () => {
                     <span className="text-lg font-bold text-foreground">
                       {formatPrice(product.price)}
                     </span>
+                    <span className="text-sm font-semibold text-destructive bg-destructive/10 px-2 py-1 rounded">
+                      -{product.flashDealData?.discount || 0}% OFF
+                    </span>
                     <span className="text-sm text-muted-foreground line-through">
                       {formatPrice(product.originalPrice)}
                     </span>

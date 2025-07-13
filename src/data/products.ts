@@ -1668,7 +1668,7 @@ export const products: Product[] = [
   {
     id: 1001,
     name: "Flash Deal - Wireless Earbuds Pro",
-    price: 1499.99,
+    price: 1479.99,
     originalPrice: 3999.99,
     image: "https://beyondthebox.ph/cdn/shop/files/Air_Pro_4_ANC_True_Wireless_Earbuds_COLOR-BLACK.png?v=1750320513",
     rating: 4.8,
@@ -1746,7 +1746,7 @@ export const products: Product[] = [
   {
     id: 1004,
     name: "Flash Deal - Smartwatch Fitness",
-    price: 2999.99,
+    price: 2959.99,
     originalPrice: 7999.99,
     image: "https://ph.garmin.com/m/ph/g/products/vivoactive6-cf-lg.png",
     rating: 4.5,
@@ -1854,7 +1854,7 @@ export const products: Product[] = [
   {
     id: 1008,
     name: "Flash Deal - Phone Case Premium",
-    price: 499.99,
+    price: 493.99,
     originalPrice: 1299.99,
     image: "https://urbangadgets.ph/wp-content/uploads/Aukey-PC-GJ10A-Magnetic-Hard-Shell-Phone-Case-iPhone-15-Pro-Max-Silicon-Lilac.webp",
     rating: 4.7,
@@ -1998,7 +1998,7 @@ export const products: Product[] = [
   },
   {
     id: 2005,
-    name: "iPhone 11",
+    name: "Apple iPhone 11 128gb",
     price: 34999.99,
     originalPrice: 39999.99,
     image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400",

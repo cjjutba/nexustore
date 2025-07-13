@@ -17,6 +17,21 @@ export default {
 				'2xl': '1400px'
 			}
 		},
+		screens: {
+			// Custom breakpoints for NexuStore
+			'mobile-xs': {'max': '424px'}, // Mobile Extra Small (≤425px)
+			'mobile-l': '425px',    // Mobile Large
+			'tablet': '768px',      // Tablet
+			'laptop-s': '1024px',   // Laptop Small
+			'laptop-m': '1280px',   // Laptop Medium
+			'laptop-l': '1440px',   // Laptop Large
+			// Keep default Tailwind breakpoints for compatibility
+			'sm': '640px',
+			'md': '768px',
+			'lg': '1024px',
+			'xl': '1280px',
+			'2xl': '1536px',
+		},
 		extend: {
 			colors: {
 				border: 'hsl(var(--border))',

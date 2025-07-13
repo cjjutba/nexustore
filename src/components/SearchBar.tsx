@@ -71,7 +71,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   // Handle suggestion click
-  const handleSuggestionClick = (suggestion: any) => {
+  const handleSuggestionClick = (suggestion: { value: string; type: string; count?: number }) => {
     setQuery(suggestion.value);
     handleSearch(suggestion.value);
   };
@@ -133,7 +133,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   }, []);
 
   // Render suggestion item
-  const renderSuggestionItem = (suggestion: any, index: number) => {
+  const renderSuggestionItem = (suggestion: { value: string; type: string; count?: number }, index: number) => {
     const isSelected = index === selectedIndex;
     
     return (

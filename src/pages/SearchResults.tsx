@@ -10,7 +10,7 @@ import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollToTop } from "@/utils/scrollToTop";
-import { formatPrice } from "@/data/products";
+import { formatPrice, Product } from "@/data/products";
 import { cn } from "@/lib/utils";
 import SearchFilters from "@/components/search/SearchFilters";
 import Pagination from "@/components/Pagination";
@@ -55,7 +55,7 @@ const SearchResults = () => {
     }
 
     // Set filters from URL
-    const newFilters: any = {};
+    const newFilters: { category?: string; brand?: string } = {};
     if (urlCategory) newFilters.category = urlCategory;
     if (urlBrand) newFilters.brand = urlBrand;
     setFilters(newFilters);
@@ -78,11 +78,13 @@ const SearchResults = () => {
   }, [query, filters, sortBy, currentPage]);
 
   // Helper function to determine product detail route based on product type
-  const getProductDetailRoute = (product: any) => {
+  const getProductDetailRoute = (product: Product) => {
     if (product.isFlashDeal) {
       return `/flash-deals/${product.id}`;
     } else if (product.isFeatured) {
       return `/featured-products/${product.id}`;
+    } else if (product.isOnSale) {
+      return `/sale/${product.id}`;
     } else {
       // Default to category route - handle category name mapping
       const categoryMap: { [key: string]: string } = {
@@ -104,7 +106,7 @@ const SearchResults = () => {
   };
 
   // Add to cart handler with validation
-  const handleAddToCart = async (product: any, e: React.MouseEvent) => {
+  const handleAddToCart = async (product: Product, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -141,7 +143,7 @@ const SearchResults = () => {
   };
 
   // Toggle waitlist handler
-  const handleToggleWaitlist = async (product: any, e: React.MouseEvent) => {
+  const handleToggleWaitlist = async (product: Product, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 

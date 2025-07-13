@@ -18,6 +18,8 @@ import FlashDeals from "./pages/FlashDeals";
 import FlashDealsProductDetail from "./pages/FlashDealsProductDetail";
 import FeaturedProducts from "./pages/FeaturedProducts";
 import FeaturedProductsProductDetail from "./pages/FeaturedProductsProductDetail";
+import Sale from "./pages/Sale";
+import SaleProductDetail from "./pages/SaleProductDetail";
 import Categories from "./pages/Categories";
 import Membership from "./pages/Membership";
 // Category Pages
@@ -51,6 +53,8 @@ const App = () => (
           <Route path="/flash-deals/:id" element={<FlashDealsProductDetail />} />
           <Route path="/featured-products" element={<FeaturedProducts />} />
           <Route path="/featured-products/:id" element={<FeaturedProductsProductDetail />} />
+          <Route path="/sale" element={<Sale />} />
+          <Route path="/sale/:id" element={<SaleProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/waitlist" element={<Waitlist />} />
           <Route path="/search" element={<SearchResults />} />

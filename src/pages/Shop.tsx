@@ -194,6 +194,8 @@ const Shop = () => {
                         return `/flash-deals/${product.id}`;
                       } else if (product.isFeatured) {
                         return `/featured-products/${product.id}`;
+                      } else if (product.isOnSale) {
+                        return `/sale/${product.id}`;
                       } else {
                         return `/categories/${product.category.toLowerCase()}/${product.id}`;
                       }

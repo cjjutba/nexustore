@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -20,7 +20,7 @@ const FlashDeals = () => {
 
   const { toggleWaitlist, isInWaitlist } = useCart();
   const { toast } = useToast();
-  const { timeLeft, formattedTime } = useFlashDealTimer();
+  const { formattedTime } = useFlashDealTimer();
 
   // Scroll to top when component mounts (when navigating to this page)
   useScrollToTop();
@@ -42,7 +42,7 @@ const FlashDeals = () => {
       case 'rating':
         return b.rating - a.rating;
       case 'sold':
-        return b.sold - a.sold;
+        return (b.flashDealData?.sold || 0) - (a.flashDealData?.sold || 0);
       default:
         return 0;
     }

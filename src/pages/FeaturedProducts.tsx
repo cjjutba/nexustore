@@ -6,7 +6,7 @@ import Pagination from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Star, Filter, Grid, List, Award } from "lucide-react";
-import { formatPrice, getFeaturedProducts } from "@/data/products";
+import { formatPrice, getFeaturedProducts, Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollToTop } from "@/utils/scrollToTop";
@@ -24,7 +24,7 @@ const FeaturedProducts = () => {
   useScrollToTop();
 
   // Handle toggle waitlist
-  const handleToggleWaitlist = (e: React.MouseEvent, product: any) => {
+  const handleToggleWaitlist = (e: React.MouseEvent, product: Product) => {
     e.preventDefault(); // Prevent navigation to product detail
     e.stopPropagation(); // Stop event bubbling
 
@@ -147,9 +147,6 @@ const FeaturedProducts = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {featuredProducts.length} featured products
-            </span>
             <Button
               variant={viewMode === 'grid' ? 'default' : 'outline'}
               size="sm"

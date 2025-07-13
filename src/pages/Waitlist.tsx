@@ -1,14 +1,16 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useCart } from "@/contexts/CartContext";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useCart, WaitlistItem } from "@/contexts/CartContext";
 import { formatPrice } from "@/data/products";
-import { 
-  Trash2, 
-  Clock, 
-  ArrowLeft, 
+import {
+  Trash2,
+  Clock,
+  ArrowLeft,
   ShoppingCart
 } from "lucide-react";
 import Footer from "@/components/Footer";
@@ -16,12 +18,48 @@ import Footer from "@/components/Footer";
 const Waitlist = () => {
   const { state, removeFromWaitlist, addToCart } = useCart();
   const waitlistItems = state.waitlist;
+  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
 
   const handleRemoveFromWaitlist = (index: number) => {
     removeFromWaitlist(index);
+    // Remove from selected items if it was selected
+    setSelectedItems(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(index);
+      return newSet;
+    });
   };
 
-  const handleMoveToCart = (item: any, index: number) => {
+  const handleSelectItem = (index: number, checked: boolean) => {
+    setSelectedItems(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(index);
+      } else {
+        newSet.delete(index);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedItems(new Set(waitlistItems.map((_, index) => index)));
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
+
+  const handleBulkDelete = () => {
+    // Sort indices in descending order to remove from end first
+    const sortedIndices = Array.from(selectedItems).sort((a, b) => b - a);
+    sortedIndices.forEach(index => {
+      removeFromWaitlist(index);
+    });
+    setSelectedItems(new Set());
+  };
+
+  const handleMoveToCart = (item: WaitlistItem, index: number) => {
     // This would typically check if the item is back in stock
     // For demo purposes, we'll assume it's available
     addToCart(
@@ -55,8 +93,8 @@ const Waitlist = () => {
             <p className="text-muted-foreground mb-8">
               Items you add to your waitlist will appear here when they're out of stock.
             </p>
-            <Link to="/">
-              <Button className="cta-gradient text-primary-foreground px-8 py-3">
+            <Link to="/shop">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 transition-all duration-300 shadow-sm hover:shadow-md">
                 Continue Shopping
               </Button>
             </Link>
@@ -75,8 +113,8 @@ const Waitlist = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link to="/">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+            <Link to="/shop">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Continue Shopping
               </Button>
@@ -88,6 +126,33 @@ const Waitlist = () => {
               </p>
             </div>
           </div>
+
+          {/* Bulk Actions */}
+          {waitlistItems.length > 0 && (
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="select-all"
+                  checked={selectedItems.size === waitlistItems.length && waitlistItems.length > 0}
+                  onCheckedChange={handleSelectAll}
+                />
+                <label htmlFor="select-all" className="text-sm text-muted-foreground cursor-pointer">
+                  Select All
+                </label>
+              </div>
+              {selectedItems.size > 0 && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBulkDelete}
+                  className="text-sm"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Selected ({selectedItems.size})
+                </Button>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -97,6 +162,15 @@ const Waitlist = () => {
               <Card key={`${item.id}-${item.selectedOptions.size}-${item.selectedOptions.color}`} className="minimalist-card">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row gap-4">
+                    {/* Selection Checkbox */}
+                    <div className="flex items-start pt-2">
+                      <Checkbox
+                        id={`waitlist-item-${index}`}
+                        checked={selectedItems.has(index)}
+                        onCheckedChange={(checked) => handleSelectItem(index, checked as boolean)}
+                      />
+                    </div>
+
                     {/* Product Image */}
                     <div className="relative w-full md:w-32 h-32 flex-shrink-0">
                       <img

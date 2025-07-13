@@ -24,6 +24,7 @@ export interface Product {
     discount: number;
   };
   isFeatured?: boolean;
+  isOnSale?: boolean;
 }
 
 export const products: Product[] = [
@@ -1779,6 +1780,117 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400",
       "https://images.unsplash.com/photo-1558877385-1c2d7b8e7b35?w=400"
     ]
+  },
+
+  // Sale Products
+  {
+    id: 1001,
+    name: "Premium Wireless Headphones",
+    price: 8999.99,
+    originalPrice: 14999.99,
+    image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400",
+    rating: 4.8,
+    reviews: 456,
+    category: "Audio",
+    brand: "Sony",
+    isNew: false,
+    inStock: true,
+    isOnSale: true,
+    description: "Premium wireless headphones with active noise cancellation and superior sound quality. Perfect for music lovers and professionals.",
+    specs: ["Active Noise Cancellation", "30-hour Battery", "Quick Charge", "Hi-Res Audio"],
+    features: ["Touch Controls", "Voice Assistant", "Foldable Design", "Carrying Case"],
+    colors: ["Black", "Silver", "Blue"],
+    images: [
+      "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400",
+      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400"
+    ]
+  },
+  {
+    id: 1002,
+    name: "Smart Fitness Watch",
+    price: 12999.99,
+    originalPrice: 18999.99,
+    image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400",
+    rating: 4.7,
+    reviews: 789,
+    category: "Wearables",
+    brand: "Garmin",
+    isNew: true,
+    inStock: true,
+    isOnSale: true,
+    description: "Advanced fitness watch with GPS tracking, heart rate monitoring, and comprehensive health insights for active lifestyles.",
+    specs: ["GPS Tracking", "Heart Rate Monitor", "7-Day Battery", "Water Resistant"],
+    features: ["Sleep Tracking", "Workout Modes", "Smart Notifications", "Health Insights"],
+    colors: ["Black", "White", "Rose Gold"],
+    images: [
+      "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400",
+      "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400"
+    ]
+  },
+  {
+    id: 1003,
+    name: "Professional Camera Lens 50mm",
+    price: 34999.99,
+    originalPrice: 49999.99,
+    image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
+    rating: 4.9,
+    reviews: 234,
+    category: "Photography",
+    brand: "Canon",
+    isNew: true,
+    inStock: true,
+    isOnSale: true,
+    description: "Professional 50mm lens with exceptional sharpness and beautiful bokeh for portrait and street photography.",
+    specs: ["50mm Focal Length", "f/1.8 Maximum Aperture", "USM Autofocus", "Full Frame"],
+    features: ["Image Stabilization", "Weather Sealed", "Silent Focusing", "Professional Grade"],
+    images: [
+      "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400",
+      "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400"
+    ]
+  },
+  {
+    id: 1004,
+    name: "Gaming Mechanical Keyboard",
+    price: 5999.99,
+    originalPrice: 8999.99,
+    image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400",
+    rating: 4.6,
+    reviews: 567,
+    category: "Computers",
+    brand: "Razer",
+    isNew: false,
+    inStock: true,
+    isOnSale: true,
+    description: "High-performance mechanical gaming keyboard with RGB backlighting and tactile switches for competitive gaming.",
+    specs: ["Mechanical Switches", "RGB Backlighting", "Anti-Ghosting", "USB-C"],
+    features: ["Programmable Keys", "Gaming Mode", "Media Controls", "Wrist Rest"],
+    colors: ["Black", "White"],
+    images: [
+      "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400",
+      "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400"
+    ]
+  },
+  {
+    id: 1005,
+    name: "Luxury Leather Handbag",
+    price: 15999.99,
+    originalPrice: 24999.99,
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
+    rating: 4.8,
+    reviews: 345,
+    category: "Accessories",
+    brand: "Michael Kors",
+    isNew: true,
+    inStock: true,
+    isOnSale: true,
+    description: "Elegant luxury leather handbag with spacious interior and timeless design perfect for any occasion.",
+    specs: ["Genuine Leather", "Multiple Compartments", "Adjustable Strap", "Gold Hardware"],
+    features: ["Handcrafted", "Dust Bag Included", "Premium Lining", "Lifetime Warranty"],
+    colors: ["Black", "Brown", "Tan", "Navy"],
+    images: [
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
+      "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400"
+    ]
   }
 ];
 
@@ -1815,6 +1927,10 @@ export const getFlashDeals = (): Product[] => {
 
 export const getFeaturedProducts = (): Product[] => {
   return products.filter(product => product.isFeatured === true);
+};
+
+export const getSaleProducts = (): Product[] => {
+  return products.filter(product => product.isOnSale === true);
 };
 
 export const formatPrice = (price: number): string => {

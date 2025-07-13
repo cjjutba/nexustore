@@ -74,7 +74,7 @@ export const Navigation = () => {
                 >
                   <Clock className="w-5 h-5 group-hover:scale-105 transition-transform duration-300" />
                   {state.waitlist.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center font-semibold shadow-sm">
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-semibold shadow-sm animate-pulse">
                       {state.waitlist.length}
                     </span>
                   )}

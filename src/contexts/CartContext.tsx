@@ -288,16 +288,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isInCart = (productId: number, selectedOptions: { size?: string; color?: string }) => {
-    return state.items.some(item => 
-      item.id === productId && 
+    return state.items.some(item =>
+      item &&
+      item.id === productId &&
+      item.selectedOptions &&
       item.selectedOptions.size === selectedOptions.size &&
       item.selectedOptions.color === selectedOptions.color
     );
   };
 
   const isInWaitlist = (productId: number, selectedOptions: { size?: string; color?: string }) => {
-    return state.waitlist.some(item => 
-      item.id === productId && 
+    return state.waitlist.some(item =>
+      item &&
+      item.id === productId &&
+      item.selectedOptions &&
       item.selectedOptions.size === selectedOptions.size &&
       item.selectedOptions.color === selectedOptions.color
     );

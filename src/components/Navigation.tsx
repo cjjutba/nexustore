@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, LogIn, UserPlus } from "lucide-react";
+import { ShoppingCart, Menu, X, LogIn, UserPlus, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { SearchBar } from "@/components/SearchBar";
+import ProfileDropdown from "@/components/ProfileDropdown";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const { getCartItemsCount, state } = useCart();
+  const { state: authState } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -26,12 +32,12 @@ export const Navigation = () => {
   }, [location.pathname]);
 
   const categoryLinks = [
-    { name: "Electronics", href: "/shop?category=electronics" },
-    { name: "Fashion", href: "/shop?category=fashion" },
-    { name: "Home & Garden", href: "/shop?category=home" },
-    { name: "Sports", href: "/shop?category=sports" },
-    { name: "Beauty", href: "/shop?category=beauty" },
-    { name: "Books", href: "/shop?category=books" }
+    { name: "Electronics", href: "/categories/electronics" },
+    { name: "Fashion", href: "/categories/fashion" },
+    { name: "Photography", href: "/categories/photography" },
+    { name: "Sports", href: "/categories/sports" },
+    { name: "Audio", href: "/categories/audio" },
+    { name: "Computers", href: "/categories/computers" }
   ];
 
   return (
@@ -40,13 +46,13 @@ export const Navigation = () => {
       isScrolled ? "shadow-lg border-b border-border/50" : "shadow-sm border-b border-border/20"
     )}>
       {/* Main Navigation */}
-      <div className="bg-background/95 backdrop-blur-md py-3">
+      <div className="bg-background/95 backdrop-blur-md py-3 relative z-10">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link
               to="/"
-              className="flex items-center space-x-3 group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg"
+              className="flex items-center space-x-3 group focus:outline-none"
               aria-label="NexuStore Home"
             >
               <div className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 tracking-tight">
@@ -56,28 +62,28 @@ export const Navigation = () => {
 
             {/* Search Bar */}
             <div className="flex-1 max-w-2xl mx-8 hidden md:block">
-              <div className="relative group">
-                <label htmlFor="search" className="sr-only">Search products</label>
-                <input
-                  id="search"
-                  type="search"
-                  placeholder="Search for products, brands and more..."
-                  className="w-full px-5 py-2.5 rounded-lg text-foreground bg-muted border border-border/30 focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring focus:bg-background transition-all duration-300 pl-5 pr-12 placeholder:text-muted-foreground"
-                  aria-label="Search products"
-                />
-                <Button
-                  size="sm"
-                  type="submit"
-                  className="absolute right-1.5 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md px-3 py-1.5 transition-all duration-300 shadow-sm hover:shadow-md focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  aria-label="Search"
-                >
-                  <Search className="w-4 h-4" />
-                </Button>
-              </div>
+              <SearchBar />
             </div>
 
             {/* Right Actions */}
             <div className="flex items-center space-x-2 lg:space-x-3">
+              {/* Wishlist */}
+              <Link to="/waitlist" className="group">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative text-primary hover:bg-muted hover:text-foreground rounded-lg p-2.5 transition-all duration-300 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  aria-label="Wishlist"
+                >
+                  <Heart className="w-5 h-5 group-hover:scale-105 transition-transform duration-300" />
+                  {state.waitlist.length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-semibold shadow-sm animate-pulse">
+                      {state.waitlist.length}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+
               {/* Cart */}
               <Link to="/cart" className="group">
                 <Button
@@ -87,32 +93,43 @@ export const Navigation = () => {
                   aria-label="Shopping cart"
                 >
                   <ShoppingCart className="w-5 h-5 group-hover:scale-105 transition-transform duration-300" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-semibold shadow-sm animate-pulse">
-                    0
-                  </span>
+                  {getCartItemsCount() > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-semibold shadow-sm animate-pulse">
+                      {getCartItemsCount()}
+                    </span>
+                  )}
                 </Button>
               </Link>
 
-              {/* Login Button */}
-              <Link to="/login" className="hidden md:block">
-                <Button
-                  variant="ghost"
-                  className="text-primary hover:bg-muted hover:text-foreground rounded-lg px-3 py-1.5 transition-all duration-300 border border-border/30 hover:border-border/60 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Login
-                </Button>
-              </Link>
+              {/* Authentication Section */}
+              {authState.isAuthenticated ? (
+                <div className="hidden md:block">
+                  <ProfileDropdown />
+                </div>
+              ) : (
+                <>
+                  {/* Login Button */}
+                  <Link to="/login" className="hidden md:block">
+                    <Button
+                      variant="ghost"
+                      className="text-primary hover:bg-muted hover:text-foreground rounded-lg px-3 py-1.5 transition-all duration-300 border border-border/30 hover:border-border/60 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
 
-              {/* Sign Up Button */}
-              <Link to="/register" className="hidden md:block">
-                <Button
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-4 py-1.5 transition-all duration-300 font-medium shadow-sm hover:shadow-md focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Sign Up
-                </Button>
-              </Link>
+                  {/* Sign Up Button */}
+                  <Link to="/register" className="hidden md:block">
+                    <Button
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-4 py-1.5 transition-all duration-300 font-medium shadow-sm hover:shadow-md focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
 
               {/* Mobile Menu Toggle */}
               <Button
@@ -131,7 +148,7 @@ export const Navigation = () => {
       </div>
 
       {/* Category Navigation */}
-      <div className="bg-muted/50 border-t border-border/20 py-2">
+      <div className="bg-muted/50 border-t border-border/20 py-2 relative z-5">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="hidden md:flex items-center justify-center space-x-6 lg:space-x-8 text-sm">
             {categoryLinks.map((link) => (
@@ -139,7 +156,7 @@ export const Navigation = () => {
                 key={link.name}
                 to={link.href}
                 className={cn(
-                  "text-muted-foreground hover:text-foreground transition-all duration-300 whitespace-nowrap relative group px-3 py-2 rounded-md hover:bg-background/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                  "text-muted-foreground hover:text-foreground transition-all duration-300 whitespace-nowrap relative group px-3 py-2 rounded-md hover:bg-background/80",
                   isActive(link.href) && "text-primary font-medium"
                 )}
               >
@@ -156,16 +173,7 @@ export const Navigation = () => {
         <div className="md:hidden bg-background/95 backdrop-blur-md border-t border-border/20 shadow-lg animate-in slide-in-from-top-2 duration-300">
           <div className="px-4 py-6 space-y-6">
             {/* Mobile Search */}
-            <div className="relative">
-              <label htmlFor="mobile-search" className="sr-only">Search products</label>
-              <input
-                id="mobile-search"
-                type="search"
-                placeholder="Search for products, brands and more..."
-                className="w-full px-6 py-3 border border-border/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring bg-muted text-foreground placeholder:text-muted-foreground"
-              />
-              <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-            </div>
+            <SearchBar isMobile={true} />
 
             {/* Mobile Categories */}
             <div className="space-y-1">
@@ -185,26 +193,32 @@ export const Navigation = () => {
               ))}
             </div>
 
-            {/* Mobile Auth Links */}
-            <div className="flex space-x-3 pt-4 border-t border-border/20">
-              <Link to="/login" className="flex-1">
-                <Button
-                  variant="outline"
-                  className="w-full border-border/30 text-primary hover:bg-muted hover:border-border/60 rounded-lg py-3 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Login
-                </Button>
-              </Link>
-              <Link to="/register" className="flex-1">
-                <Button
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg py-3 shadow-sm hover:shadow-md transition-all duration-300 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
+            {/* Mobile Auth Section */}
+            {authState.isAuthenticated ? (
+              <div className="pt-4 border-t border-border/20">
+                <ProfileDropdown />
+              </div>
+            ) : (
+              <div className="flex space-x-3 pt-4 border-t border-border/20">
+                <Link to="/login" className="flex-1">
+                  <Button
+                    variant="outline"
+                    className="w-full border-border/30 text-primary hover:bg-muted hover:border-border/60 rounded-lg py-3 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register" className="flex-1">
+                  <Button
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg py-3 shadow-sm hover:shadow-md transition-all duration-300 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Navigation } from "@/components/Navigation";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -19,14 +21,112 @@ const Register = () => {
     confirmPassword: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle registration logic here
+  const { state, register } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [state.isAuthenticated, navigate, location]);
+
+  const validateForm = () => {
+    if (!formData.firstName.trim()) {
+      toast({
+        title: "Error",
+        description: "First name is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.lastName.trim()) {
+      toast({
+        title: "Error",
+        description: "Last name is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.email.trim()) {
+      toast({
+        title: "Error",
+        description: "Email is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.phone.trim()) {
+      toast({
+        title: "Error",
+        description: "Phone number is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      toast({
+        title: "Error",
+        description: "Passwords don't match",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!acceptedTerms) {
+      toast({
+        title: "Error",
+        description: "Please accept the Terms of Service and Privacy Policy",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
       return;
     }
-    console.log("Registration attempt:", formData);
+
+    const { confirmPassword, ...registrationData } = formData;
+    const result = await register(registrationData);
+
+    if (result.success) {
+      toast({
+        title: "Welcome to NexuStore!",
+        description: "Your account has been created successfully.",
+      });
+
+      // Redirect to intended page or home
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    } else {
+      toast({
+        title: "Registration Failed",
+        description: result.error || "Failed to create account",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,27 +137,38 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <Navigation />
-      
-      <div className="flex items-center justify-center py-12 px-4">
-        <Card className="w-full max-w-md shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+    <div className="min-h-screen bg-background">
+      {/* Logo Header */}
+      <div className="absolute top-0 left-0 p-6">
+        <Link
+          to="/"
+          className="flex items-center space-x-3 group"
+          aria-label="NexuStore Home"
+        >
+          <div className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 tracking-tight">
+            NexuStore
+          </div>
+        </Link>
+      </div>
+
+      <div className="flex items-center justify-center min-h-screen py-12 px-4">
+        <Card className="w-full max-w-md minimalist-card minimalist-hover">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-bold text-foreground">
               Join NexuStore
             </CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardDescription className="text-muted-foreground">
               Create your account to start shopping
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-slate-700 font-medium">First Name</Label>
+                  <Label htmlFor="firstName" className="text-foreground font-medium">First Name</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       id="firstName"
                       name="firstName"
@@ -65,16 +176,16 @@ const Register = () => {
                       placeholder="First name"
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      className="pl-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
+                      className="pl-10 border-border focus:border-ring focus:ring-ring/20"
                       required
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-slate-700 font-medium">Last Name</Label>
+                  <Label htmlFor="lastName" className="text-foreground font-medium">Last Name</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       id="lastName"
                       name="lastName"
@@ -82,17 +193,17 @@ const Register = () => {
                       placeholder="Last name"
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      className="pl-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
+                      className="pl-10 border-border focus:border-ring focus:ring-ring/20"
                       required
                     />
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium">Email</Label>
+                <Label htmlFor="email" className="text-foreground font-medium">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="email"
                     name="email"
@@ -100,16 +211,16 @@ const Register = () => {
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="pl-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
+                    className="pl-10 border-border focus:border-ring focus:ring-ring/20"
                     required
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-slate-700 font-medium">Phone Number</Label>
+                <Label htmlFor="phone" className="text-foreground font-medium">Phone Number</Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="phone"
                     name="phone"
@@ -117,16 +228,16 @@ const Register = () => {
                     placeholder="Enter your phone number"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="pl-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
+                    className="pl-10 border-border focus:border-ring focus:ring-ring/20"
                     required
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-700 font-medium">Password</Label>
+                <Label htmlFor="password" className="text-foreground font-medium">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="password"
                     name="password"
@@ -134,23 +245,23 @@ const Register = () => {
                     placeholder="Create a password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="pl-10 pr-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
+                    className="pl-10 pr-10 border-border focus:border-ring focus:ring-ring/20"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-slate-700 font-medium">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-foreground font-medium">Confirm Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -158,57 +269,60 @@ const Register = () => {
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="pl-10 pr-10 border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
+                    className="pl-10 pr-10 border-border focus:border-ring focus:ring-ring/20"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <input
                   id="terms"
                   type="checkbox"
-                  className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="w-4 h-4 text-primary border-border rounded focus:ring-ring"
                   required
                 />
-                <Label htmlFor="terms" className="text-sm text-slate-600">
+                <Label htmlFor="terms" className="text-sm text-muted-foreground">
                   I agree to the{" "}
-                  <Link to="/terms" className="text-blue-600 hover:text-blue-800">
+                  <Link to="/terms" className="text-primary hover:text-primary/80 transition-colors">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link to="/privacy" className="text-blue-600 hover:text-blue-800">
+                  <Link to="/privacy" className="text-primary hover:text-primary/80 transition-colors">
                     Privacy Policy
                   </Link>
                 </Label>
               </div>
-              
+
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                disabled={state.isLoading}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Account
+                {state.isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
-            
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-300" />
+                <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-slate-500">Or continue with</span>
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" className="border-slate-300 hover:bg-slate-50">
+              <Button variant="outline" className="border-border hover:bg-muted">
                 <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -217,18 +331,18 @@ const Register = () => {
                 </svg>
                 Google
               </Button>
-              <Button variant="outline" className="border-slate-300 hover:bg-slate-50">
+              <Button variant="outline" className="border-border hover:bg-muted">
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
                 Facebook
               </Button>
             </div>
-            
+
             <div className="text-center">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-muted-foreground">
                 Already have an account?{" "}
-                <Link to="/login" className="text-blue-600 hover:text-blue-800 font-medium">
+                <Link to="/login" className="text-primary hover:text-primary/80 font-medium transition-colors">
                   Sign in
                 </Link>
               </p>

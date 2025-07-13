@@ -35,7 +35,10 @@ const Audio = () => {
   // Handle filter changes
   const handleFilterChange = useCallback((filtered: Product[]) => {
     setFilteredProducts(filtered);
-    setCurrentPage(1); // Reset to first page when filters change
+  }, []);
+
+  const handlePageReset = useCallback(() => {
+    setCurrentPage(1);
   }, []);
 
   // Sort products
@@ -125,6 +128,7 @@ const Audio = () => {
             <CategoryFilter
               products={allProducts}
               onFilterChange={handleFilterChange}
+              onPageReset={handlePageReset}
               categoryName="Audio"
             />
           </div>

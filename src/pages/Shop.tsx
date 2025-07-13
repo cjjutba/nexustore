@@ -1,94 +1,126 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import ShopFilter from "@/components/ShopFilter";
+import Pagination from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Filter, Grid, List, Heart, Star } from "lucide-react";
-import { products, getAllCategories, getAllBrands, getPriceRanges, formatPrice, type Product } from "@/data/products";
+import { Grid, List, Heart, Star, ShoppingBag } from "lucide-react";
+import { products, formatPrice, type Product } from "@/data/products";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { useScrollToTop, scrollToTop } from "@/utils/scrollToTop";
 
 const Shop = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('featured');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedBrand, setSelectedBrand] = useState('All');
-  const [selectedPriceRange, setSelectedPriceRange] = useState<{min: number, max: number} | null>(null);
-  const [showNewOnly, setShowNewOnly] = useState(false);
-  const [showInStockOnly, setShowInStockOnly] = useState(false);
-  const [minRating, setMinRating] = useState(0);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 18;
 
-  const categories = getAllCategories();
-  const brands = getAllBrands();
-  const priceRanges = getPriceRanges();
+  // Removed verbose render logs
 
-  const filteredProducts = useMemo(() => {
-    let filtered = [...products];
+  const { toggleWaitlist, isInWaitlist } = useCart();
+  const { toast } = useToast();
 
-    // Filter by category
-    if (selectedCategory !== 'All') {
-      filtered = filtered.filter(product => product.category === selectedCategory);
-    }
+  // Scroll to top when component mounts (when navigating to this page)
+  useScrollToTop();
 
-    // Filter by brand
-    if (selectedBrand !== 'All') {
-      filtered = filtered.filter(product => product.brand === selectedBrand);
-    }
+  const allProducts = useMemo(() => products, []);
 
-    // Filter by price range
-    if (selectedPriceRange) {
-      filtered = filtered.filter(product =>
-        product.price >= selectedPriceRange.min &&
-        product.price <= selectedPriceRange.max
-      );
-    }
+  // Initialize filtered products when component mounts
+  useEffect(() => {
+    setFilteredProducts(allProducts);
+  }, [allProducts]);
 
-    // Filter by new products only
-    if (showNewOnly) {
-      filtered = filtered.filter(product => product.isNew);
-    }
 
-    // Filter by in stock only
-    if (showInStockOnly) {
-      filtered = filtered.filter(product => product.inStock);
-    }
 
-    // Filter by minimum rating
-    if (minRating > 0) {
-      filtered = filtered.filter(product => product.rating >= minRating);
-    }
+  // Handle filter changes
+  const handleFilterChange = useCallback((filtered: Product[]) => {
+    setFilteredProducts(filtered);
+  }, []);
 
-    // Sort products
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
+        return a.price - b.price;
       case 'price-high':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
+        return b.price - a.price;
       case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
+        return b.rating - a.rating;
       case 'newest':
-        filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-        break;
+        return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
       default:
-        // Featured - keep original order
-        break;
+        return 0;
     }
+  });
 
-    return filtered;
-  }, [selectedCategory, selectedBrand, selectedPriceRange, showNewOnly, showInStockOnly, minRating, sortBy]);
+  // Pagination logic
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
+
+  // Removed verbose pagination calculation logs
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when changing pages
+    scrollToTop('smooth');
+  };
+
+  const handlePageReset = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
+
+  const handleToggleWaitlist = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault(); // Prevent navigation to product detail
+    e.stopPropagation(); // Stop event bubbling
+
+    try {
+      // Toggle waitlist with default options (first available size/color if any)
+      const selectedOptions = {
+        size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+        color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined,
+      };
+
+      const wasAdded = toggleWaitlist(product, selectedOptions);
+
+      if (wasAdded) {
+        toast({
+          title: "Added to Wishlist!",
+          description: `${product.name} has been added to your wishlist.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Removed from Wishlist",
+          description: `${product.name} has been removed from your wishlist.`,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       {/* Header */}
-      <div className="bg-gradient-surface py-12">
+      <div className="bg-gradient-surface py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Premium Products</h1>
-          <p className="text-lg text-muted-foreground">
-            Discover our curated collection of high-quality products
-          </p>
+          <div className="flex items-center justify-center mb-6">
+            <ShoppingBag className="w-12 h-12 text-primary mr-4" />
+            <h1 className="text-4xl font-bold text-foreground">All Products</h1>
+          </div>
         </div>
       </div>
 
@@ -96,161 +128,28 @@ const Shop = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-64 flex-shrink-0">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filters
-                </h3>
-                
-                {/* Category Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Category</h4>
-                  <div className="space-y-2">
-                    {categories.map((category) => (
-                      <label key={category} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="category"
-                          checked={selectedCategory === category}
-                          onChange={() => setSelectedCategory(category)}
-                          className="rounded border-border"
-                        />
-                        <span className="text-sm">{category}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Brand Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Brand</h4>
-                  <div className="space-y-2">
-                    {brands.map((brand) => (
-                      <label key={brand} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="brand"
-                          checked={selectedBrand === brand}
-                          onChange={() => setSelectedBrand(brand)}
-                          className="rounded border-border"
-                        />
-                        <span className="text-sm">{brand}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Price Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Price Range</h4>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="priceRange"
-                        checked={selectedPriceRange === null}
-                        onChange={() => setSelectedPriceRange(null)}
-                        className="rounded border-border"
-                      />
-                      <span className="text-sm">All Prices</span>
-                    </label>
-                    {priceRanges.map((range, index) => (
-                      <label key={index} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="priceRange"
-                          checked={selectedPriceRange?.min === range.min && selectedPriceRange?.max === range.max}
-                          onChange={() => setSelectedPriceRange(range)}
-                          className="rounded border-border"
-                        />
-                        <span className="text-sm">{range.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Additional Filters */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Additional Filters</h4>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={showNewOnly}
-                        onChange={(e) => setShowNewOnly(e.target.checked)}
-                        className="rounded border-border"
-                      />
-                      <span className="text-sm">New Products Only</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={showInStockOnly}
-                        onChange={(e) => setShowInStockOnly(e.target.checked)}
-                        className="rounded border-border"
-                      />
-                      <span className="text-sm">In Stock Only</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Rating Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium mb-3">Minimum Rating</h4>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="rating"
-                        checked={minRating === 0}
-                        onChange={() => setMinRating(0)}
-                        className="rounded border-border"
-                      />
-                      <span className="text-sm">All Ratings</span>
-                    </label>
-                    {[4, 3, 2, 1].map((rating) => (
-                      <label key={rating} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="rating"
-                          checked={minRating === rating}
-                          onChange={() => setMinRating(rating)}
-                          className="rounded border-border"
-                        />
-                        <div className="flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-3 h-3 ${
-                                i < rating ? 'text-accent fill-accent' : 'text-muted-foreground'
-                              }`}
-                            />
-                          ))}
-                          <span className="text-sm ml-1">& up</span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ShopFilter
+              products={allProducts}
+              onFilterChange={handleFilterChange}
+              onPageReset={handlePageReset}
+            />
           </div>
 
           {/* Main Content */}
           <div className="flex-1">
             {/* Toolbar */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <p className="text-muted-foreground">
-                Showing {filteredProducts.length} of {products.length} products
+                Showing {currentProducts.length} of {sortedProducts.length} products
+                {sortedProducts.length !== allProducts.length && ` (filtered from ${allProducts.length} total)`}
               </p>
-              
+
               <div className="flex items-center gap-4">
                 {/* Sort */}
-                <select 
-                  value={sortBy} 
+                <select
+                  value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-border rounded-md px-3 py-2 bg-background"
+                  className="border border-border rounded-md px-3 py-2 bg-background text-sm min-w-[180px]"
                 >
                   <option value="featured">Featured</option>
                   <option value="price-low">Price: Low to High</option>
@@ -280,88 +179,146 @@ const Shop = () => {
                 </div>
               </div>
             </div>
-
             {/* Products Grid */}
-            <div className={`grid gap-6 ${
-              viewMode === 'grid'
-                ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-                : 'grid-cols-1'
-            }`}>
-              {filteredProducts.map((product) => (
-                <Link key={product.id} to={`/products/${product.id}`} className="group">
-                  <Card className={`h-full hover:shadow-premium-lg transition-all duration-300 group-hover:scale-105 overflow-hidden ${
-                    viewMode === 'list' ? 'flex flex-row' : ''
-                  }`}>
-                    <div className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-64'}`}>
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      {product.isNew && (
-                        <div className="absolute top-3 left-3 bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs font-medium">
-                          New
-                        </div>
-                      )}
-                      {!product.inStock && (
-                        <div className="absolute top-3 left-3 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-medium">
-                          Out of Stock
-                        </div>
-                      )}
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="absolute top-3 right-3 bg-white/80 hover:bg-white"
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <CardContent className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
-                      <div className="text-xs text-muted-foreground mb-1">{product.brand}</div>
-                      <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors mb-2">
-                        {product.name}
-                      </h3>
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`w-3 h-3 ${
-                                i < Math.floor(product.rating) 
-                                  ? 'text-accent fill-accent' 
-                                  : 'text-muted-foreground'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-xs text-muted-foreground">({product.reviews})</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
-                        {product.originalPrice && (
-                          <>
-                            <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
-                            <span className="text-xs bg-success-light text-success px-2 py-1 rounded">
-                              Save {formatPrice(product.originalPrice - product.price)}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+            {currentProducts.length > 0 ? (
+              <>
+                <div className={`grid gap-6 ${
+                  viewMode === 'grid'
+                    ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+                    : 'grid-cols-1'
+                }`}>
+                  {currentProducts.map((product) => {
+                    // Determine the correct product detail route based on product type
+                    const getProductRoute = (product: Product) => {
+                      if (product.isFlashDeal) {
+                        return `/flash-deals/${product.id}`;
+                      } else if (product.isFeatured) {
+                        return `/featured-products/${product.id}`;
+                      } else {
+                        return `/categories/${product.category.toLowerCase()}/${product.id}`;
+                      }
+                    };
 
-            {/* Load More */}
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg">
-                Load More Products
-              </Button>
-            </div>
+                    return (
+                      <Link key={product.id} to={getProductRoute(product)} className="group">
+                        <Card className={`h-full hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02] overflow-hidden ${
+                          viewMode === 'list' ? 'flex flex-row' : ''
+                        }`}>
+                          <div className={`relative ${viewMode === 'list' ? 'w-48 h-32' : 'h-64'}`}>
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+
+                            {/* Badges */}
+                            <div className="absolute top-3 left-3 flex flex-col gap-1">
+                              {product.isNew && (
+                                <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs font-medium">
+                                  New
+                                </div>
+                              )}
+                              {product.isFlashDeal && (
+                                <div className="bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-medium">
+                                  Flash Deal
+                                </div>
+                              )}
+                              {product.isFeatured && (
+                                <div className="bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+                                  Featured
+                                </div>
+                              )}
+                              {!product.inStock && (
+                                <div className="bg-muted text-muted-foreground px-2 py-1 rounded-md text-xs font-medium">
+                                  Out of Stock
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Wishlist Heart Icon */}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => handleToggleWaitlist(e, product)}
+                              className={`absolute top-3 right-3 transition-all duration-300 hover:scale-110 ${
+                                isInWaitlist(product.id, {
+                                  size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+                                  color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined
+                                })
+                                  ? 'bg-red-500 text-white hover:bg-red-600'
+                                  : 'bg-white/90 hover:bg-white text-gray-600 hover:text-red-500'
+                              }`}
+                            >
+                              <Heart className={`h-4 w-4 ${
+                                isInWaitlist(product.id, {
+                                  size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+                                  color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined
+                                }) ? 'fill-current' : ''
+                              }`} />
+                            </Button>
+                          </div>
+
+                          <CardContent className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
+                            <div className="text-xs text-muted-foreground mb-1">{product.brand}</div>
+                            <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors mb-2 line-clamp-2">
+                              {product.name}
+                            </h3>
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-3 h-3 ${
+                                      i < Math.floor(product.rating)
+                                        ? 'text-accent fill-accent'
+                                        : 'text-muted-foreground'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-xs text-muted-foreground">({product.reviews})</span>
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
+                              {product.originalPrice && (
+                                <>
+                                  <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
+                                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                                    Save {formatPrice(product.originalPrice - product.price)}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                {/* Pagination */}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={sortedProducts.length}
+                />
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-muted-foreground mb-4">
+                  <ShoppingBag className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-lg font-semibold mb-2">No products found</h3>
+                  <p>Try adjusting your filters to see more results.</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

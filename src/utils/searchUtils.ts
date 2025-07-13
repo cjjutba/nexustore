@@ -22,100 +22,105 @@ export interface SearchOptions {
   offset?: number;
 }
 
-// Fuzzy matching utility
-const calculateSimilarity = (str1: string, str2: string): number => {
-  const longer = str1.length > str2.length ? str1 : str2;
-  const shorter = str1.length > str2.length ? str2 : str1;
-  
-  if (longer.length === 0) return 1.0;
-  
-  const distance = levenshteinDistance(longer, shorter);
-  return (longer.length - distance) / longer.length;
-};
+// Removed fuzzy matching to improve search precision
 
-const levenshteinDistance = (str1: string, str2: string): number => {
-  const matrix = [];
-  
-  for (let i = 0; i <= str2.length; i++) {
-    matrix[i] = [i];
-  }
-  
-  for (let j = 0; j <= str1.length; j++) {
-    matrix[0][j] = j;
-  }
-  
-  for (let i = 1; i <= str2.length; i++) {
-    for (let j = 1; j <= str1.length; j++) {
-      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
-        );
-      }
-    }
-  }
-  
-  return matrix[str2.length][str1.length];
-};
-
-// Search scoring weights
+// Search scoring weights (enhanced for better e-commerce search)
 const FIELD_WEIGHTS = {
-  name: 10,
-  brand: 8,
-  category: 6,
-  description: 4,
-  specs: 3,
-  features: 3,
-  colors: 2,
-  sizes: 1
+  name: 15,        // Increased weight for product name
+  brand: 12,       // Increased weight for brand
+  category: 8,     // Increased weight for category
+  description: 5,  // Slightly increased for description
+  specs: 4,        // Increased for specs
+  features: 4,     // Increased for features
+  colors: 3,       // Increased for colors
+  sizes: 2         // Increased for sizes
 };
 
-// Calculate relevance score for a product
+// Calculate relevance score for a product with improved precision
 const calculateRelevanceScore = (product: Product, query: string): { score: number; matchedFields: string[] } => {
   const normalizedQuery = query.toLowerCase().trim();
-  const queryWords = normalizedQuery.split(/\s+/);
+  // Filter out very short words that could cause false positives, but keep important short words
+  const importantShortWords = ['pro', 'max', 'air', 'mini', 'se', 'xl', 'xs', 'xr'];
+  const queryWords = normalizedQuery.split(/\s+/).filter(word =>
+    word.length > 2 || importantShortWords.includes(word.toLowerCase())
+  );
+
+  // If no meaningful words after filtering, return no score
+  if (queryWords.length === 0) {
+    return { score: 0, matchedFields: [] };
+  }
+
   let totalScore = 0;
   const matchedFields: string[] = [];
 
-  // Helper function to check field matches
+  // Helper function to check field matches with stricter criteria
   const checkFieldMatch = (fieldValue: string | string[] | undefined, fieldName: string, weight: number) => {
     if (!fieldValue) return;
-    
+
     const values = Array.isArray(fieldValue) ? fieldValue : [fieldValue];
     let fieldScore = 0;
-    
+
     values.forEach(value => {
       const normalizedValue = value.toLowerCase();
-      
-      // Exact match bonus
+
+      // Exact phrase match (highest priority)
       if (normalizedValue.includes(normalizedQuery)) {
-        fieldScore += weight * 2;
+        fieldScore += weight * 10; // Very high bonus for exact phrase matches
+        if (!matchedFields.includes(fieldName)) matchedFields.push(fieldName);
+        return; // Skip other checks if exact phrase found
+      }
+
+      // Exact full match gets highest bonus
+      if (normalizedValue === normalizedQuery) {
+        fieldScore += weight * 15;
+        if (!matchedFields.includes(fieldName)) matchedFields.push(fieldName);
+        return;
+      }
+
+      // Check if ALL query words are present (strict AND logic)
+      const allWordsPresent = queryWords.every(word => {
+        // Check for exact word boundaries first
+        const wordBoundaryRegex = new RegExp(`\\b${escapeRegex(word)}\\b`, 'i');
+        if (wordBoundaryRegex.test(normalizedValue)) {
+          return true;
+        }
+        // Check if word starts with the query word (for partial matches like "Pro" in "Professional")
+        const startsWithRegex = new RegExp(`\\b${escapeRegex(word)}`, 'i');
+        return startsWithRegex.test(normalizedValue);
+      });
+
+      if (allWordsPresent) {
+        // Calculate score based on how many words match exactly vs partially
+        let exactMatches = 0;
+        let partialMatches = 0;
+
+        queryWords.forEach(word => {
+          const wordBoundaryRegex = new RegExp(`\\b${escapeRegex(word)}\\b`, 'i');
+          if (wordBoundaryRegex.test(normalizedValue)) {
+            exactMatches++;
+          } else {
+            const startsWithRegex = new RegExp(`\\b${escapeRegex(word)}`, 'i');
+            if (startsWithRegex.test(normalizedValue)) {
+              partialMatches++;
+            }
+          }
+        });
+
+        // Score based on match quality
+        fieldScore += (exactMatches * weight * 2) + (partialMatches * weight * 0.5);
         if (!matchedFields.includes(fieldName)) matchedFields.push(fieldName);
       }
-      
-      // Word-by-word matching
-      queryWords.forEach(word => {
-        if (normalizedValue.includes(word)) {
-          fieldScore += weight;
-          if (!matchedFields.includes(fieldName)) matchedFields.push(fieldName);
-        }
-        
-        // Fuzzy matching for typos
-        const similarity = calculateSimilarity(word, normalizedValue);
-        if (similarity > 0.7) {
-          fieldScore += weight * similarity * 0.5;
-          if (!matchedFields.includes(fieldName)) matchedFields.push(fieldName);
-        }
-      });
     });
-    
+
     totalScore += fieldScore;
   };
 
-  // Check all searchable fields
+  // Helper function to escape regex special characters
+  const escapeRegex = (string: string): string => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  };
+
+  // Check all searchable fields with priority order
   checkFieldMatch(product.name, 'name', FIELD_WEIGHTS.name);
   checkFieldMatch(product.brand, 'brand', FIELD_WEIGHTS.brand);
   checkFieldMatch(product.category, 'category', FIELD_WEIGHTS.category);
@@ -125,11 +130,55 @@ const calculateRelevanceScore = (product: Product, query: string): { score: numb
   checkFieldMatch(product.colors, 'colors', FIELD_WEIGHTS.colors);
   checkFieldMatch(product.sizes, 'sizes', FIELD_WEIGHTS.sizes);
 
+  // Special bonus for brand + model combinations (e.g., "iPhone 15 Pro Max")
+  const combinedBrandName = `${product.brand} ${product.name}`.toLowerCase();
+  if (combinedBrandName.includes(normalizedQuery)) {
+    totalScore += FIELD_WEIGHTS.name * 8; // Very high bonus for brand+name match
+    if (!matchedFields.includes('brand+name')) matchedFields.push('brand+name');
+  }
+
+  // Additional bonus for queries where most words appear in the product name
+  if (queryWords.length > 1) {
+    const nameWordsFound = queryWords.filter(word =>
+      product.name.toLowerCase().includes(word)
+    ).length;
+
+    const nameMatchRatio = nameWordsFound / queryWords.length;
+    if (nameMatchRatio >= 0.7) { // 70% or more words found in name
+      totalScore += FIELD_WEIGHTS.name * nameMatchRatio * 3;
+    }
+  }
+
+  // Only apply bonuses if there's already a meaningful match
+  if (totalScore > 10) {
+    // Bonus scoring for product attributes (e-commerce specific)
+    if (product.isNew) {
+      totalScore += 2; // Bonus for new products
+    }
+
+    if (product.inStock) {
+      totalScore += 3; // Bonus for in-stock products
+    }
+
+    if (product.rating >= 4.5) {
+      totalScore += 2; // Bonus for highly rated products
+    }
+
+    // Bonus for flash deals and featured products
+    if (product.isFlashDeal) {
+      totalScore += 1;
+    }
+
+    if (product.isFeatured) {
+      totalScore += 1;
+    }
+  }
+
   return { score: totalScore, matchedFields };
 };
 
 // Apply filters to products
-const applyFilters = (products: Product[], filters: SearchFilters): Product[] => {
+const applyFilters = <T extends Product>(products: T[], filters: SearchFilters): T[] => {
   return products.filter(product => {
     if (filters.category && filters.category !== 'All' && product.category !== filters.category) {
       return false;
@@ -188,7 +237,7 @@ export const searchProducts = (products: Product[], options: SearchOptions): Sea
         matchedFields
       };
     })
-    .filter(result => result.relevanceScore > 0); // Only include products with matches
+    .filter(result => result.relevanceScore > 15); // Much higher threshold for precise results
   
   // Apply filters
   const filtered = applyFilters(scoredProducts, filters);

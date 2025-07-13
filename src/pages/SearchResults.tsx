@@ -19,7 +19,7 @@ const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, isInCart, toggleWaitlist, isInWaitlist } = useCart();
   const { toast } = useToast();
   
   const {
@@ -49,6 +49,7 @@ const SearchResults = () => {
     const urlSort = searchParams.get('sort') || 'relevance';
     const urlPage = parseInt(searchParams.get('page') || '1');
 
+    // Set query first
     if (urlQuery !== query) {
       setQuery(urlQuery);
     }
@@ -66,13 +67,129 @@ const SearchResults = () => {
     if (urlPage !== currentPage) {
       setCurrentPage(urlPage);
     }
+  }, [searchParams]);
 
-    // Perform search if query exists
-    if (urlQuery.trim()) {
-      addToHistory(urlQuery);
+  // Separate effect to perform search when query changes
+  useEffect(() => {
+    if (query.trim()) {
+      addToHistory(query);
       performSearch();
     }
-  }, [searchParams]);
+  }, [query, filters, sortBy, currentPage]);
+
+  // Helper function to determine product detail route based on product type
+  const getProductDetailRoute = (product: any) => {
+    if (product.isFlashDeal) {
+      return `/flash-deals/${product.id}`;
+    } else if (product.isFeatured) {
+      return `/featured-products/${product.id}`;
+    } else {
+      // Default to category route - handle category name mapping
+      const categoryMap: { [key: string]: string } = {
+        'Fashion': 'fashion',
+        'Electronics': 'electronics',
+        'Photography': 'photography',
+        'Computers': 'computers',
+        'Baby & Kids': 'baby-kids',
+        'Tools': 'tools',
+        'Audio': 'audio',
+        'Wearables': 'wearables',
+        'Sports': 'sports',
+        'Accessories': 'accessories'
+      };
+
+      const categorySlug = categoryMap[product.category] || product.category.toLowerCase().replace(/\s+/g, '-');
+      return `/categories/${categorySlug}/${product.id}`;
+    }
+  };
+
+  // Add to cart handler with validation
+  const handleAddToCart = async (product: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!product.inStock) {
+      toast({
+        title: "Out of Stock",
+        description: "This product is currently out of stock.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // For search results, use default options (first available size/color if any)
+      const selectedOptions = {
+        size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+        color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined,
+      };
+
+      addToCart(product, 1, selectedOptions);
+
+      toast({
+        title: "Added to Cart!",
+        description: `${product.name} has been added to your cart.`,
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Toggle waitlist handler
+  const handleToggleWaitlist = async (product: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      // Use default options for waitlist (first available size/color if any)
+      const selectedOptions = {
+        size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+        color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined,
+      };
+
+      const wasAdded = toggleWaitlist(product, selectedOptions);
+
+      if (wasAdded) {
+        toast({
+          title: "Added to Wishlist!",
+          description: `${product.name} has been added to your wishlist.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Removed from Wishlist",
+          description: `${product.name} has been removed from your wishlist.`,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Pagination handler
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Update URL with new page
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('page', page.toString());
+    setSearchParams(newSearchParams);
+
+    // Scroll to top of the main content area
+    const mainContent = document.querySelector('.container');
+    if (mainContent) {
+      mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   // Update URL when search parameters change
   useEffect(() => {
@@ -97,31 +214,9 @@ const SearchResults = () => {
     setSearchParams(params);
   }, [query, filters, sortBy, currentPage, setSearchParams]);
 
-  const handleAddToCart = (product: any) => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      quantity: 1,
-      selectedSize: product.sizes?.[0],
-      selectedColor: product.colors?.[0]
-    });
-
-    toast({
-      title: "Added to Cart",
-      description: `${product.name} has been added to your cart.`,
-    });
-  };
-
   const handleSortChange = (value: string) => {
     setSortBy(value);
     setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const totalPages = Math.ceil(totalResults / itemsPerPage);
@@ -282,21 +377,28 @@ const SearchResults = () => {
                         "relative",
                         viewMode === 'list' ? "w-48 h-32 flex-shrink-0" : "h-64"
                       )}>
-                        <Link to={`/product/${product.id}`}>
-                          <img 
-                            src={product.image} 
+                        <Link to={getProductDetailRoute(product)}>
+                          <img
+                            src={product.image}
                             alt={product.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </Link>
-                        
+
                         {/* Wishlist Heart */}
                         <Button
                           variant="ghost"
                           size="sm"
+                          onClick={(e) => handleToggleWaitlist(product, e)}
                           className="absolute top-2 right-2 bg-background/80 hover:bg-background text-muted-foreground hover:text-red-500 rounded-full p-2"
                         >
-                          <Heart className="w-4 h-4" />
+                          <Heart className={cn(
+                            "w-4 h-4",
+                            isInWaitlist(product.id, {
+                              size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+                              color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined,
+                            }) ? "fill-current text-red-500" : ""
+                          )} />
                         </Button>
 
                         {/* Badges */}
@@ -319,7 +421,7 @@ const SearchResults = () => {
                         viewMode === 'list' && "flex-1 flex flex-col justify-between"
                       )}>
                         <div className="space-y-2 mb-4">
-                          <Link to={`/product/${product.id}`}>
+                          <Link to={getProductDetailRoute(product)}>
                             <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                               {product.name}
                             </h3>
@@ -362,12 +464,22 @@ const SearchResults = () => {
                           </div>
 
                           <Button
-                            onClick={() => handleAddToCart(product)}
+                            onClick={(e) => handleAddToCart(product, e)}
                             className="w-full"
                             disabled={!product.inStock}
                           >
                             {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                           </Button>
+
+                          {/* Cart Status */}
+                          {product.inStock && isInCart(product.id, {
+                            size: product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined,
+                            color: product.colors && product.colors.length > 0 ? product.colors[0] : undefined
+                          }) && (
+                            <p className="text-sm text-green-600 text-center">
+                              ✓ This item is already in your cart
+                            </p>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -380,6 +492,8 @@ const SearchResults = () => {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
+                    itemsPerPage={itemsPerPage}
+                    totalItems={totalResults}
                   />
                 )}
               </>

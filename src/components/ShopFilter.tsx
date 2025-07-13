@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Filter, X, ChevronDown, ChevronUp, Search } from "lucide-react";
-import { Product } from "@/data/products";
+import { Filter, X, ChevronDown, ChevronUp, Search, Star } from "lucide-react";
+import { Product, getAllCategories, getAllBrands, getPriceRanges } from "@/data/products";
 
 interface FilterState {
   categories: string[];
@@ -11,187 +11,63 @@ interface FilterState {
   sizes: string[];
   colors: string[];
   priceRanges: string[];
-  ageRanges: string[];
   searchKeyword: string;
+  showNewOnly: boolean;
+  showInStockOnly: boolean;
+  minRating: number;
 }
 
-interface CategoryFilterProps {
+interface ShopFilterProps {
   products: Product[];
   onFilterChange: (filteredProducts: Product[]) => void;
   onPageReset?: () => void;
-  categoryName: string;
 }
 
-const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }: CategoryFilterProps) => {
+const ShopFilter = ({ products, onFilterChange, onPageReset }: ShopFilterProps) => {
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
     brands: [],
     sizes: [],
     colors: [],
     priceRanges: [],
-    ageRanges: [],
-    searchKeyword: ""
+    searchKeyword: "",
+    showNewOnly: false,
+    showInStockOnly: false,
+    minRating: 0
   });
 
   const [expandedSections, setExpandedSections] = useState({
-    subcategory: true,
+    category: true,
     brand: true,
     size: true,
     color: true,
     price: true,
-    age: false
+    rating: true,
+    additional: true
   });
 
-  // Extract unique filter options from products
+  // Get filter options from all products
   const getFilterOptions = () => {
-    const brands = new Set<string>();
+    const categories = getAllCategories().filter(cat => cat !== 'All');
+    const brands = getAllBrands().filter(brand => brand !== 'All');
     const sizes = new Set<string>();
     const colors = new Set<string>();
-    const ageRanges = new Set<string>();
 
     products.forEach(product => {
-      if (product.brand) brands.add(product.brand);
       if (product.sizes) product.sizes.forEach(size => sizes.add(size));
       if (product.colors) product.colors.forEach(color => colors.add(color));
-      if (product.ageRange) ageRanges.add(product.ageRange);
     });
 
-    // Define subcategories based on category
-    const subcategoryMap: { [key: string]: string[] } = {
-      'Fashion': ['Clothing', 'Shoes', 'Accessories', 'Bags', 'Jackets'],
-      'Electronics': ['Smartphones', 'Laptops', 'Tablets', 'Gaming', 'Accessories'],
-      'Photography': ['Cameras', 'Lenses', 'Tripods', 'Lighting', 'Accessories'],
-      'Computers': ['Laptops', 'Desktops', 'Keyboards', 'Monitors', 'Storage'],
-      'Baby & Kids': ['Toys', 'Clothing', 'Safety', 'Feeding', 'Strollers'],
-      'Tools': ['Power Tools', 'Hand Tools', 'Measuring', 'Storage', 'Safety'],
-      'Audio': ['Headphones', 'Speakers', 'Microphones', 'Amplifiers', 'Accessories'],
-      'Wearables': ['Smartwatches', 'Fitness Trackers', 'VR Headsets', 'Smart Glasses'],
-      'Sports': ['Fitness', 'Outdoor', 'Team Sports', 'Water Sports', 'Equipment'],
-      'Accessories': ['Bags', 'Jewelry', 'Sunglasses', 'Wallets', 'Phone Cases']
-    };
-
     return {
-      subcategories: subcategoryMap[categoryName] || [],
-      brands: Array.from(brands).sort(),
+      categories,
+      brands,
       sizes: Array.from(sizes).sort(),
-      colors: Array.from(colors).sort(),
-      ageRanges: Array.from(ageRanges).sort()
+      colors: Array.from(colors).sort()
     };
   };
 
-  const filterOptions = useMemo(() => getFilterOptions(), [products, categoryName]);
-
-  const priceRanges = [
-    { label: "Under ₱5,000", min: 0, max: 5000 },
-    { label: "₱5,000 - ₱15,000", min: 5000, max: 15000 },
-    { label: "₱15,000 - ₱50,000", min: 15000, max: 50000 },
-    { label: "Over ₱50,000", min: 50000, max: Infinity }
-  ];
-
-  // Helper function to determine product subcategory
-  const getProductSubcategory = (product: Product): string => {
-    const name = product.name.toLowerCase();
-
-    // Fashion subcategory mapping
-    if (categoryName === 'Fashion') {
-      if (name.includes('t-shirt') || name.includes('shirt') || name.includes('polo') || name.includes('dress') || name.includes('suit')) return 'Clothing';
-      if (name.includes('shoe') || name.includes('sneaker') || name.includes('boot')) return 'Shoes';
-      if (name.includes('jacket') || name.includes('coat')) return 'Jackets';
-      if (name.includes('bag') || name.includes('backpack')) return 'Bags';
-      if (name.includes('jean') || name.includes('pant')) return 'Clothing';
-      return 'Accessories';
-    }
-
-    // Electronics subcategory mapping
-    if (categoryName === 'Electronics') {
-      if (name.includes('iphone') || name.includes('galaxy') || name.includes('smartphone') || name.includes('phone')) return 'Smartphones';
-      if (name.includes('laptop') || name.includes('macbook') || name.includes('notebook')) return 'Laptops';
-      if (name.includes('tablet') || name.includes('ipad')) return 'Tablets';
-      if (name.includes('gaming') || name.includes('mouse') || name.includes('keyboard') || name.includes('controller')) return 'Gaming';
-      if (name.includes('speaker') || name.includes('headphone') || name.includes('earbuds') || name.includes('airpods')) return 'Accessories';
-      if (name.includes('tv') || name.includes('monitor') || name.includes('display')) return 'Accessories';
-      return 'Accessories';
-    }
-
-    // Photography subcategory mapping
-    if (categoryName === 'Photography') {
-      if (name.includes('camera') || name.includes('dslr') || name.includes('mirrorless')) return 'Cameras';
-      if (name.includes('lens') || name.includes('50mm') || name.includes('85mm') || name.includes('24-70')) return 'Lenses';
-      if (name.includes('tripod') || name.includes('stand')) return 'Tripods';
-      if (name.includes('light') || name.includes('flash') || name.includes('led')) return 'Lighting';
-      return 'Accessories';
-    }
-
-    // Computers subcategory mapping
-    if (categoryName === 'Computers') {
-      if (name.includes('laptop') || name.includes('macbook') || name.includes('notebook')) return 'Laptops';
-      if (name.includes('desktop') || name.includes('pc') || name.includes('tower')) return 'Desktops';
-      if (name.includes('keyboard') || name.includes('mechanical')) return 'Keyboards';
-      if (name.includes('monitor') || name.includes('display') || name.includes('screen')) return 'Monitors';
-      if (name.includes('ssd') || name.includes('hdd') || name.includes('drive') || name.includes('storage')) return 'Storage';
-      return 'Accessories';
-    }
-
-    // Baby & Kids subcategory mapping
-    if (categoryName === 'Baby & Kids') {
-      if (name.includes('toy') || name.includes('doll') || name.includes('puzzle') || name.includes('game')) return 'Toys';
-      if (name.includes('shirt') || name.includes('dress') || name.includes('pant') || name.includes('clothing')) return 'Clothing';
-      if (name.includes('safety') || name.includes('gate') || name.includes('lock')) return 'Safety';
-      if (name.includes('bottle') || name.includes('feeding') || name.includes('high chair')) return 'Feeding';
-      if (name.includes('stroller') || name.includes('car seat') || name.includes('carrier')) return 'Strollers';
-      return 'Toys';
-    }
-
-    // Tools subcategory mapping
-    if (categoryName === 'Tools') {
-      if (name.includes('drill') || name.includes('saw') || name.includes('grinder') || name.includes('power')) return 'Power Tools';
-      if (name.includes('wrench') || name.includes('screwdriver') || name.includes('hammer') || name.includes('hand')) return 'Hand Tools';
-      if (name.includes('tape') || name.includes('ruler') || name.includes('level') || name.includes('measuring')) return 'Measuring';
-      if (name.includes('box') || name.includes('chest') || name.includes('cabinet') || name.includes('storage')) return 'Storage';
-      if (name.includes('safety') || name.includes('helmet') || name.includes('glove') || name.includes('goggle')) return 'Safety';
-      return 'Hand Tools';
-    }
-
-    // Audio subcategory mapping
-    if (categoryName === 'Audio') {
-      if (name.includes('headphone') || name.includes('earphone') || name.includes('earbuds') || name.includes('airpods')) return 'Headphones';
-      if (name.includes('speaker') || name.includes('bluetooth') || name.includes('wireless')) return 'Speakers';
-      if (name.includes('microphone') || name.includes('mic') || name.includes('recording')) return 'Microphones';
-      if (name.includes('amplifier') || name.includes('amp') || name.includes('receiver')) return 'Amplifiers';
-      return 'Accessories';
-    }
-
-    // Wearables subcategory mapping
-    if (categoryName === 'Wearables') {
-      if (name.includes('watch') || name.includes('apple watch') || name.includes('smartwatch')) return 'Smartwatches';
-      if (name.includes('fitness') || name.includes('tracker') || name.includes('band')) return 'Fitness Trackers';
-      if (name.includes('vr') || name.includes('virtual') || name.includes('headset')) return 'VR Headsets';
-      if (name.includes('glasses') || name.includes('smart glasses') || name.includes('ar')) return 'Smart Glasses';
-      return 'Smartwatches';
-    }
-
-    // Sports subcategory mapping
-    if (categoryName === 'Sports') {
-      if (name.includes('fitness') || name.includes('gym') || name.includes('weight') || name.includes('dumbbell')) return 'Fitness';
-      if (name.includes('outdoor') || name.includes('camping') || name.includes('hiking') || name.includes('tent')) return 'Outdoor';
-      if (name.includes('basketball') || name.includes('football') || name.includes('soccer') || name.includes('team')) return 'Team Sports';
-      if (name.includes('swimming') || name.includes('water') || name.includes('surf') || name.includes('diving')) return 'Water Sports';
-      return 'Equipment';
-    }
-
-    // Accessories subcategory mapping
-    if (categoryName === 'Accessories') {
-      if (name.includes('bag') || name.includes('backpack') || name.includes('purse') || name.includes('wallet')) return 'Bags';
-      if (name.includes('jewelry') || name.includes('necklace') || name.includes('ring') || name.includes('earring')) return 'Jewelry';
-      if (name.includes('sunglasses') || name.includes('glasses') || name.includes('eyewear')) return 'Sunglasses';
-      if (name.includes('wallet') || name.includes('purse') || name.includes('money')) return 'Wallets';
-      if (name.includes('case') || name.includes('cover') || name.includes('phone case')) return 'Phone Cases';
-      return 'Bags';
-    }
-
-    // Add other category mappings as needed
-    return 'Other';
-  };
+  const filterOptions = useMemo(() => getFilterOptions(), [products]);
+  const priceRanges = getPriceRanges();
 
   // Apply filters to products
   const applyFilters = useCallback(() => {
@@ -209,12 +85,11 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
       );
     }
 
-    // Filter by subcategories
+    // Filter by categories
     if (filters.categories.length > 0) {
-      filteredProducts = filteredProducts.filter(product => {
-        const subcategory = getProductSubcategory(product);
-        return filters.categories.includes(subcategory);
-      });
+      filteredProducts = filteredProducts.filter(product =>
+        filters.categories.includes(product.category)
+      );
     }
 
     // Filter by brands
@@ -249,15 +124,23 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
       });
     }
 
-    // Filter by age ranges (for Baby & Kids)
-    if (filters.ageRanges.length > 0) {
-      filteredProducts = filteredProducts.filter(product =>
-        product.ageRange && filters.ageRanges.includes(product.ageRange)
-      );
+    // Filter by new products only
+    if (filters.showNewOnly) {
+      filteredProducts = filteredProducts.filter(product => product.isNew);
+    }
+
+    // Filter by in stock only
+    if (filters.showInStockOnly) {
+      filteredProducts = filteredProducts.filter(product => product.inStock);
+    }
+
+    // Filter by minimum rating
+    if (filters.minRating > 0) {
+      filteredProducts = filteredProducts.filter(product => product.rating >= filters.minRating);
     }
 
     return filteredProducts;
-  }, [filters, products, categoryName]);
+  }, [filters, products, priceRanges]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -268,7 +151,7 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
     return () => clearTimeout(timeoutId);
   }, [applyFilters]); // Removed onFilterChange from dependencies to prevent infinite loop
 
-  const handleFilterChange = (filterType: keyof FilterState, value: string) => {
+  const handleFilterChange = (filterType: keyof FilterState, value: string | boolean | number) => {
     // Reset page when filters change
     if (onPageReset) {
       onPageReset();
@@ -277,16 +160,26 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
     if (filterType === 'searchKeyword') {
       setFilters(prev => ({
         ...prev,
-        searchKeyword: value
+        searchKeyword: value as string
+      }));
+    } else if (filterType === 'showNewOnly' || filterType === 'showInStockOnly') {
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: value as boolean
+      }));
+    } else if (filterType === 'minRating') {
+      setFilters(prev => ({
+        ...prev,
+        minRating: value as number
       }));
     } else {
       setFilters(prev => {
         const currentArray = prev[filterType] as string[];
         return {
           ...prev,
-          [filterType]: currentArray.includes(value)
+          [filterType]: currentArray.includes(value as string)
             ? currentArray.filter((item: string) => item !== value)
-            : [...currentArray, value]
+            : [...currentArray, value as string]
         };
       });
     }
@@ -304,8 +197,10 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
       sizes: [],
       colors: [],
       priceRanges: [],
-      ageRanges: [],
-      searchKeyword: ""
+      searchKeyword: "",
+      showNewOnly: false,
+      showInStockOnly: false,
+      minRating: 0
     });
   };
 
@@ -313,7 +208,11 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
     let count = 0;
     Object.entries(filters).forEach(([key, value]) => {
       if (key === 'searchKeyword') {
-        if (value && value.trim() !== '') count += 1;
+        if (value && (value as string).trim() !== '') count += 1;
+      } else if (key === 'showNewOnly' || key === 'showInStockOnly') {
+        if (value) count += 1;
+      } else if (key === 'minRating') {
+        if (value > 0) count += 1;
       } else {
         count += (value as string[]).length;
       }
@@ -328,13 +227,23 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
     }));
   };
 
-  const removeFilter = (filterType: keyof FilterState, value: string) => {
+  const removeFilter = (filterType: keyof FilterState, value?: string) => {
     if (filterType === 'searchKeyword') {
       setFilters(prev => ({
         ...prev,
         searchKeyword: ""
       }));
-    } else {
+    } else if (filterType === 'showNewOnly' || filterType === 'showInStockOnly') {
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: false
+      }));
+    } else if (filterType === 'minRating') {
+      setFilters(prev => ({
+        ...prev,
+        minRating: 0
+      }));
+    } else if (value) {
       setFilters(prev => ({
         ...prev,
         [filterType]: (prev[filterType] as string[]).filter((item: string) => item !== value)
@@ -394,7 +303,7 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
                 <div className="flex items-center gap-1 bg-accent/10 text-accent px-2 py-1 rounded-md text-sm">
                   <span>Search: "{filters.searchKeyword}"</span>
                   <button
-                    onClick={() => removeFilter('searchKeyword', '')}
+                    onClick={() => removeFilter('searchKeyword')}
                     className="hover:bg-accent/20 rounded-full p-0.5"
                   >
                     <X className="w-3 h-3" />
@@ -402,9 +311,47 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
                 </div>
               )}
 
-              {/* Other filters */}
+              {/* Boolean filters */}
+              {filters.showNewOnly && (
+                <div className="flex items-center gap-1 bg-accent/10 text-accent px-2 py-1 rounded-md text-sm">
+                  <span>New Only</span>
+                  <button
+                    onClick={() => removeFilter('showNewOnly')}
+                    className="hover:bg-accent/20 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+
+              {filters.showInStockOnly && (
+                <div className="flex items-center gap-1 bg-accent/10 text-accent px-2 py-1 rounded-md text-sm">
+                  <span>In Stock Only</span>
+                  <button
+                    onClick={() => removeFilter('showInStockOnly')}
+                    className="hover:bg-accent/20 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+
+              {/* Rating filter */}
+              {filters.minRating > 0 && (
+                <div className="flex items-center gap-1 bg-accent/10 text-accent px-2 py-1 rounded-md text-sm">
+                  <span>{filters.minRating}+ Stars</span>
+                  <button
+                    onClick={() => removeFilter('minRating')}
+                    className="hover:bg-accent/20 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+
+              {/* Array filters */}
               {Object.entries(filters).map(([filterType, values]) => {
-                if (filterType === 'searchKeyword') return null;
+                if (!Array.isArray(values)) return null;
                 return (values as string[]).map((value: string) => (
                   <div
                     key={`${filterType}-${value}`}
@@ -424,31 +371,31 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
           </div>
         )}
 
-        {/* Subcategory Filter */}
-        {filterOptions.subcategories.length > 0 && (
+        {/* Category Filter */}
+        {filterOptions.categories.length > 0 && (
           <div className="mb-6">
             <button
-              onClick={() => toggleSection('subcategory')}
+              onClick={() => toggleSection('category')}
               className="flex items-center justify-between w-full mb-3"
             >
-              <h4 className="font-medium">Subcategory</h4>
-              {expandedSections.subcategory ? (
+              <h4 className="font-medium">Category</h4>
+              {expandedSections.category ? (
                 <ChevronUp className="w-4 h-4" />
               ) : (
                 <ChevronDown className="w-4 h-4" />
               )}
             </button>
-            {expandedSections.subcategory && (
-              <div className="space-y-2">
-                {filterOptions.subcategories.map((subcategory) => (
-                  <label key={subcategory} className="flex items-center gap-2 cursor-pointer">
+            {expandedSections.category && (
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {filterOptions.categories.map((category) => (
+                  <label key={category} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       className="rounded border-border"
-                      checked={filters.categories.includes(subcategory)}
-                      onChange={() => handleFilterChange('categories', subcategory)}
+                      checked={filters.categories.includes(category)}
+                      onChange={() => handleFilterChange('categories', category)}
                     />
-                    <span className="text-sm">{subcategory}</span>
+                    <span className="text-sm">{category}</span>
                   </label>
                 ))}
               </div>
@@ -584,40 +531,96 @@ const CategoryFilter = ({ products, onFilterChange, onPageReset, categoryName }:
           )}
         </div>
 
-        {/* Age Range Filter (for Baby & Kids) */}
-        {filterOptions.ageRanges.length > 0 && (
-          <div className="mb-6">
-            <button
-              onClick={() => toggleSection('age')}
-              className="flex items-center justify-between w-full mb-3"
-            >
-              <h4 className="font-medium">Age Range</h4>
-              {expandedSections.age ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </button>
-            {expandedSections.age && (
-              <div className="space-y-2">
-                {filterOptions.ageRanges.map((ageRange) => (
-                  <label key={ageRange} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="rounded border-border"
-                      checked={filters.ageRanges.includes(ageRange)}
-                      onChange={() => handleFilterChange('ageRanges', ageRange)}
-                    />
-                    <span className="text-sm">{ageRange}</span>
-                  </label>
-                ))}
-              </div>
+        {/* Rating Filter */}
+        <div className="mb-6">
+          <button
+            onClick={() => toggleSection('rating')}
+            className="flex items-center justify-between w-full mb-3"
+          >
+            <h4 className="font-medium">Minimum Rating</h4>
+            {expandedSections.rating ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
             )}
-          </div>
-        )}
+          </button>
+          {expandedSections.rating && (
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="rating"
+                  checked={filters.minRating === 0}
+                  onChange={() => handleFilterChange('minRating', 0)}
+                  className="rounded border-border"
+                />
+                <span className="text-sm">All Ratings</span>
+              </label>
+              {[4, 3, 2, 1].map((rating) => (
+                <label key={rating} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="rating"
+                    checked={filters.minRating === rating}
+                    onChange={() => handleFilterChange('minRating', rating)}
+                    className="rounded border-border"
+                  />
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3 h-3 ${
+                          i < rating ? 'text-accent fill-accent' : 'text-muted-foreground'
+                        }`}
+                      />
+                    ))}
+                    <span className="text-sm ml-1">& up</span>
+                  </div>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Additional Filters */}
+        <div className="mb-6">
+          <button
+            onClick={() => toggleSection('additional')}
+            className="flex items-center justify-between w-full mb-3"
+          >
+            <h4 className="font-medium">Additional Filters</h4>
+            {expandedSections.additional ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </button>
+          {expandedSections.additional && (
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={filters.showNewOnly}
+                  onChange={(e) => handleFilterChange('showNewOnly', e.target.checked)}
+                  className="rounded border-border"
+                />
+                <span className="text-sm">New Products Only</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={filters.showInStockOnly}
+                  onChange={(e) => handleFilterChange('showInStockOnly', e.target.checked)}
+                  className="rounded border-border"
+                />
+                <span className="text-sm">In Stock Only</span>
+              </label>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
 };
 
-export default CategoryFilter;
+export default ShopFilter;

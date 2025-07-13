@@ -124,11 +124,17 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
 
   // Perform search
   const performSearch = useCallback((options: Partial<SearchOptions> = {}) => {
-    if (!query.trim()) return;
-    
+    const searchQuery = options.query || query;
+    if (!searchQuery.trim()) return;
+
     setIsLoading(true);
-    setCurrentPage(1); // Reset to first page on new search
-    debouncedSearch(query, options);
+    if (options.query && options.query !== query) {
+      setQueryState(options.query);
+    }
+    if (!options.query) {
+      setCurrentPage(1); // Reset to first page on new search only if not from URL
+    }
+    debouncedSearch(searchQuery, options);
   }, [query, debouncedSearch]);
 
   // Clear search

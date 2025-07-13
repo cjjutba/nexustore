@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Pagination from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Star, Filter, Grid, List, Clock } from "lucide-react";
@@ -14,6 +15,8 @@ import { useFlashDealTimer } from "@/utils/flashDealTimer";
 const FlashDeals = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('discount');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 16;
 
   const { toggleWaitlist, isInWaitlist } = useCart();
   const { toast } = useToast();
@@ -45,6 +48,18 @@ const FlashDeals = () => {
     }
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(sortedDeals.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentDeals = sortedDeals.slice(startIndex, endIndex);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when changing pages
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -70,6 +85,13 @@ const FlashDeals = () => {
 
       {/* Filters and Controls */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Toolbar */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <p className="text-muted-foreground">
+            Showing {currentDeals.length} of {sortedDeals.length} flash deals
+          </p>
+        </div>
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm">
@@ -113,7 +135,7 @@ const FlashDeals = () => {
             ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
             : 'grid-cols-1'
         }`}>
-          {sortedDeals.map((product) => (
+          {currentDeals.map((product) => (
             <div key={product.id} className="group relative">
               <Link to={`/flash-deals/${product.id}`}>
                 <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border hover:border-accent/50">
@@ -216,6 +238,17 @@ const FlashDeals = () => {
             </Button>
           </div>
           ))}
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-12 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={sortedDeals.length}
+          />
         </div>
       </div>
 

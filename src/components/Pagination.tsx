@@ -9,13 +9,15 @@ interface PaginationProps {
   totalItems: number;
 }
 
-const Pagination = ({ 
-  currentPage, 
-  totalPages, 
-  onPageChange, 
-  itemsPerPage, 
-  totalItems 
+const Pagination = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+  itemsPerPage,
+  totalItems
 }: PaginationProps) => {
+  // Removed verbose render logs
+
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 

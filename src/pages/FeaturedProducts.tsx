@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Pagination from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Star, Filter, Grid, List, Award } from "lucide-react";
@@ -13,6 +14,8 @@ import { useScrollToTop } from "@/utils/scrollToTop";
 const FeaturedProducts = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('rating');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 16;
 
   const { toggleWaitlist, isInWaitlist } = useCart();
   const { toast } = useToast();
@@ -77,6 +80,18 @@ const FeaturedProducts = () => {
     }
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+    // Scroll to top when changing pages
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -105,6 +120,13 @@ const FeaturedProducts = () => {
 
       {/* Filters and Controls */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Toolbar */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <p className="text-muted-foreground">
+            Showing {currentProducts.length} of {sortedProducts.length} featured products
+          </p>
+        </div>
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm">
@@ -151,7 +173,7 @@ const FeaturedProducts = () => {
             ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
             : 'grid-cols-1'
         }`}>
-          {sortedProducts.map((product) => (
+          {currentProducts.map((product) => (
             <Link key={product.id} to={`/featured-products/${product.id}`} className="group">
               <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border hover:border-accent/50">
                 <div className="relative">
@@ -269,6 +291,17 @@ const FeaturedProducts = () => {
               </Card>
             </Link>
           ))}
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-12 flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={sortedProducts.length}
+          />
         </div>
 
         {/* Empty State */}

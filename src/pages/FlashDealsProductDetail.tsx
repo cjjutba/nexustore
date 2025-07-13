@@ -373,7 +373,7 @@ const FlashDealsProductDetail = () => {
             </div>
 
             {/* Size Selection */}
-            {product.sizes.length > 0 && (
+            {product.sizes && product.sizes.length > 0 && (
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Size</label>
                 <div className="flex gap-2">
@@ -395,7 +395,7 @@ const FlashDealsProductDetail = () => {
             )}
 
             {/* Color Selection */}
-            {product.colors.length > 0 && (
+            {product.colors && product.colors.length > 0 && (
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Color</label>
                 <div className="flex gap-2">
@@ -433,8 +433,8 @@ const FlashDealsProductDetail = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                  disabled={quantity >= product.stock}
+                  onClick={() => setQuantity(Math.min(product.flashDealData?.stock || 99, quantity + 1))}
+                  disabled={quantity >= (product.flashDealData?.stock || 99)}
                   className="h-10 w-10"
                 >
                   <Plus className="h-4 w-4" />
@@ -448,10 +448,10 @@ const FlashDealsProductDetail = () => {
                 <Button
                   size="lg"
                   onClick={handleAddToCart}
-                  disabled={isAddingToCart || product.stock === 0}
+                  disabled={isAddingToCart || !product.inStock || (product.flashDealData?.stock || 0) === 0}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  {isAddingToCart ? "Adding..." : product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                  {isAddingToCart ? "Adding..." : (!product.inStock || (product.flashDealData?.stock || 0) === 0) ? "Out of Stock" : "Add to Cart"}
                 </Button>
 
                 <Button
@@ -479,7 +479,7 @@ const FlashDealsProductDetail = () => {
               </div>
 
               {/* Cart/Waitlist Status */}
-              {product.stock > 0 && isInCart(product.id, { size: selectedSize, color: selectedColor }) && (
+              {product.inStock && (product.flashDealData?.stock || 0) > 0 && isInCart(product.id, { size: selectedSize, color: selectedColor }) && (
                 <p className="text-sm text-green-600 text-center">
                   ✓ This item is already in your cart
                 </p>

@@ -140,30 +140,31 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       <button
         key={`${suggestion.type}-${suggestion.value}`}
         className={cn(
-          "w-full px-4 py-3 text-left hover:bg-muted/50 transition-colors duration-200 flex items-center gap-3",
-          isSelected && "bg-muted/50"
+          "w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 bg-white",
+          isSelected && "bg-gray-50"
         )}
+        style={{ backgroundColor: isSelected ? '#f9fafb' : '#ffffff' }}
         onClick={() => handleSuggestionClick(suggestion)}
       >
         {suggestion.type === 'history' && (
-          <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <Clock className="w-4 h-4 text-gray-500 flex-shrink-0" />
         )}
         {suggestion.type === 'popular' && (
-          <TrendingUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <TrendingUp className="w-4 h-4 text-gray-500 flex-shrink-0" />
         )}
         {suggestion.type === 'suggestion' && (
-          <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <Search className="w-4 h-4 text-gray-500 flex-shrink-0" />
         )}
         {suggestion.type === 'category' && (
-          <div className="w-4 h-4 bg-primary/20 rounded flex-shrink-0" />
+          <div className="w-4 h-4 bg-blue-100 rounded flex-shrink-0" />
         )}
-        
+
         <div className="flex-1 min-w-0">
-          <div className="text-sm text-foreground truncate">
+          <div className="text-sm text-gray-900 truncate">
             {suggestion.value}
           </div>
           {suggestion.type === 'category' && (
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-gray-600">
               {suggestion.count} products
             </div>
           )}
@@ -173,7 +174,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative z-[100]", className)}>
       <form onSubmit={handleSubmit} className="relative group">
         <label htmlFor={isMobile ? "mobile-search" : "search"} className="sr-only">
           Search products
@@ -229,56 +230,68 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         </Button>
       </form>
 
+      {/* Backdrop overlay */}
+      {isOpen && allSuggestions.length > 0 && (
+        <div
+          className="fixed inset-0 z-[9998]"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
       {/* Suggestions dropdown */}
       {isOpen && allSuggestions.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-1 bg-background/95 backdrop-blur-md border border-border/30 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto"
-          style={{ backgroundColor: 'hsl(var(--background))' }}
+          className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-2xl z-[101] max-h-96 overflow-y-auto"
+          style={{
+            backgroundColor: '#ffffff',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }}
         >
           {/* Search history header */}
           {query.trim() === '' && searchHistory.length > 0 && (
-            <div className="px-4 py-2 border-b border-border/10 flex items-center justify-between">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between bg-white" style={{ backgroundColor: '#ffffff' }}>
+              <span className="text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Recent Searches
               </span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearHistory}
-                className="text-xs text-muted-foreground hover:text-foreground"
+                className="text-xs text-gray-600 hover:text-gray-900 bg-white"
               >
                 Clear All
               </Button>
             </div>
           )}
-          
+
           {/* Popular searches header */}
           {query.trim() === '' && popularSearches.length > 0 && searchHistory.length === 0 && (
-            <div className="px-4 py-2 border-b border-border/10">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <div className="px-4 py-2 border-b border-gray-200 bg-white" style={{ backgroundColor: '#ffffff' }}>
+              <span className="text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Popular Searches
               </span>
             </div>
           )}
           
           {/* Suggestions list */}
-          <div className="py-1">
-            {allSuggestions.map((suggestion, index) => 
+          <div className="py-1 bg-white" style={{ backgroundColor: '#ffffff' }}>
+            {allSuggestions.map((suggestion, index) =>
               renderSuggestionItem(suggestion, index)
             )}
           </div>
-          
+
           {/* See all results */}
           {query.trim() && (
-            <div className="border-t border-border/10 p-2">
+            <div className="border-t border-gray-200 p-2 bg-white" style={{ backgroundColor: '#ffffff' }}>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-primary hover:text-primary/80"
+                className="w-full justify-start text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-200 font-medium bg-white"
                 onClick={() => handleSearch()}
+                style={{ backgroundColor: '#ffffff' }}
               >
                 <Search className="w-4 h-4 mr-2" />
-                See all results for "{query}"
+                See all results for "<span className="font-semibold">{query}</span>"
               </Button>
             </div>
           )}

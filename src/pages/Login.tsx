@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,15 +10,60 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { state, login } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      // Check for returnTo query parameter first, then location state, then default to home
+      const searchParams = new URLSearchParams(location.search);
+      const returnTo = searchParams.get('returnTo');
+      const from = returnTo || (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [state.isAuthenticated, navigate, location]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempt:", formData);
+
+    if (!formData.email || !formData.password) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const result = await login(formData);
+
+    if (result.success) {
+      toast({
+        title: "Welcome back!",
+        description: "You have been successfully logged in.",
+      });
+
+      // Redirect to intended page or home
+      const searchParams = new URLSearchParams(location.search);
+      const returnTo = searchParams.get('returnTo');
+      const from = returnTo || (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    } else {
+      toast({
+        title: "Login Failed",
+        description: result.error || "Invalid email or password",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +147,8 @@ const Login = () => {
                   <input
                     id="remember"
                     type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
                     className="w-4 h-4 text-primary border-border rounded focus:ring-ring"
                   />
                   <Label htmlFor="remember" className="text-sm text-muted-foreground">
@@ -113,9 +162,10 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full cta-gradient hover:opacity-90 text-primary-foreground font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                disabled={state.isLoading}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In
+                {state.isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
 

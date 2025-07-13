@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, Menu, X, LogIn, UserPlus, Clock } from "lucide-react";
+import { ShoppingCart, Menu, X, LogIn, UserPlus, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { SearchBar } from "@/components/SearchBar";
+import ProfileDropdown from "@/components/ProfileDropdown";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { getCartItemsCount, state } = useCart();
+  const { state: authState } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -64,15 +67,15 @@ export const Navigation = () => {
 
             {/* Right Actions */}
             <div className="flex items-center space-x-2 lg:space-x-3">
-              {/* Waitlist */}
+              {/* Wishlist */}
               <Link to="/waitlist" className="group">
                 <Button
                   variant="ghost"
                   size="icon"
                   className="relative text-primary hover:bg-muted hover:text-foreground rounded-lg p-2.5 transition-all duration-300 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  aria-label="Waitlist"
+                  aria-label="Wishlist"
                 >
-                  <Clock className="w-5 h-5 group-hover:scale-105 transition-transform duration-300" />
+                  <Heart className="w-5 h-5 group-hover:scale-105 transition-transform duration-300" />
                   {state.waitlist.length > 0 && (
                     <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-semibold shadow-sm animate-pulse">
                       {state.waitlist.length}
@@ -98,26 +101,35 @@ export const Navigation = () => {
                 </Button>
               </Link>
 
-              {/* Login Button */}
-              <Link to="/login" className="hidden md:block">
-                <Button
-                  variant="ghost"
-                  className="text-primary hover:bg-muted hover:text-foreground rounded-lg px-3 py-1.5 transition-all duration-300 border border-border/30 hover:border-border/60 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Login
-                </Button>
-              </Link>
+              {/* Authentication Section */}
+              {authState.isAuthenticated ? (
+                <div className="hidden md:block">
+                  <ProfileDropdown />
+                </div>
+              ) : (
+                <>
+                  {/* Login Button */}
+                  <Link to="/login" className="hidden md:block">
+                    <Button
+                      variant="ghost"
+                      className="text-primary hover:bg-muted hover:text-foreground rounded-lg px-3 py-1.5 transition-all duration-300 border border-border/30 hover:border-border/60 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
 
-              {/* Sign Up Button */}
-              <Link to="/register" className="hidden md:block">
-                <Button
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-4 py-1.5 transition-all duration-300 font-medium shadow-sm hover:shadow-md focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Sign Up
-                </Button>
-              </Link>
+                  {/* Sign Up Button */}
+                  <Link to="/register" className="hidden md:block">
+                    <Button
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-4 py-1.5 transition-all duration-300 font-medium shadow-sm hover:shadow-md focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
 
               {/* Mobile Menu Toggle */}
               <Button
@@ -181,26 +193,32 @@ export const Navigation = () => {
               ))}
             </div>
 
-            {/* Mobile Auth Links */}
-            <div className="flex space-x-3 pt-4 border-t border-border/20">
-              <Link to="/login" className="flex-1">
-                <Button
-                  variant="outline"
-                  className="w-full border-border/30 text-primary hover:bg-muted hover:border-border/60 rounded-lg py-3 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Login
-                </Button>
-              </Link>
-              <Link to="/register" className="flex-1">
-                <Button
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg py-3 shadow-sm hover:shadow-md transition-all duration-300 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
+            {/* Mobile Auth Section */}
+            {authState.isAuthenticated ? (
+              <div className="pt-4 border-t border-border/20">
+                <ProfileDropdown />
+              </div>
+            ) : (
+              <div className="flex space-x-3 pt-4 border-t border-border/20">
+                <Link to="/login" className="flex-1">
+                  <Button
+                    variant="outline"
+                    className="w-full border-border/30 text-primary hover:bg-muted hover:border-border/60 rounded-lg py-3 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register" className="flex-1">
+                  <Button
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg py-3 shadow-sm hover:shadow-md transition-all duration-300 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

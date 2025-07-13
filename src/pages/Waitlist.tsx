@@ -9,7 +9,7 @@ import { useCart, WaitlistItem } from "@/contexts/CartContext";
 import { formatPrice } from "@/data/products";
 import {
   Trash2,
-  Clock,
+  Heart,
   ArrowLeft,
   ShoppingCart
 } from "lucide-react";
@@ -88,10 +88,10 @@ const Waitlist = () => {
         <Navigation />
         <div className="container mx-auto px-4 py-16">
           <div className="text-center max-w-md mx-auto">
-            <Clock className="w-24 h-24 text-muted-foreground mx-auto mb-6" />
-            <h1 className="text-2xl font-bold text-foreground mb-4">Your waitlist is empty</h1>
+            <Heart className="w-24 h-24 text-muted-foreground mx-auto mb-6" />
+            <h1 className="text-2xl font-bold text-foreground mb-4">Your wishlist is empty</h1>
             <p className="text-muted-foreground mb-8">
-              Items you add to your waitlist will appear here when they're out of stock.
+              Items you love will appear here. Start browsing and add items to your wishlist.
             </p>
             <Link to="/shop">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 transition-all duration-300 shadow-sm hover:shadow-md">
@@ -120,9 +120,9 @@ const Waitlist = () => {
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Waitlist</h1>
+              <h1 className="text-3xl font-bold text-foreground">My Wishlist</h1>
               <p className="text-muted-foreground">
-                {waitlistItems.length} {waitlistItems.length === 1 ? 'item' : 'items'} in your waitlist
+                {waitlistItems.length} {waitlistItems.length === 1 ? 'item' : 'items'} in your wishlist
               </p>
             </div>
           </div>
@@ -180,8 +180,8 @@ const Waitlist = () => {
                       />
                       <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
                         <Badge variant="secondary" className="text-xs">
-                          <Clock className="w-3 h-3 mr-1" />
-                          Waitlisted
+                          <Heart className="w-3 h-3 mr-1" />
+                          Wishlisted
                         </Badge>
                       </div>
                     </div>
@@ -239,24 +239,24 @@ const Waitlist = () => {
             ))}
           </div>
 
-          {/* Waitlist Info */}
+          {/* Wishlist Info */}
           <div className="space-y-6">
             <Card className="minimalist-card">
               <CardHeader>
-                <CardTitle className="text-foreground">About Waitlist</CardTitle>
+                <CardTitle className="text-foreground">About Wishlist</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Items in your waitlist are currently out of stock. We'll notify you when they become available again.
+                  Save items you love for later. Your wishlist is private and only visible to you.
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 text-sm">
-                    <Clock className="w-4 h-4 text-primary" />
-                    <span className="text-muted-foreground">Automatic notifications</span>
+                    <Heart className="w-4 h-4 text-primary" />
+                    <span className="text-muted-foreground">Save for later</span>
                   </div>
                   <div className="flex items-center space-x-2 text-sm">
                     <ShoppingCart className="w-4 h-4 text-primary" />
-                    <span className="text-muted-foreground">Easy move to cart</span>
+                    <span className="text-muted-foreground">Easy add to cart</span>
                   </div>
                 </div>
               </CardContent>

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { SearchProvider } from "@/contexts/SearchContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -12,6 +13,13 @@ import Cart from "./pages/Cart";
 import Waitlist from "./pages/Waitlist";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import Orders from "./pages/Orders";
+import Wishlist from "./pages/Wishlist";
+import Checkout from "./pages/Checkout";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
+import ProtectedRoute from "./components/ProtectedRoute";
 import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 import FlashDeals from "./pages/FlashDeals";
@@ -40,11 +48,12 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <CartProvider>
-        <SearchProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <SearchProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
           <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/shop" element={<Shop />} />
@@ -60,6 +69,12 @@ const App = () => (
           <Route path="/search" element={<SearchResults />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+          <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/checkout/success" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
           <Route path="/membership" element={<Membership />} />
           <Route path="/categories" element={<Categories />} />
           {/* Category Routes */}
@@ -78,9 +93,10 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-        </SearchProvider>
-      </CartProvider>
+          </BrowserRouter>
+          </SearchProvider>
+        </CartProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

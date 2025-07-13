@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { formatPrice } from "@/data/products";
 import {
   Minus,
@@ -15,7 +16,6 @@ import {
   Trash2,
   ShoppingBag,
   ArrowLeft,
-  Heart,
   Shield,
   Truck,
   RotateCcw
@@ -24,9 +24,12 @@ import Footer from "@/components/Footer";
 
 const Cart = () => {
   const { state, removeFromCart, updateQuantity } = useCart();
+  const { state: authState } = useAuth();
+  const navigate = useNavigate();
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const cartItems = state.items;
 
@@ -82,6 +85,22 @@ const Cart = () => {
       setAppliedPromo("SAVE10");
       setPromoCode("");
     }
+  };
+
+  const handleProceedToCheckout = () => {
+    setIsCheckingOut(true);
+
+    // Check if user is authenticated
+    if (!authState.isAuthenticated) {
+      // Redirect to login with return URL
+      navigate('/login?returnTo=/checkout');
+      setIsCheckingOut(false);
+      return;
+    }
+
+    // User is authenticated, proceed to checkout
+    navigate('/checkout');
+    setIsCheckingOut(false);
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -328,8 +347,19 @@ const Cart = () => {
                   )}
                 </div>
 
-                <Button className="w-full cta-gradient text-primary-foreground py-3 font-medium">
-                  Proceed to Checkout
+                <Button
+                  onClick={handleProceedToCheckout}
+                  disabled={isCheckingOut || cartItems.length === 0}
+                  className="w-full cta-gradient text-primary-foreground py-3 font-medium"
+                >
+                  {isCheckingOut ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Processing...</span>
+                    </div>
+                  ) : (
+                    "Proceed to Checkout"
+                  )}
                 </Button>
               </CardContent>
             </Card>

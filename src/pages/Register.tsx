@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +11,7 @@ import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -18,14 +21,112 @@ const Register = () => {
     confirmPassword: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle registration logic here
+  const { state, register } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [state.isAuthenticated, navigate, location]);
+
+  const validateForm = () => {
+    if (!formData.firstName.trim()) {
+      toast({
+        title: "Error",
+        description: "First name is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.lastName.trim()) {
+      toast({
+        title: "Error",
+        description: "Last name is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.email.trim()) {
+      toast({
+        title: "Error",
+        description: "Email is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.phone.trim()) {
+      toast({
+        title: "Error",
+        description: "Phone number is required",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      toast({
+        title: "Error",
+        description: "Passwords don't match",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!acceptedTerms) {
+      toast({
+        title: "Error",
+        description: "Please accept the Terms of Service and Privacy Policy",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
       return;
     }
-    console.log("Registration attempt:", formData);
+
+    const { confirmPassword, ...registrationData } = formData;
+    const result = await register(registrationData);
+
+    if (result.success) {
+      toast({
+        title: "Welcome to NexuStore!",
+        description: "Your account has been created successfully.",
+      });
+
+      // Redirect to intended page or home
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    } else {
+      toast({
+        title: "Registration Failed",
+        description: result.error || "Failed to create account",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,6 +286,8 @@ const Register = () => {
                 <input
                   id="terms"
                   type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
                   className="w-4 h-4 text-primary border-border rounded focus:ring-ring"
                   required
                 />
@@ -202,9 +305,10 @@ const Register = () => {
 
               <Button
                 type="submit"
-                className="w-full cta-gradient hover:opacity-90 text-primary-foreground font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                disabled={state.isLoading}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Account
+                {state.isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
 

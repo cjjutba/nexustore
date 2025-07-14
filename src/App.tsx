@@ -34,6 +34,7 @@ import HelpCenter from "./pages/HelpCenter";
 import ShippingInfo from "./pages/ShippingInfo";
 import ReturnsRefunds from "./pages/ReturnsRefunds";
 import ContactUs from "./pages/ContactUs";
+import AboutNexuStore from "./pages/AboutNexuStore";
 // Category Pages
 import Fashion from "./pages/categories/Fashion";
 import CategoryProductDetail from "./pages/categories/CategoryProductDetail";
@@ -84,6 +85,7 @@ const App = () => (
           <Route path="/shipping" element={<ShippingInfo />} />
           <Route path="/returns" element={<ReturnsRefunds />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/about" element={<AboutNexuStore />} />
           <Route path="/categories" element={<Categories />} />
           {/* Category Routes */}
           <Route path="/categories/fashion" element={<Fashion />} />

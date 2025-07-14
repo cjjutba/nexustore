@@ -32,6 +32,7 @@ import Categories from "./pages/Categories";
 import Membership from "./pages/Membership";
 import HelpCenter from "./pages/HelpCenter";
 import ShippingInfo from "./pages/ShippingInfo";
+import ReturnsRefunds from "./pages/ReturnsRefunds";
 // Category Pages
 import Fashion from "./pages/categories/Fashion";
 import CategoryProductDetail from "./pages/categories/CategoryProductDetail";
@@ -80,6 +81,7 @@ const App = () => (
           <Route path="/membership" element={<Membership />} />
           <Route path="/help" element={<HelpCenter />} />
           <Route path="/shipping" element={<ShippingInfo />} />
+          <Route path="/returns" element={<ReturnsRefunds />} />
           <Route path="/categories" element={<Categories />} />
           {/* Category Routes */}
           <Route path="/categories/fashion" element={<Fashion />} />

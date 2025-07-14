@@ -31,6 +31,7 @@ import SaleProductDetail from "./pages/SaleProductDetail";
 import Categories from "./pages/Categories";
 import Membership from "./pages/Membership";
 import HelpCenter from "./pages/HelpCenter";
+import ShippingInfo from "./pages/ShippingInfo";
 // Category Pages
 import Fashion from "./pages/categories/Fashion";
 import CategoryProductDetail from "./pages/categories/CategoryProductDetail";
@@ -78,6 +79,7 @@ const App = () => (
           <Route path="/checkout/success" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
           <Route path="/membership" element={<Membership />} />
           <Route path="/help" element={<HelpCenter />} />
+          <Route path="/shipping" element={<ShippingInfo />} />
           <Route path="/categories" element={<Categories />} />
           {/* Category Routes */}
           <Route path="/categories/fashion" element={<Fashion />} />

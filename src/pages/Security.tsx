@@ -48,7 +48,6 @@ import {
   Users,
   Scale,
   Award,
-  Certificate,
   Verified,
   Info,
   HelpCircle,
@@ -776,7 +775,7 @@ const Security = () => {
                     <CardContent className="p-6">
                       <div className="flex items-start space-x-4">
                         <div className="bg-green-100 p-2 rounded-lg flex-shrink-0">
-                          <Certificate className="w-5 h-5 text-green-600" />
+                          <Award className="w-5 h-5 text-green-600" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">

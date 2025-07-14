@@ -1,0 +1,53 @@
+MIT License
+
+Copyright (c) 2025 NexuStore
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Additional Terms for NexuStore
+
+### Frontend-Only Implementation Notice
+
+This project is a frontend-only demonstration of an e-commerce platform. It includes:
+
+- Mock data and simulated functionality
+- No backend services or database connections
+- No real payment processing capabilities
+- Local storage for demonstration purposes only
+
+### Usage Guidelines
+
+1. **Educational Use**: This project is intended for learning, portfolio demonstration, and as a starting point for e-commerce development.
+
+2. **Commercial Use**: While permitted under the MIT License, users should note that this is a frontend-only implementation. Production use would require:
+   - Backend API development
+   - Database integration
+   - Real payment processing systems
+   - Security implementations
+   - Legal compliance measures
+
+3. **Attribution**: While not required by the MIT License, attribution to the original NexuStore project is appreciated.
+
+### Disclaimer
+
+The NexuStore project is provided as a demonstration and learning resource. The creators make no warranties about the suitability of this code for production use without proper backend integration and security measures.
+
+For questions or contributions, please refer to the project repository and documentation.

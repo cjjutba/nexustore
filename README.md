@@ -16,7 +16,7 @@ A modern, full-featured e-commerce platform built for the Philippine market. Nex
 ## ✨ Features
 
 ### 🛍️ **E-commerce Core**
-- **Product Catalog**: 500+ products across 10 categories (Fashion, Electronics, Photography, etc.)
+- **Product Catalog**: 50+ products across 10 categories (Fashion, Electronics, Photography, etc.)
 - **Advanced Search**: Global search with real-time suggestions and filtering
 - **Shopping Cart**: Persistent cart with local storage, quantity management, and product options
 - **Wishlist**: Save favorite products with heart icon toggle functionality
@@ -107,7 +107,7 @@ npm run dev
 
 4. **Open in browser**
 ```
-http://localhost:5173
+http://localhost:8080
 ```
 
 ### Build for Production

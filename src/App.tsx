@@ -30,6 +30,18 @@ import Sale from "./pages/Sale";
 import SaleProductDetail from "./pages/SaleProductDetail";
 import Categories from "./pages/Categories";
 import Membership from "./pages/Membership";
+import HelpCenter from "./pages/HelpCenter";
+import ShippingInfo from "./pages/ShippingInfo";
+import ReturnsRefunds from "./pages/ReturnsRefunds";
+import ContactUs from "./pages/ContactUs";
+import AboutNexuStore from "./pages/AboutNexuStore";
+import Careers from "./pages/Careers";
+import PressNews from "./pages/PressNews";
+import Investors from "./pages/Investors";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
+import Security from "./pages/Security";
 // Category Pages
 import Fashion from "./pages/categories/Fashion";
 import CategoryProductDetail from "./pages/categories/CategoryProductDetail";
@@ -76,6 +88,18 @@ const App = () => (
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
           <Route path="/checkout/success" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
           <Route path="/membership" element={<Membership />} />
+          <Route path="/help" element={<HelpCenter />} />
+          <Route path="/shipping" element={<ShippingInfo />} />
+          <Route path="/returns" element={<ReturnsRefunds />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/about" element={<AboutNexuStore />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/press" element={<PressNews />} />
+          <Route path="/investors" element={<Investors />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
+          <Route path="/security" element={<Security />} />
           <Route path="/categories" element={<Categories />} />
           {/* Category Routes */}
           <Route path="/categories/fashion" element={<Fashion />} />

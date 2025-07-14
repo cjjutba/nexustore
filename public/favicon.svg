@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="16" cy="16" r="16" fill="#000000"/>
+  
+  <!-- NexuStore "N" Letter -->
+  <path d="M8 8 L8 24 L10.5 24 L10.5 14.5 L21.5 24 L24 24 L24 8 L21.5 8 L21.5 17.5 L10.5 8 L8 8 Z" fill="#ffffff"/>
+  
+  <!-- Small accent dot for premium feel -->
+  <circle cx="25" cy="7" r="2" fill="#ffffff"/>
+</svg>

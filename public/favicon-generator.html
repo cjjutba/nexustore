@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexuStore Favicon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .favicon-preview {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .favicon-box {
+            width: 64px;
+            height: 64px;
+            background: #000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+        .favicon-n {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+        }
+        .favicon-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .size-16 { width: 16px; height: 16px; }
+        .size-32 { width: 32px; height: 32px; }
+        .size-64 { width: 64px; height: 64px; }
+        .size-16 .favicon-n { font-size: 10px; }
+        .size-32 .favicon-n { font-size: 18px; }
+        .size-16 .favicon-dot { width: 3px; height: 3px; top: 2px; right: 2px; }
+        .size-32 .favicon-dot { width: 6px; height: 6px; top: 3px; right: 3px; }
+    </style>
+</head>
+<body>
+    <h1>NexuStore Favicon Design</h1>
+    
+    <div class="favicon-preview">
+        <div class="favicon-box size-16">
+            <span class="favicon-n">N</span>
+            <div class="favicon-dot"></div>
+        </div>
+        <div>16x16</div>
+    </div>
+    
+    <div class="favicon-preview">
+        <div class="favicon-box size-32">
+            <span class="favicon-n">N</span>
+            <div class="favicon-dot"></div>
+        </div>
+        <div>32x32</div>
+    </div>
+    
+    <div class="favicon-preview">
+        <div class="favicon-box size-64">
+            <span class="favicon-n">N</span>
+            <div class="favicon-dot"></div>
+        </div>
+        <div>64x64</div>
+    </div>
+
+    <div class="instructions">
+        <h2>Favicon Design Specifications</h2>
+        <p><strong>NexuStore Favicon Design:</strong></p>
+        <ul>
+            <li><strong>Background:</strong> Black (#000000) - represents premium, professional branding</li>
+            <li><strong>Main Element:</strong> White "N" letter - first letter of NexuStore</li>
+            <li><strong>Accent:</strong> Small white dot in top-right corner - represents premium quality and attention to detail</li>
+            <li><strong>Style:</strong> Clean, modern, minimalist design that works at all sizes</li>
+            <li><strong>Brand Alignment:</strong> Matches NexuStore's black and white color scheme</li>
+        </ul>
+        
+        <h3>Required Favicon Files:</h3>
+        <ul>
+            <li><code>favicon.ico</code> - 16x16, 32x32, 48x48 multi-size ICO file</li>
+            <li><code>favicon-16x16.png</code> - 16x16 PNG</li>
+            <li><code>favicon-32x32.png</code> - 32x32 PNG</li>
+            <li><code>apple-touch-icon.png</code> - 180x180 PNG for iOS</li>
+            <li><code>android-chrome-192x192.png</code> - 192x192 PNG for Android</li>
+            <li><code>android-chrome-512x512.png</code> - 512x512 PNG for Android</li>
+        </ul>
+        
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Use the design shown above as reference</li>
+            <li>Create the favicon files using a favicon generator tool or image editor</li>
+            <li>Ensure the "N" letter is clearly visible at 16x16 size</li>
+            <li>Maintain the black background and white elements across all sizes</li>
+            <li>Place the generated files in the <code>public/</code> directory</li>
+        </ol>
+        
+        <h3>Online Favicon Generators:</h3>
+        <ul>
+            <li><a href="https://favicon.io/" target="_blank">favicon.io</a> - Free favicon generator</li>
+            <li><a href="https://realfavicongenerator.net/" target="_blank">RealFaviconGenerator</a> - Comprehensive favicon generator</li>
+            <li><a href="https://www.favicon-generator.org/" target="_blank">Favicon Generator</a> - Simple favicon creation</li>
+        </ul>
+    </div>
+</body>
+</html>

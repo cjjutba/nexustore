@@ -36,6 +36,7 @@ import ReturnsRefunds from "./pages/ReturnsRefunds";
 import ContactUs from "./pages/ContactUs";
 import AboutNexuStore from "./pages/AboutNexuStore";
 import Careers from "./pages/Careers";
+import PressNews from "./pages/PressNews";
 // Category Pages
 import Fashion from "./pages/categories/Fashion";
 import CategoryProductDetail from "./pages/categories/CategoryProductDetail";
@@ -88,6 +89,7 @@ const App = () => (
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/about" element={<AboutNexuStore />} />
           <Route path="/careers" element={<Careers />} />
+          <Route path="/press" element={<PressNews />} />
           <Route path="/categories" element={<Categories />} />
           {/* Category Routes */}
           <Route path="/categories/fashion" element={<Fashion />} />

@@ -11,7 +11,7 @@ A modern, full-featured e-commerce platform built for the Philippine market. Nex
 
 ## 🌐 Live Demo
 
-**Website**: [https://nexustore-phi.vercel.app/](https://nexustore-phi.vercel.app/)
+**Website**: [https://nexustore-phi.vercel.app/](https://nexustore-ecommerce.vercel.app/)
 
 ## ✨ Features
 
@@ -206,7 +206,7 @@ src/
 
 The application is deployed on **Vercel** with automatic deployments from the main branch. Since this is a frontend-only application, no backend infrastructure or database setup is required.
 
-**Live URL**: [https://nexustore-phi.vercel.app/](https://nexustore-phi.vercel.app/)
+**Live URL**: [https://nexustore-phi.vercel.app/](https://nexustore-ecommerce.vercel.app/)
 
 ### Deploy Your Own
 

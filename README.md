@@ -5,13 +5,35 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.4.11-blue)](https://tailwindcss.com/)
 
-A modern, full-featured e-commerce platform built for the Philippine market. NexuStore offers a premium shopping experience with comprehensive product categories, secure authentication, and responsive design.
+## 🏪 What is NexuStore?
+
+NexuStore is a modern, full-featured e-commerce platform built specifically for the Philippine market. It offers a premium shopping experience with comprehensive product categories, secure authentication, and responsive design. This project demonstrates advanced frontend development skills with React, TypeScript, and modern web technologies.
 
 > **⚠️ Frontend-Only Implementation**: This project is a complete frontend demonstration using mock data and local storage. It does not include backend services, databases, or real payment processing. All data is simulated for showcase purposes.
 
 ## 🌐 Live Demo
-
 **Website**: [https://nexustore-ecommerce.vercel.app/](https://nexustore-ecommerce.vercel.app/)
+
+---
+
+## 📋 Table of Contents
+- [🏪 What is NexuStore?](#-what-is-nexustore)
+- [🌐 Live Demo](#-live-demo)
+- [✨ Features](#-features)
+- [🛠️ Technology Stack](#️-technology-stack)
+- [🚀 Getting Started](#-getting-started)
+- [📁 Project Structure](#-project-structure)
+- [🎨 Design System](#-design-system)
+- [🌏 Philippine Market Focus](#-philippine-market-focus)
+- [📱 Mobile Responsiveness](#-mobile-responsiveness)
+- [🔒 Security Features](#-security-features)
+- [🚀 Deployment](#-deployment)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [👨‍💻 Author](#-author)
+- [🙏 Acknowledgments](#-acknowledgments)
+
+---
 
 ## ✨ Features
 
@@ -57,6 +79,8 @@ A modern, full-featured e-commerce platform built for the Philippine market. Nex
 - **Company Info**: About Us, Careers, Press & News, Investors
 - **Legal**: Privacy Policy, Terms of Service, Cookie Policy, Security
 
+---
+
 ## 🛠️ Technology Stack
 
 ### **Frontend**
@@ -81,6 +105,8 @@ A modern, full-featured e-commerce platform built for the Philippine market. Nex
 - **TypeScript ESLint** - TypeScript-specific linting rules
 - **Vite SWC** - Fast compilation with SWC
 
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -88,7 +114,6 @@ A modern, full-featured e-commerce platform built for the Philippine market. Nex
 - Git
 
 ### Installation
-
 1. **Clone the repository**
 ```bash
 git clone <repository-url>
@@ -111,14 +136,14 @@ http://localhost:8080
 ```
 
 ### Build for Production
-
 ```bash
 npm run build
 npm run preview
 ```
 
-## 📁 Project Structure
+---
 
+## 📁 Project Structure
 ```
 src/
 ├── components/          # Reusable UI components
@@ -139,6 +164,8 @@ src/
 └── lib/                # Library configurations
 ```
 
+---
+
 ## 🎨 Design System
 
 ### **Color Palette**
@@ -157,6 +184,8 @@ src/
 - **Forms**: Accessible inputs with validation states
 - **Navigation**: Sticky header with category navigation
 
+---
+
 ## 🌏 Philippine Market Focus
 
 ### **Localization**
@@ -170,6 +199,8 @@ src/
 - **Customer Support**: 24/7 assistance
 - **Return Policy**: 30-day returns
 - **Warranty**: Comprehensive product warranties
+
+---
 
 ## 📱 Mobile Responsiveness
 
@@ -186,8 +217,9 @@ src/
 - Optimized checkout flow
 - Responsive image galleries
 
-## 🔒 Security Features
+---
 
+## 🔒 Security Features
 > **Note**: Security features listed below are frontend implementations and demonstrations. Real-world deployment would require backend security measures.
 
 ### **Data Protection**
@@ -202,14 +234,14 @@ src/
 - **Mock Processing**: Simulated payment processing for demo purposes
 - **Security UI**: 3D Secure and fraud detection interface examples
 
-## 🚀 Deployment
+---
 
+## 🚀 Deployment
 The application is deployed on **Vercel** with automatic deployments from the main branch. Since this is a frontend-only application, no backend infrastructure or database setup is required.
 
 **Live URL**: [https://nexustore-ecommerce.vercel.app/](https://nexustore-ecommerce.vercel.app/)
 
 ### Deploy Your Own
-
 1. Fork this repository
 2. Connect to Vercel
 3. Deploy with default settings (static site)
@@ -217,25 +249,37 @@ The application is deployed on **Vercel** with automatic deployments from the ma
 
 > **Note**: This is a static frontend deployment. For a production e-commerce site, you would need to integrate with backend services, databases, and real payment processors.
 
-## 🤝 Contributing
+---
 
+## 🤝 Contributing
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+---
 
+## 📄 License
 This project is open source and available under the [MIT License](LICENSE).
 
-## 🙏 Acknowledgments
+---
 
+## 👨‍💻 Author
+
+**CJ Jutba**
+- 🌐 **Portfolio**: [https://cjjutba.com/](https://cjjutba.com/)
+- 💼 **LinkedIn**: [https://www.linkedin.com/in/cjjutba/](https://www.linkedin.com/in/cjjutba/)
+- 🐙 **GitHub**: [https://github.com/cjjutba](https://github.com/cjjutba)
+- 📧 **Email**: [hello@cjjutba.com](mailto:hello@cjjutba.com)
+
+---
+
+## 🙏 Acknowledgments
 - **shadcn/ui** for the beautiful component library
 - **Tailwind CSS** for the utility-first CSS framework
 - **Lucide** for the comprehensive icon set
 - **Vercel** for seamless deployment and hosting
 
 ---
-
 **Built with ❤️ for the Philippine e-commerce market**

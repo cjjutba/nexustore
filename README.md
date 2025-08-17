@@ -5,15 +5,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.4.11-blue)](https://tailwindcss.com/)
 
-## 🏪 What is NexuStore?
-
-NexuStore is a modern, full-featured e-commerce platform built specifically for the Philippine market. It offers a premium shopping experience with comprehensive product categories, secure authentication, and responsive design. This project demonstrates advanced frontend development skills with React, TypeScript, and modern web technologies.
-
-> **⚠️ Frontend-Only Implementation**: This project is a complete frontend demonstration using mock data and local storage. It does not include backend services, databases, or real payment processing. All data is simulated for showcase purposes.
-
-## 🌐 Live Demo
-**Website**: [https://nexustore-ecommerce.vercel.app/](https://nexustore-ecommerce.vercel.app/)
-
 ---
 
 ## 📋 Table of Contents
@@ -32,6 +23,19 @@ NexuStore is a modern, full-featured e-commerce platform built specifically for 
 - [📄 License](#-license)
 - [👨‍💻 Author](#-author)
 - [🙏 Acknowledgments](#-acknowledgments)
+
+---
+
+## 🏪 What is NexuStore?
+
+NexuStore is a modern, full-featured e-commerce platform built specifically for the Philippine market. It offers a premium shopping experience with comprehensive product categories, secure authentication, and responsive design. This project demonstrates advanced frontend development skills with React, TypeScript, and modern web technologies.
+
+> **⚠️ Frontend-Only Implementation**: This project is a complete frontend demonstration using mock data and local storage. It does not include backend services, databases, or real payment processing. All data is simulated for showcase purposes.
+
+---
+
+## 🌐 Live Demo
+**Website**: [https://nexustore-ecommerce.vercel.app/](https://nexustore-ecommerce.vercel.app/)
 
 ---
 

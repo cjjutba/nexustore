@@ -35,7 +35,7 @@ NexuStore is a modern, full-featured e-commerce platform built specifically for 
 ---
 
 ## 🌐 Live Demo
-**Website**: [https://nexustore-ecommerce.vercel.app/](https://nexustore-ecommerce.vercel.app/)
+**Website**: [https://nexustore.cjjutba.com/](https://nexustore.cjjutba.com/)
 
 ---
 
@@ -243,7 +243,7 @@ src/
 ## 🚀 Deployment
 The application is deployed on **Vercel** with automatic deployments from the main branch. Since this is a frontend-only application, no backend infrastructure or database setup is required.
 
-**Live URL**: [https://nexustore-ecommerce.vercel.app/](https://nexustore-ecommerce.vercel.app/)
+**Live URL**: [https://nexustore.cjjutba.com/](https;//nexustore.cjjutba.com/)
 
 ### Deploy Your Own
 1. Fork this repository
